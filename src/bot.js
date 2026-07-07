@@ -74,6 +74,7 @@ client.on("messageCreate", async (message) => {
         .addFields(
           { name: `\`${prefix}stats\``, value: "Hiển thị biểu đồ ASCII thống kê tỉ lệ game đã gửi.", inline: false },
           { name: `\`${prefix}check <tên game>\``, value: "Tra cứu lịch sử xem game đã được gửi hay chưa.", inline: false },
+          { name: `\`${prefix}search <tên game>\``, value: "Tìm kiếm so sánh giá game trực tuyến trên Steam và Epic.", inline: false },
           { name: `\`${prefix}webhooks\``, value: "Kiểm tra kết nối và trạng thái hoạt động các Webhook.", inline: false },
           { name: `\`${prefix}changelog\``, value: "Gửi tin thông báo cập nhật v1.0.0 lên Discord.", inline: false },
           { name: `\`${prefix}send <tên> | <url> | [nền tảng] | [loại]\``, value: "Gửi nhanh một tin nhắn game tùy chọn lên Discord (Ngăn cách các tham số bằng dấu `|`).", inline: false }
@@ -268,6 +269,53 @@ npm run check-webhooks
         await message.reply(`✅ Đã gửi thành công Embed game: **${title}**!`);
       } catch (err) {
         await message.reply(`❌ Gửi game thất bại: ${err.message}`);
+      }
+      break;
+    }
+
+    case "search": {
+      const query = args.join(" ");
+      if (!query) {
+        return message.reply(`⚠️ Cú pháp sai! Vui lòng nhập: \`${prefix}search <tên game>\``);
+      }
+
+      const msg = await message.reply("🔄 Đang tìm kiếm giá game trực tuyến trên Steam và Epic...");
+      
+      try {
+        const { searchAllDeals } = require("./services/search.service");
+        const results = await searchAllDeals(query);
+
+        if (results.length === 0) {
+          return msg.edit(`❌ Không tìm thấy deal nào cho game "${query}" trực tuyến.`);
+        }
+
+        const embed = new EmbedBuilder()
+          .setTitle(`🔍 Kết quả so sánh giá: ${query}`)
+          .setDescription(`Dưới đây là các deal game được tìm thấy từ Steam và Epic Games Store cho từ khóa **${query}**:`)
+          .setColor(0x3498db)
+          .setTimestamp();
+
+        results.slice(0, 8).forEach((item) => {
+          const discountLabel = item.discountPercent ? `[-${item.discountPercent}%]` : "";
+          const value = `• **Giá hiện tại**: ${item.currentPrice} ${discountLabel}\n` +
+                        `• **Giá gốc**: ${item.originalPrice}\n` +
+                        `• **Link Store**: [Mở Store](${item.url})`;
+          
+          embed.addFields({
+            name: `🛍️ [${item.store}] ${item.title}`,
+            value: value,
+            inline: false
+          });
+        });
+
+        const firstImage = results.find(r => r.image)?.image;
+        if (firstImage) {
+          embed.setThumbnail(firstImage);
+        }
+
+        await msg.edit({ content: "✅ Tìm kiếm hoàn tất!", embeds: [embed] });
+      } catch (err) {
+        await msg.edit(`❌ Gặp lỗi khi tìm kiếm: ${err.message}`);
       }
       break;
     }

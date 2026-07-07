@@ -18,7 +18,8 @@
     "stats-chart": "node scripts/cli.js stats-chart",
     "check-webhooks": "node scripts/cli.js check-webhooks",
     "send-changelog": "node scripts/cli.js send-changelog",
-    "discord-bot": "node src/bot.js"
+    "discord-bot": "node src/bot.js",
+    "search-deal": "node scripts/cli.js search-deal"
   },
   "keywords": [],
   "author": "",

@@ -322,6 +322,32 @@ npm run check-webhooks
       break;
     }
 
+    case "search-deal": {
+      const query = args.slice(1).join(" ");
+      if (!query) {
+        console.log("Lỗi: Vui lòng nhập tên game cần tìm kiếm.");
+        return;
+      }
+      console.log(`Đang tìm kiếm deal cho game "${query}" trực tuyến trên Steam và Epic...`);
+      const { searchAllDeals } = require("../src/services/search.service");
+      const results = await searchAllDeals(query);
+      if (results.length === 0) {
+        console.log(`Không tìm thấy deal nào cho từ khóa "${query}".`);
+      } else {
+        console.log(`\nKết quả tìm kiếm trực tuyến (${results.length} deal):`);
+        console.table(
+          results.map((item) => ({
+            "Cửa hàng": item.store,
+            "Tên Game": item.title,
+            "Giá Gốc": item.originalPrice,
+            "Giá Hiện Tại": item.currentPrice,
+            "Giảm Giá": item.discountPercent ? `${item.discountPercent}%` : "0%",
+          }))
+        );
+      }
+      break;
+    }
+
     default:
       console.log(`Không tìm thấy lệnh "${command}".`);
       printUsage();
