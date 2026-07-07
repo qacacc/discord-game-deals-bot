@@ -50,6 +50,7 @@ async function getOtherFreeGames() {
       timeout: 20_000,
       params: {
         platform: "pc",
+        type: "game", // Chỉ lấy game đầy đủ (Full Games), loại bỏ DLC và in-game loot linh tinh
       },
     });
 
