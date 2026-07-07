@@ -25,31 +25,28 @@ function askQuestion(query) {
 
 function printUsage() {
   console.log(`
-======================================================
-              BOT GAME ADMIN CLI TOOLS
-======================================================
-Hướng dẫn sử dụng:
-  npm run cli-tool <lệnh> [tham số]
-
-Danh sách các lệnh:
-  show            Hiển thị bảng danh sách các game đã gửi lưu trong sent.json.
-  clean           Chủ động dọn dẹp các deal sale/event cũ quá 30 ngày.
-  reset           Xóa sạch hoàn toàn lịch sử đã gửi (reset sent.json).
-  check <từ_khóa>
-                  Tìm kiếm trong lịch sử xem game đã gửi chưa (theo tên hoặc ID).
-  send-test -- "<tên>" "<url>" [nền_tảng] [loại_alert]
-                  Gửi nhanh 1 tin nhắn test game lên Discord.
-  send-custom     [Interactive] Mở giao diện trò chuyện hỏi-đáp trực tiếp để
-                  soạn và gửi tin nhắn game tùy chọn bất kỳ lên Discord.
-  stats-chart     In biểu đồ cột dạng ký tự ASCII thể hiện phân bổ các game đã gửi.
-  check-webhooks  Kiểm tra trạng thái kết nối và phản hồi từ các Webhook Discord.
-  send-changelog  Gửi tin nhắn thông báo Changelog cập nhật v1.0.0 lên Discord.
-
-Ví dụ:
-  npm run cli-tool show
-  npm run cli-tool stats-chart
-  npm run send-custom
-======================================================
+╔══════════════════════════════════════════════════════════════════════════╗
+║                       BOT GAME - ADMIN CLI TOOLS                         ║
+╠══════════════════════════════════════════════════════════════════════════╣
+║ Hướng dẫn sử dụng:                                                       ║
+║   npm run cli-tool <lệnh> [tham số]                                      ║
+║                                                                          ║
+║ Danh sách các lệnh khả dụng:                                             ║
+║   show            Hiển thị bảng danh sách các game đã gửi                ║
+║   stats-chart     In biểu đồ ASCII phân bổ game theo nền tảng            ║
+║   send-custom     [Interactive] Mở cuộc trò chuyện soạn gửi game tùy chọn ║
+║   check-webhooks  Kiểm tra trạng thái kết nối các webhook                ║
+║   send-changelog  Gửi tin nhắn thông báo Changelog v1.0.0 lên Discord   ║
+║   clean           Dọn dẹp các deal sale/event cũ quá 30 ngày             ║
+║   reset           Xóa sạch hoàn toàn lịch sử đã gửi (sent.json)          ║
+║   check <từ_khóa> Tìm kiếm game đã gửi theo tên hoặc ID                  ║
+║   send-test       Gửi nhanh một tin nhắn test game lên Discord           ║
+║                                                                          ║
+║ Ví dụ chạy nhanh:                                                        ║
+║   npm run show-history                                                   ║
+║   npm run stats-chart                                                    ║
+║   npm run send-custom                                                    ║
+╚══════════════════════════════════════════════════════════════════════════╝
   `);
 }
 
@@ -298,7 +295,22 @@ async function main() {
 • 📉 **Bộ lọc thông minh**: Lọc theo giá bán tối đa mong muốn và thể loại game yêu thích.
 • 💵 **Đa tiền tệ**: Tự động chuyển vùng giá giữa VNĐ (₫) và USD ($).
 • 📦 **Gom nhóm tin nhắn**: Gộp nhiều deal sale cùng lúc giúp kênh chat gọn gàng.
-• 🛠️ **Công cụ quản trị CLI**: Hỗ trợ xem bảng thống kê, tìm kiếm deal, kiểm tra webhook và chat-bot tự động gửi tin nhắn tùy chọn từ console.`,
+• 🛠️ **Công cụ quản trị CLI**: Hỗ trợ xem bảng thống kê, tìm kiếm deal, kiểm tra webhook và chat-bot tự động gửi tin nhắn tùy chọn từ console.
+
+💻 **BỘ LỆNH ĐIỀU KHIỂN CLI NHANH (ADMIN TOOLS):**
+\`\`\`bash
+# Xem bảng lịch sử game đã gửi
+npm run show-history
+
+# Vẽ biểu đồ ASCII thống kê game
+npm run stats-chart
+
+# Trình soạn tin tương tác gửi game
+npm run send-custom
+
+# Kiểm tra sức khỏe các Webhook
+npm run check-webhooks
+\`\`\``,
         url: "https://github.com/",
       };
       try {
