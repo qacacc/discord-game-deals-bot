@@ -120,6 +120,41 @@ function printDetailedSummary(summary, newGames, dryRun) {
 }
 
 /**
+ * Hàm lọc game dựa trên các tiêu chí cấu hình cá nhân của người dùng (Giá / Thể loại)
+ */
+function filterByPreferences(game, { maxSalePrice, preferredGenres, excludedGenres }) {
+  // 1. Lọc theo giá thành tối đa (chỉ áp dụng cho các deal giảm giá sale)
+  if (game.alertType === "sale" && maxSalePrice > 0) {
+    if (game.priceValue !== undefined && game.priceValue > maxSalePrice) {
+      return false;
+    }
+  }
+
+  // 2. Lọc theo thể loại game
+  if (game.genres) {
+    const gameGenres = game.genres.split(",").map((g) => g.trim().toLowerCase());
+
+    // Kiểm tra danh sách thể loại loại trừ
+    if (excludedGenres.length > 0) {
+      const hasExcluded = gameGenres.some((genre) => excludedGenres.includes(genre));
+      if (hasExcluded) {
+        return false;
+      }
+    }
+
+    // Kiểm tra danh sách thể loại ưu tiên (chỉ giữ lại các game có chứa ít nhất 1 thể loại ưu tiên)
+    if (preferredGenres.length > 0) {
+      const hasPreferred = gameGenres.some((genre) => preferredGenres.includes(genre));
+      if (!hasPreferred) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+/**
  * Hàm kiểm tra và gửi game chính
  */
 async function runChecker({
@@ -145,6 +180,9 @@ async function runChecker({
   minSaleDiscountPercent = readNumberEnv("MIN_SALE_DISCOUNT_PERCENT", 80),
   maxSaleAlertsPerPlatform = readNumberEnv("MAX_SALE_ALERTS_PER_PLATFORM", 5),
   steamPagesCount = readNumberEnv("STEAM_PAGES_TO_SCAN", 3),
+  maxSalePrice = readNumberEnv("MAX_SALE_PRICE", 0), // 0 là không giới hạn giá
+  preferredGenresStr = process.env.PREFERRED_GENRES || "",
+  excludedGenresStr = process.env.EXCLUDED_GENRES || "",
 } = {}) {
   const t = getSummaryLocale();
   console.log(t.start_scanning);
@@ -199,12 +237,21 @@ async function runChecker({
     ...steamSales,
   ].map(normalizeGame);
 
+  // Phân tích danh sách cấu hình thể loại
+  const preferredGenres = preferredGenresStr ? preferredGenresStr.split(",").map((g) => g.trim().toLowerCase()).filter(Boolean) : [];
+  const excludedGenres = excludedGenresStr ? excludedGenresStr.split(",").map((g) => g.trim().toLowerCase()).filter(Boolean) : [];
+
+  // Áp dụng bộ lọc Giá & Thể loại theo mong muốn người dùng
+  const filteredGames = allGames.filter((game) =>
+    filterByPreferences(game, { maxSalePrice, preferredGenres, excludedGenres })
+  );
+
   // Lọc ra các game chưa từng được gửi trước đây
-  const newGames = allGames.filter((game) => !isGameSent(game.id, sentData));
-  const duplicateCount = allGames.length - newGames.length;
+  const newGames = filteredGames.filter((game) => !isGameSent(game.id, sentData));
+  const duplicateCount = filteredGames.length - newGames.length;
 
   const summary = {
-    checked: allGames.length,
+    checked: filteredGames.length,
     duplicates: duplicateCount,
     epicFree: epicGames.length,
     epicUpcoming: epicUpcoming.length,
@@ -218,7 +265,7 @@ async function runChecker({
   if (newGames.length === 0) {
     console.log(t.none);
     printDetailedSummary({ ...summary, sent: 0 }, [], dryRun);
-    return { checked: allGames.length, sent: 0, pending: 0, duplicates: duplicateCount };
+    return { checked: filteredGames.length, sent: 0, pending: 0, duplicates: duplicateCount };
   }
 
   // Phân loại game: Game sale (sẽ batching) và game khác (gửi đơn lẻ)
@@ -282,7 +329,7 @@ async function runChecker({
   if (dryRun) {
     console.log(t.dry_done);
     printDetailedSummary({ ...summary, sent: 0, pending: newGames.length }, newGames, dryRun);
-    return { checked: allGames.length, sent: 0, pending: newGames.length, duplicates: duplicateCount };
+    return { checked: filteredGames.length, sent: 0, pending: newGames.length, duplicates: duplicateCount };
   }
 
   saveSent(sentData);
@@ -290,7 +337,7 @@ async function runChecker({
   console.log(t.done);
   printDetailedSummary({ ...summary, sent: newGames.length }, newGames, dryRun);
 
-  return { checked: allGames.length, sent: newGames.length, pending: 0, duplicates: duplicateCount };
+  return { checked: filteredGames.length, sent: newGames.length, pending: 0, duplicates: duplicateCount };
 }
 
 if (require.main === module) {

@@ -21,17 +21,18 @@ const LOCALES = {
     desc_sale: "Game đang giảm giá mạnh.",
     desc_upcoming: "Game sắp được nhận miễn phí trên Epic Games Store.",
     desc_free: "Game đang miễn phí để nhận.",
-    field_platform: "Nền tảng",
-    field_original_price: "Giá gốc",
-    field_current_price: "Giá hiện tại",
-    field_discount: "Giảm giá",
-    field_start_date: "Bắt đầu tặng từ",
-    field_end_date: "Hạn nhận",
-    field_link_store: "Link cửa hàng",
-    field_link_claim: "Link nhận",
-    field_reviews: "Đánh giá",
-    field_notes: "Ghi chú",
-    field_event_page: "Trang sự kiện",
+    field_platform: "🎮 Nền tảng",
+    field_original_price: "💵 Giá gốc",
+    field_current_price: "🏷️ Giá hiện tại",
+    field_discount: "📉 Giảm giá",
+    field_start_date: "📅 Bắt đầu tặng từ",
+    field_end_date: "📅 Hạn nhận",
+    field_link_store: "🔗 Link cửa hàng",
+    field_link_claim: "🔗 Link nhận",
+    field_reviews: "⭐ Đánh giá",
+    field_genres: "🏷️ Thể loại",
+    field_notes: "📝 Ghi chú",
+    field_event_page: "🔗 Trang sự kiện",
     text_open_sale: "Mở trang sale",
     text_view_store: "Xem trên cửa hàng",
     text_claim_game: "Nhận game",
@@ -47,17 +48,18 @@ const LOCALES = {
     desc_sale: "This game is deeply discounted.",
     desc_upcoming: "This game will be free soon on Epic Games Store.",
     desc_free: "This game is currently free to claim.",
-    field_platform: "Platform",
-    field_original_price: "Original Price",
-    field_current_price: "Current Price",
-    field_discount: "Discount",
-    field_start_date: "Starts At",
-    field_end_date: "Ends At",
-    field_link_store: "Store Link",
-    field_link_claim: "Claim Link",
-    field_reviews: "Reviews",
-    field_notes: "Notes",
-    field_event_page: "Event Page",
+    field_platform: "🎮 Platform",
+    field_original_price: "💵 Original Price",
+    field_current_price: "🏷️ Current Price",
+    field_discount: "📉 Discount",
+    field_start_date: "📅 Starts At",
+    field_end_date: "📅 Ends At",
+    field_link_store: "🔗 Store Link",
+    field_link_claim: "🔗 Claim Link",
+    field_reviews: "⭐ Reviews",
+    field_genres: "🏷️ Genres",
+    field_notes: "📝 Notes",
+    field_event_page: "🔗 Event Page",
     text_open_sale: "Open sale page",
     text_view_store: "View on store",
     text_claim_game: "Claim game",
@@ -243,7 +245,7 @@ function createEmbed(game) {
 }
 
 /**
- * Tạo các trường thông tin chi tiết (fields) cho Embed Discord
+ * Tạo các trường thông tin chi tiết (fields) cho Embed Discord với bố cục lưới (inline: true)
  */
 function getEmbedFields(game) {
   const t = getLocale();
@@ -274,50 +276,64 @@ function getEmbedFields(game) {
   }
 
   if (game.alertType === "upcoming") {
-    return [
+    const fields = [
       {
         name: t.field_platform,
         value: game.platform || "Unknown",
-        inline: false,
+        inline: true,
       },
       {
         name: t.field_original_price,
         value: game.originalPrice || "Unknown",
-        inline: false,
+        inline: true,
       },
+    ];
+
+    if (game.genres) {
+      fields.push({
+        name: t.field_genres,
+        value: game.genres,
+        inline: true,
+      });
+    }
+
+    fields.push(
       {
         name: t.field_start_date,
         value: game.startDate || "Unknown",
-        inline: false,
+        inline: true,
       },
       {
         name: t.field_end_date,
         value: game.endDate || "Unknown",
-        inline: false,
+        inline: true,
       },
       {
         name: t.field_link_store,
         value: game.url ? `[${t.text_view_store}](${game.url})` : "Unknown",
         inline: false,
-      },
-    ];
+      }
+    );
+
+    return fields;
   }
 
+  // Đối với game free hoặc game sale (hiển thị dạng lưới tối ưu)
   const fields = [
     {
       name: t.field_platform,
       value: game.platform || "Unknown",
-      inline: false,
+      inline: true,
     },
     {
       name: t.field_original_price,
       value: game.originalPrice || "Unknown",
-      inline: false,
+      inline: true,
     },
     {
       name: t.field_current_price,
       value: game.currentPrice || t.current_free,
-      inline: false,
+      inline: true,
     },
   ];
 
@@ -325,7 +341,7 @@ function getEmbedFields(game) {
     fields.push({
       name: t.field_discount,
       value: `${game.discountPercent}%`,
-      inline: false,
+      inline: true,
     });
   }
 
@@ -333,7 +349,15 @@ function getEmbedFields(game) {
     fields.push({
       name: t.field_reviews,
       value: game.reviews,
-      inline: false,
+      inline: true,
+    });
+  }
+
+  if (game.genres) {
+    fields.push({
+      name: t.field_genres,
+      value: game.genres,
+      inline: true,
     });
   }
 
@@ -341,13 +365,13 @@ function getEmbedFields(game) {
     {
       name: t.field_end_date,
       value: game.endDate || "Unknown",
-      inline: false,
+      inline: true,
     },
     {
       name: t.field_link_claim,
       value: game.url ? `[${t.text_claim_game}](${game.url})` : "Unknown",
       inline: false,
-    },
+    }
   );
 
   return fields;

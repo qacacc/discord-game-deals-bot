@@ -307,3 +307,97 @@ test("gui game free tu GOG", async () => {
   assert.deepEqual(sentGames, ["gog:12345"]);
   assert.deepEqual(result, { checked: 1, sent: 1, pending: 0, duplicates: 0 });
 });
+
+test("loc deal sale theo MAX_SALE_PRICE", async () => {
+  const sentData = { sent: [] };
+  let batchedGames = [];
+
+  const result = await runChecker({
+    maxSalePrice: 100000, // Chỉ nhận deal <= 100k
+    getEpicGames: async () => [],
+    getEpicUpcoming: async () => [],
+    getSteamGames: async () => [],
+    getGogGames: async () => [],
+    getEpicSales: async () => [
+      {
+        id: "epic-sale:cheap:90:end",
+        title: "Cheap Game",
+        alertType: "sale",
+        platform: "Epic Games Store",
+        priceValue: 50000, // 50k -> Nhận
+      },
+      {
+        id: "epic-sale:expensive:50:end",
+        title: "Expensive Game",
+        alertType: "sale",
+        platform: "Epic Games Store",
+        priceValue: 150000, // 150k -> Loại bỏ
+      }
+    ],
+    getSteamSales: async () => [],
+    getSaleEvents: () => [],
+    sendGame: async () => {},
+    sendSalesBatch: async (games) => {
+      batchedGames = games.map(g => g.id);
+    },
+    loadSent: () => sentData,
+    saveSent: () => {},
+  });
+
+  assert.deepEqual(batchedGames, ["epic-sale:cheap:90:end"]);
+  assert.deepEqual(result, { checked: 1, sent: 1, pending: 0, duplicates: 0 });
+});
+
+test("loc deal sale theo PREFERRED_GENRES va EXCLUDED_GENRES", async () => {
+  const sentData = { sent: [] };
+  let batchedGames = [];
+
+  // Giả lập env preferred & excluded
+  process.env.PREFERRED_GENRES = "Action, RPG";
+  process.env.EXCLUDED_GENRES = "Casual, Sports";
+
+  const result = await runChecker({
+    getEpicGames: async () => [],
+    getEpicUpcoming: async () => [],
+    getSteamGames: async () => [],
+    getGogGames: async () => [],
+    getEpicSales: async () => [
+      {
+        id: "epic-sale:game-action:90:end",
+        title: "Action Game",
+        alertType: "sale",
+        platform: "Epic Games Store",
+        genres: "Action, Adventure", // Có Action -> Nhận
+      },
+      {
+        id: "epic-sale:game-sports:80:end",
+        title: "Action Sports Game",
+        alertType: "sale",
+        platform: "Epic Games Store",
+        genres: "Action, Sports", // Có Sports (loại trừ) -> Bỏ qua
+      },
+      {
+        id: "epic-sale:game-strategy:80:end",
+        title: "Strategy Game",
+        alertType: "sale",
+        platform: "Epic Games Store",
+        genres: "Strategy, Simulation", // Không có Action hay RPG -> Bỏ qua
+      }
+    ],
+    getSteamSales: async () => [],
+    getSaleEvents: () => [],
+    sendGame: async () => {},
+    sendSalesBatch: async (games) => {
+      batchedGames = games.map(g => g.id);
+    },
+    loadSent: () => sentData,
+    saveSent: () => {},
+  });
+
+  // Cleanup env sau test
+  delete process.env.PREFERRED_GENRES;
+  delete process.env.EXCLUDED_GENRES;
+
+  assert.deepEqual(batchedGames, ["epic-sale:game-action:90:end"]);
+  assert.deepEqual(result, { checked: 1, sent: 1, pending: 0, duplicates: 0 });
+});

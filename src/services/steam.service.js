@@ -98,6 +98,7 @@ function parseSteamSearchResults(html = "") {
         platform: "Steam",
         originalPrice: originalPrice || "Unknown",
         currentPrice: finalPrice || "Free",
+        priceValue: 0,
         endDate: "Xem trên Steam",
         url,
         appUrl: getSteamAppUrl(appId),
@@ -145,6 +146,7 @@ function parseSteamSaleResults(html = "", { minDiscountPercent = 80, limit = 5 }
         platform: "Steam",
         originalPrice: originalPrice || "Unknown",
         currentPrice: finalPrice || "Unknown",
+        priceValue: finalValue / 100, // Quy đổi giá trị số thực tế (chia cho 100)
         discountPercent,
         endDate: "Xem trên Steam",
         url,

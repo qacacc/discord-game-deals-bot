@@ -137,10 +137,29 @@ function formatDate(isoDate) {
 }
 
 /**
+ * Trích xuất thể loại game từ danh sách tags của Epic Games Store
+ */
+function getEpicGenres(game) {
+  const tags = game.tags || [];
+  return tags
+    .map((tag) => tag.name)
+    .filter((name) => {
+      const commonGenres = [
+        "Action", "Adventure", "RPG", "Strategy", "Shooter", "Indie", "Simulation",
+        "Sports", "Puzzle", "Casual", "Platformer", "Horror", "Survival", "Sci-fi",
+        "Fighting", "Stealth", "Racing", "Multiplayer", "Co-op", "Singleplayer"
+      ];
+      return commonGenres.includes(name);
+    })
+    .join(", ");
+}
+
+/**
  * Map dữ liệu thô từ Epic sang object chuẩn của Bot cho game đang miễn phí
  */
 function mapEpicGame(game, promotion) {
   const price = game.price?.totalPrice?.fmtPrice;
+  const genres = getEpicGenres(game);
 
   return {
     id: `epic:${game.id}`,
@@ -149,10 +168,12 @@ function mapEpicGame(game, promotion) {
     platform: "Epic Games Store",
     originalPrice: price?.originalPrice || "Unknown",
     currentPrice: "Free",
+    priceValue: 0,
     endDate: formatDate(promotion.endDate),
     url: getGameUrl(game),
     appUrl: getEpicAppUrl(game),
     image: getGameImage(game),
+    genres: genres || undefined,
   };
 }
 
@@ -161,6 +182,7 @@ function mapEpicGame(game, promotion) {
  */
 function mapEpicUpcomingGame(game, promotion) {
   const price = game.price?.totalPrice?.fmtPrice;
+  const genres = getEpicGenres(game);
 
   return {
     id: `epic-upcoming:${game.id}`,
@@ -169,11 +191,13 @@ function mapEpicUpcomingGame(game, promotion) {
     platform: "Epic Games Store",
     originalPrice: price?.originalPrice || "Unknown",
     currentPrice: "Sắp miễn phí",
+    priceValue: 0,
     startDate: formatDate(promotion.startDate),
     endDate: formatDate(promotion.endDate),
     url: getGameUrl(game),
     appUrl: getEpicAppUrl(game),
     image: getGameImage(game),
+    genres: genres || undefined,
   };
 }
 
@@ -183,6 +207,8 @@ function mapEpicUpcomingGame(game, promotion) {
 function mapEpicSaleGame(game, promotion) {
   const price = game.price?.totalPrice?.fmtPrice;
   const discountPercent = promotion.discountSetting?.discountPercentage;
+  const priceValue = game.price?.totalPrice?.discountPrice ?? 0;
+  const genres = getEpicGenres(game);
 
   return {
     id: `epic-sale:${game.id}:${discountPercent}:${promotion.endDate}`,
@@ -191,11 +217,13 @@ function mapEpicSaleGame(game, promotion) {
     platform: "Epic Games Store",
     originalPrice: price?.originalPrice || "Unknown",
     currentPrice: price?.discountPrice || price?.intermediatePrice || "Unknown",
+    priceValue,
     discountPercent,
     endDate: formatDate(promotion.endDate),
     url: getGameUrl(game),
     appUrl: getEpicAppUrl(game),
     image: getGameImage(game),
+    genres: genres || undefined,
   };
 }
 

@@ -16,9 +16,18 @@ function getGogImageUrl(url) {
 }
 
 /**
+ * Trích xuất các thể loại game từ dữ liệu GOG
+ */
+function getGogGenres(product) {
+  const genres = product.genres || [];
+  return genres.map((g) => g.name).join(", ");
+}
+
+/**
  * Ánh xạ dữ liệu thô từ GOG API sang object chuẩn của Bot
  */
 function mapGogGame(product) {
+  const genres = getGogGenres(product);
   return {
     id: `gog:${product.id}`,
     title: product.title,
@@ -26,9 +35,11 @@ function mapGogGame(product) {
     platform: "GOG.com",
     originalPrice: "Unknown",
     currentPrice: "Free",
+    priceValue: 0,
     endDate: "Xem trên GOG",
     url: `https://www.gog.com/game/${product.slug}`,
     image: getGogImageUrl(product.coverHorizontal || product.coverVertical),
+    genres: genres || undefined,
   };
 }
 

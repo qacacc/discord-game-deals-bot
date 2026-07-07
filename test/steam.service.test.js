@@ -34,6 +34,7 @@ test("parse Steam game dang giam ve mien phi", () => {
     platform: "Steam",
     originalPrice: "100.000₫",
     currentPrice: "Free",
+    priceValue: 0,
     endDate: "Xem trên Steam",
     url: "https://store.steampowered.com/app/123456/Test_Game/",
     appUrl: "steam://store/123456",

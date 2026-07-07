@@ -156,6 +156,9 @@ MAX_SALE_ALERTS_PER_PLATFORM=5
 | `MIN_SALE_DISCOUNT_PERCENT` | No | Local `.env` + GitHub Secrets/Variables | Minimum sale discount, default `80` |
 | `MAX_SALE_ALERTS_PER_PLATFORM` | No | Local `.env` + GitHub Secrets/Variables | Max deals per platform, default `5` |
 | `STEAM_PAGES_TO_SCAN` | No | Local `.env` + GitHub Secrets/Variables | Number of Steam search pages to scan (50 games/page), default `3` |
+| `MAX_SALE_PRICE` | No | Local `.env` + GitHub Secrets/Variables | Maximum price limit for sale alerts (e.g. `150000` VNĐ), default unlimited |
+| `PREFERRED_GENRES` | No | Local `.env` + GitHub Secrets/Variables | Preferred game genres to receive (e.g. `Action, RPG`), default all |
+| `EXCLUDED_GENRES` | No | Local `.env` + GitHub Secrets/Variables | Excluded game genres to ignore (e.g. `Hentai, Anime`), default none |
 | `MESSAGE_LOCALE` | No | Local `.env` + GitHub Secrets/Variables | Language for Discord Embeds and logs (`vi` or `en`), default `vi` |
 | `DISCORD_MENTION_ROLE` | No | Local `.env` + GitHub Secrets/Variables | Discord role to ping (e.g. `@everyone`, `@here`, or `<@&id_role>`), default none |
 
@@ -327,6 +330,13 @@ To keep Discord channels clean during sales, the bot batches discount deals (`sa
 
 ### Does the bot support GOG.com free games?
 Yes! The bot scans GOG.com catalog for free games. GOG support can be toggled using `ENABLE_GOG`, and you can configure a separate webhook using `GOG_DISCORD_WEBHOOK_URL`.
+
+### How can I filter deals by price and genre?
+You can customize your feed by setting the following environment variables:
+* `MAX_SALE_PRICE`: Maximum price to receive alerts for sale deals (e.g. `150000` VNĐ).
+* `PREFERRED_GENRES`: Preferred game categories (e.g. `Action, RPG`) to restrict alerts to specific tags.
+* `EXCLUDED_GENRES`: Genre tags to exclude from alerts (e.g. `Casual, Sports`).
+
 
 
 ### Are Steam ratings displayed?

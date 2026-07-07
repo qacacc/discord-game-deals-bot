@@ -85,6 +85,13 @@ To keep Discord channels clean during sales, the bot batches discount deals (`sa
 ### Does the bot support GOG.com free games?
 Yes! The bot scans GOG.com catalog for free games. GOG support can be toggled using `ENABLE_GOG`, and you can configure a separate webhook using `GOG_DISCORD_WEBHOOK_URL`.
 
+### How can I filter deals by price and genre?
+You can customize your feed by setting the following environment variables:
+* `MAX_SALE_PRICE`: Maximum price to receive alerts for sale deals (e.g. `150000` VNĐ).
+* `PREFERRED_GENRES`: Preferred game categories (e.g. `Action, RPG`) to restrict alerts to specific tags.
+* `EXCLUDED_GENRES`: Genre tags to exclude from alerts (e.g. `Casual, Sports`).
+
+
 
 
 ## Release Tag v1.0.0
