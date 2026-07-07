@@ -1,6 +1,8 @@
 const assert = require("node:assert/strict");
 const test = require("node:test");
 
+process.env.SEND_SALE_DETAILS_TO_DISCORD = "true";
+
 const { runChecker } = require("../src/index");
 
 test("gui game moi va danh dau da gui", async () => {

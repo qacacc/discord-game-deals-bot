@@ -189,6 +189,7 @@ async function runChecker({
   upcomingAlertsEnabled = readBooleanEnv("ENABLE_UPCOMING_ALERTS", true),
   eventAlertsEnabled = readBooleanEnv("ENABLE_EVENT_ALERTS", true),
   saleAlertsEnabled = readBooleanEnv("SALE_ALERTS_ENABLED", true),
+  sendSaleDetailsToDiscord = readBooleanEnv("SEND_SALE_DETAILS_TO_DISCORD", true),
   minSaleDiscountPercent = readNumberEnv("MIN_SALE_DISCOUNT_PERCENT", 80),
   maxSaleAlertsPerPlatform = readNumberEnv("MAX_SALE_ALERTS_PER_PLATFORM", 5),
   steamPagesCount = readNumberEnv("STEAM_PAGES_TO_SCAN", 3),
@@ -318,12 +319,16 @@ async function runChecker({
 
   if (epicSaleGames.length > 0) {
     if (dryRun) {
-      console.log(`[Dry run] [Batch] Epic Sales: ${epicSaleGames.map((g) => g.title).join(", ")}`);
+      console.log(`[Dry run] [Batch] Epic Sales${sendSaleDetailsToDiscord ? "" : " (Chỉ thống kê)"}: ${epicSaleGames.map((g) => g.title).join(", ")}`);
     } else {
       try {
-        await sendSalesBatch(epicSaleGames);
+        if (sendSaleDetailsToDiscord) {
+          await sendSalesBatch(epicSaleGames);
+          console.log(`Sent Epic sales batch: ${epicSaleGames.map((g) => g.title).join(", ")}`);
+        } else {
+          console.log(`Logged Epic sales batch (Chỉ thống kê): ${epicSaleGames.map((g) => g.title).join(", ")}`);
+        }
         epicSaleGames.forEach((g) => markGameAsSent(g, sentData));
-        console.log(`Sent Epic sales batch: ${epicSaleGames.map((g) => g.title).join(", ")}`);
       } catch (error) {
         console.error(`Error sending Epic sales batch to Discord:`, error.message);
       }
@@ -332,12 +337,16 @@ async function runChecker({
 
   if (steamSaleGames.length > 0) {
     if (dryRun) {
-      console.log(`[Dry run] [Batch] Steam Sales: ${steamSaleGames.map((g) => g.title).join(", ")}`);
+      console.log(`[Dry run] [Batch] Steam Sales${sendSaleDetailsToDiscord ? "" : " (Chỉ thống kê)"}: ${steamSaleGames.map((g) => g.title).join(", ")}`);
     } else {
       try {
-        await sendSalesBatch(steamSaleGames);
+        if (sendSaleDetailsToDiscord) {
+          await sendSalesBatch(steamSaleGames);
+          console.log(`Sent Steam sales batch: ${steamSaleGames.map((g) => g.title).join(", ")}`);
+        } else {
+          console.log(`Logged Steam sales batch (Chỉ thống kê): ${steamSaleGames.map((g) => g.title).join(", ")}`);
+        }
         steamSaleGames.forEach((g) => markGameAsSent(g, sentData));
-        console.log(`Sent Steam sales batch: ${steamSaleGames.map((g) => g.title).join(", ")}`);
       } catch (error) {
         console.error(`Error sending Steam sales batch to Discord:`, error.message);
       }

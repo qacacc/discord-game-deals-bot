@@ -326,3 +326,16 @@ client.login(token).catch((err) => {
   console.error("Lỗi đăng nhập Discord Bot Client:", err.message);
   process.exit(1);
 });
+
+// Tự động chạy quét game mới định kỳ mỗi 4 giờ (14.400.000 ms)
+const FOUR_HOURS_MS = 4 * 60 * 60 * 1000;
+setInterval(async () => {
+  console.log("🤖 [Auto Checker] Bắt đầu tự động quét game mới...");
+  try {
+    const { runChecker } = require("./index");
+    await runChecker();
+    console.log("🤖 [Auto Checker] Quét tự động hoàn tất!");
+  } catch (err) {
+    console.error("🤖 [Auto Checker] Quét tự động gặp lỗi:", err.message);
+  }
+}, FOUR_HOURS_MS);
