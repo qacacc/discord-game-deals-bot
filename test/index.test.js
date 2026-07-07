@@ -2,6 +2,9 @@ const assert = require("node:assert/strict");
 const test = require("node:test");
 
 process.env.SEND_SALE_DETAILS_TO_DISCORD = "true";
+process.env.ENABLE_GOG = "true";
+process.env.ENABLE_UBISOFT = "true";
+process.env.ENABLE_OTHER_PLATFORMS = "true";
 
 const { runChecker } = require("../src/index");
 
