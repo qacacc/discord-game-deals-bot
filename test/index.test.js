@@ -27,7 +27,7 @@ test("gui game moi va danh dau da gui", async () => {
 
   assert.deepEqual(sentGames, ["epic-new-game"]);
   assert.deepEqual(sentData.sent, ["epic-new-game"]);
-  assert.deepEqual(result, { checked: 1, sent: 1, pending: 0 });
+  assert.deepEqual(result, { checked: 1, sent: 1, pending: 0, duplicates: 0 });
 });
 
 test("khong gui lai game da nam trong sent.json", async () => {
@@ -52,7 +52,7 @@ test("khong gui lai game da nam trong sent.json", async () => {
   });
 
   assert.deepEqual(sentGames, []);
-  assert.deepEqual(result, { checked: 1, sent: 0, pending: 0 });
+  assert.deepEqual(result, { checked: 1, sent: 0, pending: 0, duplicates: 1 });
 });
 
 test("dry-run khong gui Discord va khong ghi sent.json", async () => {
@@ -84,7 +84,7 @@ test("dry-run khong gui Discord va khong ghi sent.json", async () => {
   assert.deepEqual(sentGames, []);
   assert.deepEqual(sentData.sent, []);
   assert.equal(saved, false);
-  assert.deepEqual(result, { checked: 1, sent: 0, pending: 1 });
+  assert.deepEqual(result, { checked: 1, sent: 0, pending: 1, duplicates: 0 });
 });
 
 test("gui sale alert khi co deal moi", async () => {
@@ -115,7 +115,7 @@ test("gui sale alert khi co deal moi", async () => {
 
   assert.deepEqual(sentGames, ["epic-sale:test:90:end"]);
   assert.deepEqual(sentData.sent, ["epic-sale:test:90:end"]);
-  assert.deepEqual(result, { checked: 1, sent: 1, pending: 0 });
+  assert.deepEqual(result, { checked: 1, sent: 1, pending: 0, duplicates: 0 });
 });
 
 test("gui thong bao event truoc game sale", async () => {
@@ -155,5 +155,26 @@ test("gui thong bao event truoc game sale", async () => {
   });
 
   assert.deepEqual(sentGames, ["event:steam-summer-sale-2026", "steam-sale:test:90:1000"]);
-  assert.deepEqual(result, { checked: 2, sent: 2, pending: 0 });
+  assert.deepEqual(result, { checked: 2, sent: 2, pending: 0, duplicates: 0 });
+});
+
+test("co the tat Epic bang cau hinh", async () => {
+  const result = await runChecker({
+    epicEnabled: false,
+    steamEnabled: false,
+    getEpicGames: async () => {
+      throw new Error("Epic should be disabled");
+    },
+    getSteamGames: async () => {
+      throw new Error("Steam should be disabled");
+    },
+    getEpicSales: async () => [],
+    getSteamSales: async () => [],
+    getSaleEvents: () => [],
+    sendGame: async () => {},
+    loadSent: () => ({ sent: [] }),
+    saveSent: () => {},
+  });
+
+  assert.deepEqual(result, { checked: 0, sent: 0, pending: 0, duplicates: 0 });
 });

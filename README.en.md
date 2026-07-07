@@ -10,6 +10,8 @@
   <img src="https://img.shields.io/badge/GitHub%20Actions-181717?style=for-the-badge&logo=githubactions&logoColor=white" alt="GitHub Actions">
 </p>
 
+![Check Free Games](https://github.com/qacacc/discord-game-deals-bot/actions/workflows/check-free-games.yml/badge.svg)
+
 [English](README.en.md) | [Tiếng Việt](README.vi.md)
 
 A free Discord bot that posts **free games**, **sale events**, and **deep discount deals** from **Epic Games Store** and **Steam**.
@@ -126,6 +128,10 @@ DISCORD_WEBHOOK_URL=optional_fallback_webhook_here
 EPIC_DISCORD_WEBHOOK_URL=your_epic_webhook_here
 STEAM_DISCORD_WEBHOOK_URL=your_steam_webhook_here
 SALE_ALERTS_ENABLED=true
+ENABLE_EPIC=true
+ENABLE_STEAM=true
+ENABLE_FREE_ALERTS=true
+ENABLE_EVENT_ALERTS=true
 MIN_SALE_DISCOUNT_PERCENT=80
 MAX_SALE_ALERTS_PER_PLATFORM=5
 ```
@@ -138,6 +144,10 @@ MAX_SALE_ALERTS_PER_PLATFORM=5
 | `STEAM_DISCORD_WEBHOOK_URL` | Yes | Local `.env` + GitHub Secrets | Steam channel webhook |
 | `DISCORD_WEBHOOK_URL` | No | Local `.env` + GitHub Secrets | Fallback webhook if you do not split channels |
 | `SALE_ALERTS_ENABLED` | No | Local `.env` + GitHub Secrets/Variables | Enable sale alerts, default `true` |
+| `ENABLE_EPIC` | No | Local `.env` + GitHub Secrets/Variables | Enable Epic checks, default `true` |
+| `ENABLE_STEAM` | No | Local `.env` + GitHub Secrets/Variables | Enable Steam checks, default `true` |
+| `ENABLE_FREE_ALERTS` | No | Local `.env` + GitHub Secrets/Variables | Enable free game alerts, default `true` |
+| `ENABLE_EVENT_ALERTS` | No | Local `.env` + GitHub Secrets/Variables | Enable sale event alerts, default `true` |
 | `MIN_SALE_DISCOUNT_PERCENT` | No | Local `.env` + GitHub Secrets/Variables | Minimum sale discount, default `80` |
 | `MAX_SALE_ALERTS_PER_PLATFORM` | No | Local `.env` + GitHub Secrets/Variables | Max deals per platform, default `5` |
 
@@ -274,6 +284,20 @@ npm run dry-run
 npm test
 npm start
 ```
+
+## FAQ
+
+### Why did the bot send nothing?
+
+There may be no new games or deals, or the current items already exist in `src/storage/sent.json`.
+
+### Does it run if my PC is off?
+
+Local mode does not. GitHub Actions does, because it runs on GitHub's infrastructure.
+
+### Can I use one Discord channel only?
+
+Yes. Set only `DISCORD_WEBHOOK_URL`, or set the same webhook URL for Epic and Steam.
 
 ## Support & Custom Bot Requests
 

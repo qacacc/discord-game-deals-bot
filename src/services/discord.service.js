@@ -28,15 +28,41 @@ function getWebhookUrl(game = {}) {
   return webhookUrl;
 }
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function postWebhook(url, payload, options = {}) {
+  const maxAttempts = 3;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      return await axios.post(url, payload, {
+        timeout: 15_000,
+        validateStatus: (status) => status >= 200 && status < 300,
+        ...options,
+      });
+    } catch (error) {
+      const status = error.response?.status;
+      const retryAfterSeconds = Number(error.response?.headers?.["retry-after"]);
+      const shouldRetry = status === 429 || status >= 500 || !status;
+
+      if (!shouldRetry || attempt === maxAttempts) {
+        throw error;
+      }
+
+      const delayMs = Number.isFinite(retryAfterSeconds)
+        ? retryAfterSeconds * 1000
+        : 1000 * attempt;
+
+      console.warn(`Discord webhook retry ${attempt}/${maxAttempts} after ${delayMs}ms`);
+      await sleep(delayMs);
+    }
+  }
+}
+
 async function sendDiscordMessage(content) {
-  await axios.post(
-    getWebhookUrl(),
-    { content },
-    {
-      timeout: 15_000,
-      validateStatus: (status) => status >= 200 && status < 300,
-    },
-  );
+  await postWebhook(getWebhookUrl(), { content });
 }
 
 function getEmbedTitle(game) {
@@ -195,19 +221,18 @@ async function sendGameEmbed(game) {
   );
   form.append("files[0]", new Blob([fs.readFileSync(iconFile)], { type: "image/png" }), path.basename(iconFile));
 
-  await axios.post(
+  await postWebhook(
     getWebhookUrl(game),
     form,
     {
-      timeout: 15_000,
       headers: form.getHeaders ? form.getHeaders() : undefined,
-      validateStatus: (status) => status >= 200 && status < 300,
     },
   );
 }
 
 module.exports = {
   getWebhookUrl,
+  postWebhook,
   sendDiscordMessage,
   sendGameEmbed,
 };

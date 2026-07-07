@@ -10,6 +10,8 @@
   <img src="https://img.shields.io/badge/GitHub%20Actions-181717?style=for-the-badge&logo=githubactions&logoColor=white" alt="GitHub Actions">
 </p>
 
+![Check Free Games](https://github.com/qacacc/discord-game-deals-bot/actions/workflows/check-free-games.yml/badge.svg)
+
 Free Discord webhook bot for Epic Games Store and Steam free games, sale events, and deep discount alerts.
 
 ## Project Info

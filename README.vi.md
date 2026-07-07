@@ -10,6 +10,8 @@
   <img src="https://img.shields.io/badge/GitHub%20Actions-181717?style=for-the-badge&logo=githubactions&logoColor=white" alt="GitHub Actions">
 </p>
 
+![Check Free Games](https://github.com/qacacc/discord-game-deals-bot/actions/workflows/check-free-games.yml/badge.svg)
+
 [English](README.en.md) | [Tiếng Việt](README.vi.md)
 
 Bot Discord báo **game miễn phí**, **sự kiện sale** và **deal giảm sâu** từ **Epic Games Store** + **Steam**.
@@ -126,6 +128,10 @@ DISCORD_WEBHOOK_URL=optional_fallback_webhook_here
 EPIC_DISCORD_WEBHOOK_URL=your_epic_webhook_here
 STEAM_DISCORD_WEBHOOK_URL=your_steam_webhook_here
 SALE_ALERTS_ENABLED=true
+ENABLE_EPIC=true
+ENABLE_STEAM=true
+ENABLE_FREE_ALERTS=true
+ENABLE_EVENT_ALERTS=true
 MIN_SALE_DISCOUNT_PERCENT=80
 MAX_SALE_ALERTS_PER_PLATFORM=5
 ```
@@ -138,6 +144,10 @@ MAX_SALE_ALERTS_PER_PLATFORM=5
 | `STEAM_DISCORD_WEBHOOK_URL` | Có | Local `.env` + GitHub Secrets | Webhook channel Steam |
 | `DISCORD_WEBHOOK_URL` | Không | Local `.env` + GitHub Secrets | Webhook fallback nếu không tách kênh |
 | `SALE_ALERTS_ENABLED` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt báo sale, mặc định `true` |
+| `ENABLE_EPIC` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt kiểm tra Epic, mặc định `true` |
+| `ENABLE_STEAM` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt kiểm tra Steam, mặc định `true` |
+| `ENABLE_FREE_ALERTS` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt báo game free, mặc định `true` |
+| `ENABLE_EVENT_ALERTS` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt báo event sale, mặc định `true` |
 | `MIN_SALE_DISCOUNT_PERCENT` | Không | Local `.env` + GitHub Secrets/Variables | Mức giảm tối thiểu để báo sale, mặc định `80` |
 | `MAX_SALE_ALERTS_PER_PLATFORM` | Không | Local `.env` + GitHub Secrets/Variables | Số deal tối đa mỗi nền tảng, mặc định `5` |
 
@@ -283,6 +293,20 @@ npm run dry-run
 npm test
 npm start
 ```
+
+## FAQ
+
+### Vì sao bot không gửi gì?
+
+Có thể chưa có game/deal mới, hoặc các mục hiện tại đã nằm trong `src/storage/sent.json`.
+
+### Tắt máy thì bot có chạy không?
+
+Chạy local thì không. GitHub Actions vẫn chạy vì workflow chạy trên hạ tầng của GitHub.
+
+### Có dùng một channel Discord duy nhất được không?
+
+Được. Chỉ cần dùng `DISCORD_WEBHOOK_URL`, hoặc đặt cùng một webhook cho Epic và Steam.
 
 ## Ủng Hộ & Liên Hệ Làm Bot Riêng
 

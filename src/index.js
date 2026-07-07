@@ -38,6 +38,10 @@ async function runChecker({
   loadSent = loadSentGames,
   saveSent = saveSentGames,
   dryRun = false,
+  epicEnabled = readBooleanEnv("ENABLE_EPIC", true),
+  steamEnabled = readBooleanEnv("ENABLE_STEAM", true),
+  freeAlertsEnabled = readBooleanEnv("ENABLE_FREE_ALERTS", true),
+  eventAlertsEnabled = readBooleanEnv("ENABLE_EVENT_ALERTS", true),
   saleAlertsEnabled = readBooleanEnv("SALE_ALERTS_ENABLED", true),
   minSaleDiscountPercent = readNumberEnv("MIN_SALE_DISCOUNT_PERCENT", 80),
   maxSaleAlertsPerPlatform = readNumberEnv("MAX_SALE_ALERTS_PER_PLATFORM", 5),
@@ -45,21 +49,21 @@ async function runChecker({
   console.log("Checking free games and sale alerts...");
 
   const sentData = loadSent();
-  const epicGames = await getEpicGames();
-  const steamGames = await getSteamGames();
-  const epicSales = saleAlertsEnabled
+  const epicGames = epicEnabled && freeAlertsEnabled ? await getEpicGames() : [];
+  const steamGames = steamEnabled && freeAlertsEnabled ? await getSteamGames() : [];
+  const epicSales = epicEnabled && saleAlertsEnabled
     ? await getEpicSales({
         minDiscountPercent: minSaleDiscountPercent,
         limit: maxSaleAlertsPerPlatform,
       })
     : [];
-  const steamSales = saleAlertsEnabled
+  const steamSales = steamEnabled && saleAlertsEnabled
     ? await getSteamSales({
         minDiscountPercent: minSaleDiscountPercent,
         limit: maxSaleAlertsPerPlatform,
       })
     : [];
-  const saleEvents = saleAlertsEnabled
+  const saleEvents = eventAlertsEnabled && saleAlertsEnabled
     ? getSaleEvents({
         steamSales,
         epicSales,
@@ -70,10 +74,21 @@ async function runChecker({
     normalizeGame,
   );
   const newGames = allGames.filter((game) => !isGameSent(game.id, sentData));
+  const duplicateCount = allGames.length - newGames.length;
+  const summary = {
+    checked: allGames.length,
+    duplicates: duplicateCount,
+    epicFree: epicGames.length,
+    steamFree: steamGames.length,
+    events: saleEvents.length,
+    epicSales: epicSales.length,
+    steamSales: steamSales.length,
+  };
 
   if (newGames.length === 0) {
     console.log("No new games or sale alerts.");
-    return { checked: allGames.length, sent: 0, pending: 0 };
+    console.log(`Summary: ${JSON.stringify({ ...summary, sent: 0 })}`);
+    return { checked: allGames.length, sent: 0, pending: 0, duplicates: duplicateCount };
   }
 
   for (const game of newGames) {
@@ -95,14 +110,16 @@ async function runChecker({
 
   if (dryRun) {
     console.log("Dry run done. No Discord message sent and sent.json was not changed.");
-    return { checked: allGames.length, sent: 0, pending: newGames.length };
+    console.log(`Summary: ${JSON.stringify({ ...summary, sent: 0, pending: newGames.length })}`);
+    return { checked: allGames.length, sent: 0, pending: newGames.length, duplicates: duplicateCount };
   }
 
   saveSent(sentData);
 
   console.log("Done.");
+  console.log(`Summary: ${JSON.stringify({ ...summary, sent: newGames.length })}`);
 
-  return { checked: allGames.length, sent: newGames.length, pending: 0 };
+  return { checked: allGames.length, sent: newGames.length, pending: 0, duplicates: duplicateCount };
 }
 
 if (require.main === module) {
