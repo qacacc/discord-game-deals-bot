@@ -1,8 +1,11 @@
-const axios = require("axios");
+const { fetchWithRetry } = require("../utils/request");
 
 const EPIC_FREE_GAMES_URL =
   "https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions";
 
+/**
+ * Lấy chương trình khuyến mãi miễn phí hiện tại của game
+ */
 function getCurrentFreePromotion(game, now = new Date()) {
   const offerGroups = game.promotions?.promotionalOffers || [];
 
@@ -21,6 +24,29 @@ function getCurrentFreePromotion(game, now = new Date()) {
   return null;
 }
 
+/**
+ * Lấy chương trình khuyến mãi miễn phí SẮP DIỄN RA của game (Upcoming)
+ */
+function getUpcomingFreePromotion(game, now = new Date()) {
+  const offerGroups = game.promotions?.upcomingPromotionalOffers || [];
+
+  for (const group of offerGroups) {
+    for (const offer of group.promotionalOffers || []) {
+      const startDate = new Date(offer.startDate);
+      const isFree = offer.discountSetting?.discountPercentage === 0;
+
+      if (isFree && startDate > now) {
+        return offer;
+      }
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Lấy chương trình giảm giá hiện tại của game
+ */
 function getCurrentSalePromotion(game, now = new Date(), minDiscountPercent = 80) {
   const offerGroups = game.promotions?.promotionalOffers || [];
 
@@ -40,6 +66,9 @@ function getCurrentSalePromotion(game, now = new Date(), minDiscountPercent = 80
   return null;
 }
 
+/**
+ * Trích xuất store slug để tạo đường dẫn game
+ */
 function getStoreSlug(game) {
   return (
     game.productSlug ||
@@ -49,6 +78,9 @@ function getStoreSlug(game) {
   );
 }
 
+/**
+ * Tạo URL trang chi tiết game trên trình duyệt web
+ */
 function getGameUrl(game) {
   const slug = getStoreSlug(game);
 
@@ -59,6 +91,9 @@ function getGameUrl(game) {
   return `https://store.epicgames.com/p/${slug.replace(/\/home$/, "")}`;
 }
 
+/**
+ * Tạo URL mở game trực tiếp trên Epic Games Launcher
+ */
 function getEpicAppUrl(game) {
   const slug = getStoreSlug(game);
 
@@ -69,6 +104,9 @@ function getEpicAppUrl(game) {
   return `com.epicgames.launcher://store/p/${slug.replace(/\/home$/, "")}`;
 }
 
+/**
+ * Lấy ảnh bìa game theo thứ tự ưu tiên các kích thước/định dạng
+ */
 function getGameImage(game) {
   const preferredTypes = ["OfferImageWide", "featuredMedia", "Thumbnail"];
 
@@ -83,6 +121,9 @@ function getGameImage(game) {
   return "";
 }
 
+/**
+ * Định dạng ngày giờ theo múi giờ Việt Nam
+ */
 function formatDate(isoDate) {
   if (!isoDate) {
     return "Unknown";
@@ -95,6 +136,9 @@ function formatDate(isoDate) {
   }).format(new Date(isoDate));
 }
 
+/**
+ * Map dữ liệu thô từ Epic sang object chuẩn của Bot cho game đang miễn phí
+ */
 function mapEpicGame(game, promotion) {
   const price = game.price?.totalPrice?.fmtPrice;
 
@@ -112,6 +156,30 @@ function mapEpicGame(game, promotion) {
   };
 }
 
+/**
+ * Map dữ liệu thô từ Epic sang object chuẩn của Bot cho game SẮP miễn phí (Upcoming)
+ */
+function mapEpicUpcomingGame(game, promotion) {
+  const price = game.price?.totalPrice?.fmtPrice;
+
+  return {
+    id: `epic-upcoming:${game.id}`,
+    title: game.title,
+    alertType: "upcoming",
+    platform: "Epic Games Store",
+    originalPrice: price?.originalPrice || "Unknown",
+    currentPrice: "Sắp miễn phí",
+    startDate: formatDate(promotion.startDate),
+    endDate: formatDate(promotion.endDate),
+    url: getGameUrl(game),
+    appUrl: getEpicAppUrl(game),
+    image: getGameImage(game),
+  };
+}
+
+/**
+ * Map dữ liệu thô từ Epic sang object chuẩn của Bot cho game đang giảm giá sâu
+ */
 function mapEpicSaleGame(game, promotion) {
   const price = game.price?.totalPrice?.fmtPrice;
   const discountPercent = promotion.discountSetting?.discountPercentage;
@@ -131,8 +199,12 @@ function mapEpicSaleGame(game, promotion) {
   };
 }
 
+/**
+ * Gửi request lấy dữ liệu từ catalog của Epic Games Store
+ */
 async function fetchEpicGames({ country = "VN", locale = "en-US" } = {}) {
-  const response = await axios.get(EPIC_FREE_GAMES_URL, {
+  const response = await fetchWithRetry(EPIC_FREE_GAMES_URL, {
+    method: "GET",
     timeout: 20_000,
     params: {
       locale,
@@ -144,6 +216,9 @@ async function fetchEpicGames({ country = "VN", locale = "en-US" } = {}) {
   return response.data?.data?.Catalog?.searchStore?.elements || [];
 }
 
+/**
+ * Lấy danh sách game đang miễn phí trên Epic Store
+ */
 async function getEpicFreeGames(options = {}) {
   const games = await fetchEpicGames(options);
 
@@ -155,6 +230,23 @@ async function getEpicFreeGames(options = {}) {
     .filter(Boolean);
 }
 
+/**
+ * Lấy danh sách game sắp miễn phí trên Epic Store
+ */
+async function getEpicUpcomingGames(options = {}) {
+  const games = await fetchEpicGames(options);
+
+  return games
+    .map((game) => {
+      const promotion = getUpcomingFreePromotion(game);
+      return promotion ? mapEpicUpcomingGame(game, promotion) : null;
+    })
+    .filter(Boolean);
+}
+
+/**
+ * Lấy danh sách game đang giảm giá mạnh trên Epic Store
+ */
 async function getEpicSaleGames({
   country = "VN",
   locale = "en-US",
@@ -175,10 +267,13 @@ async function getEpicSaleGames({
 module.exports = {
   EPIC_FREE_GAMES_URL,
   getCurrentFreePromotion,
+  getUpcomingFreePromotion,
   getCurrentSalePromotion,
   getEpicFreeGames,
+  getEpicUpcomingGames,
   getEpicSaleGames,
   getEpicAppUrl,
   mapEpicGame,
+  mapEpicUpcomingGame,
   mapEpicSaleGame,
 };

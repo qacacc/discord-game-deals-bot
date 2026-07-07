@@ -16,6 +16,8 @@
 
 A free Discord bot that posts **free games**, **sale events**, and **deep discount deals** from **Epic Games Store** and **Steam**.
 
+![Discord Bot Demo](assets/images/demo.png)
+
 It uses **Discord Webhooks** and **GitHub Actions**, so you do not need a VPS, database, Discord bot token, `discord.js`, or a bot running 24/7.
 
 ## Project Info
@@ -147,9 +149,11 @@ MAX_SALE_ALERTS_PER_PLATFORM=5
 | `ENABLE_EPIC` | No | Local `.env` + GitHub Secrets/Variables | Enable Epic checks, default `true` |
 | `ENABLE_STEAM` | No | Local `.env` + GitHub Secrets/Variables | Enable Steam checks, default `true` |
 | `ENABLE_FREE_ALERTS` | No | Local `.env` + GitHub Secrets/Variables | Enable free game alerts, default `true` |
+| `ENABLE_UPCOMING_ALERTS` | No | Local `.env` + GitHub Secrets/Variables | Enable Epic upcoming free game alerts, default `true` |
 | `ENABLE_EVENT_ALERTS` | No | Local `.env` + GitHub Secrets/Variables | Enable sale event alerts, default `true` |
 | `MIN_SALE_DISCOUNT_PERCENT` | No | Local `.env` + GitHub Secrets/Variables | Minimum sale discount, default `80` |
 | `MAX_SALE_ALERTS_PER_PLATFORM` | No | Local `.env` + GitHub Secrets/Variables | Max deals per platform, default `5` |
+| `STEAM_PAGES_TO_SCAN` | No | Local `.env` + GitHub Secrets/Variables | Number of Steam search pages to scan (50 games/page), default `3` |
 
 Preview what the bot finds without sending Discord messages:
 
@@ -298,6 +302,28 @@ Local mode does not. GitHub Actions does, because it runs on GitHub's infrastruc
 ### Can I use one Discord channel only?
 
 Yes. Set only `DISCORD_WEBHOOK_URL`, or set the same webhook URL for Epic and Steam.
+
+### How do I change how many Steam pages are scanned?
+Configure the `STEAM_PAGES_TO_SCAN` environment variable in your `.env` or GitHub Variables. Default is `3` (scans ~150 games).
+
+### How does the network retry mechanism work?
+When the bot faces network outages or is rate-limited by Discord/Steam/Epic, it automatically pauses and retries up to 3 times with exponential backoff. It automatically waits for the duration specified in Discord's `retry-after` header when rate limit 429 happens.
+
+### What information is stored in the sent history?
+The `src/storage/sent.json` file now logs more details including: `id` (game ID), `title` (game name or event title), `platform` (Steam/Epic), and `sentAt` (timestamp). The new format is fully backward compatible with the older ID-only string array format.
+
+## Creating Release Tag v1.0.0
+To mark your repository with the official `v1.0.0` stable release version, run the following commands in your local shell:
+
+```bash
+# Tag the release locally
+git tag -a v1.0.0 -m "Release v1.0.0 - Network retry & feature upgrades"
+
+# Push the tag to GitHub
+git push origin v1.0.0
+```
+Or you can go to GitHub web interface, click **Releases** -> **Draft a new release**, type `v1.0.0` as the tag name, and publish the release.
+
 
 ## Support & Custom Bot Requests
 

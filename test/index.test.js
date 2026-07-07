@@ -16,6 +16,7 @@ test("gui game moi va danh dau da gui", async () => {
         url: "https://example.com/game",
       },
     ],
+    getEpicUpcoming: async () => [],
     getSteamGames: async () => [],
     getEpicSales: async () => [],
     getSteamSales: async () => [],
@@ -26,11 +27,14 @@ test("gui game moi va danh dau da gui", async () => {
   });
 
   assert.deepEqual(sentGames, ["epic-new-game"]);
-  assert.deepEqual(sentData.sent, ["epic-new-game"]);
+  // sentData.sent lúc này lưu object do cơ chế lịch sử chi tiết
+  assert.equal(sentData.sent.length, 1);
+  assert.equal(sentData.sent[0].id, "epic-new-game");
+  assert.equal(sentData.sent[0].title, "Epic New Game");
   assert.deepEqual(result, { checked: 1, sent: 1, pending: 0, duplicates: 0 });
 });
 
-test("khong gui lai game da nam trong sent.json", async () => {
+test("khong gui lai game da nam trong sent.json (tuong thich nguoc lich su cu)", async () => {
   const sentData = { sent: ["epic-old-game"] };
   const sentGames = [];
 
@@ -42,6 +46,7 @@ test("khong gui lai game da nam trong sent.json", async () => {
         platform: "Epic Games Store",
       },
     ],
+    getEpicUpcoming: async () => [],
     getSteamGames: async () => [],
     getEpicSales: async () => [],
     getSteamSales: async () => [],
@@ -70,6 +75,7 @@ test("dry-run khong gui Discord va khong ghi sent.json", async () => {
         url: "https://example.com/preview",
       },
     ],
+    getEpicUpcoming: async () => [],
     getSteamGames: async () => [],
     getEpicSales: async () => [],
     getSteamSales: async () => [],
@@ -93,6 +99,7 @@ test("gui sale alert khi co deal moi", async () => {
 
   const result = await runChecker({
     getEpicGames: async () => [],
+    getEpicUpcoming: async () => [],
     getSteamGames: async () => [],
     getEpicSales: async () => [
       {
@@ -114,7 +121,8 @@ test("gui sale alert khi co deal moi", async () => {
   });
 
   assert.deepEqual(sentGames, ["epic-sale:test:90:end"]);
-  assert.deepEqual(sentData.sent, ["epic-sale:test:90:end"]);
+  assert.equal(sentData.sent.length, 1);
+  assert.equal(sentData.sent[0].id, "epic-sale:test:90:end");
   assert.deepEqual(result, { checked: 1, sent: 1, pending: 0, duplicates: 0 });
 });
 
@@ -124,6 +132,7 @@ test("gui thong bao event truoc game sale", async () => {
 
   const result = await runChecker({
     getEpicGames: async () => [],
+    getEpicUpcoming: async () => [],
     getSteamGames: async () => [],
     getEpicSales: async () => [],
     getSteamSales: async () => [
@@ -165,6 +174,9 @@ test("co the tat Epic bang cau hinh", async () => {
     getEpicGames: async () => {
       throw new Error("Epic should be disabled");
     },
+    getEpicUpcoming: async () => {
+      throw new Error("Epic upcoming should be disabled");
+    },
     getSteamGames: async () => {
       throw new Error("Steam should be disabled");
     },
@@ -177,4 +189,32 @@ test("co the tat Epic bang cau hinh", async () => {
   });
 
   assert.deepEqual(result, { checked: 0, sent: 0, pending: 0, duplicates: 0 });
+});
+
+test("gui game sap mien phi khi co upcoming game moi", async () => {
+  const sentData = { sent: [] };
+  const sentGames = [];
+
+  const result = await runChecker({
+    getEpicGames: async () => [],
+    getEpicUpcoming: async () => [
+      {
+        id: "epic-upcoming:nova-lands",
+        title: "Nova Lands",
+        alertType: "upcoming",
+        platform: "Epic Games Store",
+        url: "https://example.com/upcoming",
+      },
+    ],
+    getSteamGames: async () => [],
+    getEpicSales: async () => [],
+    getSteamSales: async () => [],
+    getSaleEvents: () => [],
+    sendGame: async (game) => sentGames.push(game.id),
+    loadSent: () => sentData,
+    saveSent: () => {},
+  });
+
+  assert.deepEqual(sentGames, ["epic-upcoming:nova-lands"]);
+  assert.deepEqual(result, { checked: 1, sent: 1, pending: 0, duplicates: 0 });
 });

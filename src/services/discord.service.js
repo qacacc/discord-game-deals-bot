@@ -1,6 +1,6 @@
-const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
+const { fetchWithRetry } = require("../utils/request");
 
 const ICON_FILES = {
   epic: "epic.png",
@@ -10,6 +10,9 @@ const ICON_FILES = {
   steam: "steam.png",
 };
 
+/**
+ * Lấy Webhook URL tương ứng với nền tảng của game
+ */
 function getWebhookUrl(game = {}) {
   const platform = (game.platform || "").toLowerCase();
   const platformWebhookUrl = platform.includes("epic")
@@ -28,47 +31,35 @@ function getWebhookUrl(game = {}) {
   return webhookUrl;
 }
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
+/**
+ * Gửi dữ liệu tới Discord Webhook thông qua helper fetchWithRetry
+ */
 async function postWebhook(url, payload, options = {}) {
-  const maxAttempts = 3;
-
-  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-    try {
-      return await axios.post(url, payload, {
-        timeout: 15_000,
-        validateStatus: (status) => status >= 200 && status < 300,
-        ...options,
-      });
-    } catch (error) {
-      const status = error.response?.status;
-      const retryAfterSeconds = Number(error.response?.headers?.["retry-after"]);
-      const shouldRetry = status === 429 || status >= 500 || !status;
-
-      if (!shouldRetry || attempt === maxAttempts) {
-        throw error;
-      }
-
-      const delayMs = Number.isFinite(retryAfterSeconds)
-        ? retryAfterSeconds * 1000
-        : 1000 * attempt;
-
-      console.warn(`Discord webhook retry ${attempt}/${maxAttempts} after ${delayMs}ms`);
-      await sleep(delayMs);
-    }
-  }
+  return await fetchWithRetry(url, {
+    method: "POST",
+    data: payload,
+    timeout: 15_000,
+    ...options,
+  });
 }
 
+/**
+ * Gửi tin nhắn text đơn giản tới Discord
+ */
 async function sendDiscordMessage(content) {
   await postWebhook(getWebhookUrl(), { content });
 }
 
+/**
+ * Lấy tiêu đề hiển thị trong Embed
+ */
 function getEmbedTitle(game) {
   return game.eventName || game.title;
 }
 
+/**
+ * Lấy mô tả tóm tắt cho từng loại Alert
+ */
 function getEmbedDescription(game) {
   if (game.alertType === "event") {
     return `Sự kiện sale đang diễn ra trên **${game.platform}**.`;
@@ -78,29 +69,61 @@ function getEmbedDescription(game) {
     return "Game đang giảm giá mạnh.";
   }
 
+  if (game.alertType === "upcoming") {
+    return "Game sắp được nhận miễn phí trên Epic Games Store.";
+  }
+
   return "Game đang miễn phí để nhận.";
 }
 
+/**
+ * Lấy mã màu sắc tương ứng cho Embed
+ */
 function getEmbedColor(game) {
   if (game.alertType === "event") {
-    return 0x3498db;
+    return 0x3498db; // Xanh dương
   }
 
-  return game.alertType === "sale" ? 0xf1c40f : 0x2ecc71;
+  if (game.alertType === "sale") {
+    return 0xf1c40f; // Vàng
+  }
+
+  if (game.alertType === "upcoming") {
+    return 0x9b59b6; // Tím cho game sắp ra mắt
+  }
+
+  return 0x2ecc71; // Xanh lá
 }
 
+/**
+ * Tạo URL đính kèm icon của Webhook
+ */
 function getEmbedIconUrl(game) {
   return `attachment://${getIconFileName(game)}`;
 }
 
+/**
+ * Lấy tiêu đề đề mục cho tác giả (Author Header)
+ */
 function getEmbedHeader(game) {
   if (game.alertType === "event") {
     return "Sự Kiện Sale Đang Diễn Ra";
   }
 
-  return game.alertType === "sale" ? "Game Đang Sale Mạnh" : "Game Miễn Phí";
+  if (game.alertType === "sale") {
+    return "Game Đang Sale Mạnh";
+  }
+
+  if (game.alertType === "upcoming") {
+    return "Game Sắp Miễn Phí";
+  }
+
+  return "Game Miễn Phí";
 }
 
+/**
+ * Xác định tên file icon đính kèm tương ứng nền tảng/alertType
+ */
 function getIconFileName(game) {
   const platform = (game.platform || "").toLowerCase();
 
@@ -119,10 +142,16 @@ function getIconFileName(game) {
   return game.alertType === "sale" ? ICON_FILES.sale : ICON_FILES.free;
 }
 
+/**
+ * Lấy đường dẫn vật lý của file icon
+ */
 function getIconFile(game) {
   return path.join(__dirname, "..", "assets", "icons", getIconFileName(game));
 }
 
+/**
+ * Tạo object Embed theo định dạng Discord API
+ */
 function createEmbed(game) {
   return {
     author: {
@@ -139,9 +168,12 @@ function createEmbed(game) {
   };
 }
 
+/**
+ * Tạo các trường thông tin chi tiết (fields) cho Embed Discord
+ */
 function getEmbedFields(game) {
   if (game.alertType === "event") {
-    const eventFields = [
+    return [
       {
         name: "Nền tảng",
         value: game.platform || "Unknown",
@@ -163,8 +195,36 @@ function getEmbedFields(game) {
         inline: false,
       },
     ];
+  }
 
-    return eventFields;
+  if (game.alertType === "upcoming") {
+    return [
+      {
+        name: "Nền tảng",
+        value: game.platform || "Unknown",
+        inline: false,
+      },
+      {
+        name: "Giá gốc",
+        value: game.originalPrice || "Unknown",
+        inline: false,
+      },
+      {
+        name: "Bắt đầu tặng từ",
+        value: game.startDate || "Unknown",
+        inline: false,
+      },
+      {
+        name: "Hạn nhận",
+        value: game.endDate || "Unknown",
+        inline: false,
+      },
+      {
+        name: "Link cửa hàng",
+        value: game.url ? `[Xem trên cửa hàng](${game.url})` : "Unknown",
+        inline: false,
+      },
+    ];
   }
 
   const fields = [
@@ -209,6 +269,9 @@ function getEmbedFields(game) {
   return fields;
 }
 
+/**
+ * Gửi tin nhắn Embed kèm icon cục bộ (Multipart/form-data) tới Discord Webhook
+ */
 async function sendGameEmbed(game) {
   const iconFile = getIconFile(game);
   const form = new FormData();

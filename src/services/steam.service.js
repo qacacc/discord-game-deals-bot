@@ -1,7 +1,10 @@
-const axios = require("axios");
+const { fetchWithRetry } = require("../utils/request");
 
 const STEAM_SEARCH_URL = "https://store.steampowered.com/search/results/";
 
+/**
+ * Giải mã các ký tự HTML cơ bản
+ */
 function decodeHtml(value = "") {
   return value
     .replace(/&amp;/g, "&")
@@ -12,19 +15,31 @@ function decodeHtml(value = "") {
     .trim();
 }
 
+/**
+ * Loại bỏ các tham số tracking của Steam khỏi URL
+ */
 function stripTracking(url = "") {
   return decodeHtml(url).split("?")[0];
 }
 
+/**
+ * Trích xuất giá trị đầu tiên khớp với regex
+ */
 function extractFirst(pattern, text) {
   const match = text.match(pattern);
   return match ? decodeHtml(match[1]) : "";
 }
 
+/**
+ * Tạo URL mở game trực tiếp trên ứng dụng Steam client
+ */
 function getSteamAppUrl(appId) {
   return `steam://store/${appId}`;
 }
 
+/**
+ * Phân tích cú pháp HTML từ kết quả tìm kiếm của Steam để lọc game miễn phí
+ */
 function parseSteamSearchResults(html = "") {
   const rows = html.match(/<a[\s\S]*?class="[^"]*search_result_row[^"]*"[\s\S]*?<\/a>/g) || [];
 
@@ -40,7 +55,6 @@ function parseSteamSearchResults(html = "") {
       );
       const finalPrice = extractFirst(/<div class="discount_final_price">([\s\S]*?)<\/div>/, row);
       const finalValue = Number(extractFirst(/data-price-final="(\d+)"/, row));
-      const discountPercent = Number(extractFirst(/<div class="discount_pct">-(\d+)%<\/div>/, row));
 
       if (!appId || !title || finalValue !== 0) {
         return null;
@@ -62,6 +76,9 @@ function parseSteamSearchResults(html = "") {
     .filter(Boolean);
 }
 
+/**
+ * Phân tích cú pháp HTML từ kết quả tìm kiếm của Steam để lọc game đang giảm giá sâu
+ */
 function parseSteamSaleResults(html = "", { minDiscountPercent = 80, limit = 5 } = {}) {
   const rows = html.match(/<a[\s\S]*?class="[^"]*search_result_row[^"]*"[\s\S]*?<\/a>/g) || [];
 
@@ -101,59 +118,132 @@ function parseSteamSaleResults(html = "", { minDiscountPercent = 80, limit = 5 }
     .slice(0, limit);
 }
 
-async function getSteamFreeGames({ country = "vn", language = "english" } = {}) {
-  const response = await axios.get(STEAM_SEARCH_URL, {
-    timeout: 20_000,
-    headers: {
-      "User-Agent": "Mozilla/5.0",
-    },
-    params: {
-      query: "",
-      start: 0,
-      count: 50,
-      dynamic_data: "",
-      sort_by: "_ASC",
-      specials: 1,
-      maxprice: "free",
-      category1: 998,
-      infinite: 1,
-      cc: country,
-      l: language,
-    },
-  });
+/**
+ * Lấy danh sách game miễn phí trên Steam (quét nhiều trang kết quả)
+ */
+async function getSteamFreeGames({ country = "vn", language = "english", pages = 3 } = {}) {
+  let allGames = [];
 
-  return parseSteamSearchResults(response.data?.results_html || "");
+  for (let page = 0; page < pages; page += 1) {
+    const start = page * 50;
+    try {
+      const response = await fetchWithRetry(STEAM_SEARCH_URL, {
+        method: "GET",
+        headers: {
+          "User-Agent": "Mozilla/5.0",
+        },
+        params: {
+          query: "",
+          start,
+          count: 50,
+          dynamic_data: "",
+          sort_by: "_ASC",
+          specials: 1,
+          maxprice: "free",
+          category1: 998,
+          infinite: 1,
+          cc: country,
+          l: language,
+        },
+      });
+
+      const html = response.data?.results_html || "";
+      if (!html.trim()) {
+        break;
+      }
+
+      const games = parseSteamSearchResults(html);
+      if (games.length === 0) {
+        break;
+      }
+
+      allGames = allGames.concat(games);
+    } catch (error) {
+      console.error(`[Steam] Lỗi khi quét trang game miễn phí thứ ${page + 1}:`, error.message);
+      if (page === 0) {
+        throw error; // Ném lỗi nếu trang đầu tiên thất bại
+      }
+      break;
+    }
+  }
+
+  // Loại bỏ các phần tử trùng lặp theo ID
+  const seenIds = new Set();
+  return allGames.filter((game) => {
+    if (seenIds.has(game.id)) {
+      return false;
+    }
+    seenIds.add(game.id);
+    return true;
+  });
 }
 
+/**
+ * Lấy danh sách game giảm giá mạnh trên Steam (quét nhiều trang kết quả)
+ */
 async function getSteamSaleGames({
   country = "vn",
   language = "english",
   minDiscountPercent = 80,
   limit = 5,
+  pages = 3,
 } = {}) {
-  const response = await axios.get(STEAM_SEARCH_URL, {
-    timeout: 20_000,
-    headers: {
-      "User-Agent": "Mozilla/5.0",
-    },
-    params: {
-      query: "",
-      start: 0,
-      count: 50,
-      dynamic_data: "",
-      sort_by: "_ASC",
-      specials: 1,
-      category1: 998,
-      infinite: 1,
-      cc: country,
-      l: language,
-    },
+  let allGames = [];
+
+  for (let page = 0; page < pages; page += 1) {
+    const start = page * 50;
+    try {
+      const response = await fetchWithRetry(STEAM_SEARCH_URL, {
+        method: "GET",
+        headers: {
+          "User-Agent": "Mozilla/5.0",
+        },
+        params: {
+          query: "",
+          start,
+          count: 50,
+          dynamic_data: "",
+          sort_by: "_ASC",
+          specials: 1,
+          category1: 998,
+          infinite: 1,
+          cc: country,
+          l: language,
+        },
+      });
+
+      const html = response.data?.results_html || "";
+      if (!html.trim()) {
+        break;
+      }
+
+      // Đặt limit cao khi parse từng trang để không bị mất deal, sau đó sẽ slice ở kết quả cuối cùng
+      const games = parseSteamSaleResults(html, { minDiscountPercent, limit: 100 });
+      if (games.length === 0) {
+        break;
+      }
+
+      allGames = allGames.concat(games);
+    } catch (error) {
+      console.error(`[Steam] Lỗi khi quét trang game sale thứ ${page + 1}:`, error.message);
+      if (page === 0) {
+        throw error;
+      }
+      break;
+    }
+  }
+
+  // Loại bỏ các phần tử trùng lặp theo ID
+  const seenIds = new Set();
+  const uniqueGames = allGames.filter((game) => {
+    if (seenIds.has(game.id)) {
+      return false;
+    }
+    seenIds.add(game.id);
+    return true;
   });
 
-  return parseSteamSaleResults(response.data?.results_html || "", {
-    minDiscountPercent,
-    limit,
-  });
+  return uniqueGames.slice(0, limit);
 }
 
 module.exports = {

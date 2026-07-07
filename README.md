@@ -14,6 +14,8 @@
 
 Free Discord webhook bot for Epic Games Store and Steam free games, sale events, and deep discount alerts.
 
+![Discord Bot Demo](assets/images/demo.png)
+
 ## Project Info
 
 | Item | Value |
@@ -56,6 +58,25 @@ More details:
 
 - [English guide](README.en.md)
 - [Hướng dẫn tiếng Việt](README.vi.md)
+
+## FAQ & Features
+
+### How many Steam pages are scanned?
+By default, the bot scans `3` pages of Steam search results (about 150 games). You can customize this by setting the `STEAM_PAGES_TO_SCAN` environment variable.
+
+### How does the retry logic work?
+If Steam, Epic Store, or Discord webhooks encounter network errors or temporary outages, the bot will automatically retry up to 3 times with exponential backoff. It also handles Discord's 429 rate limit by waiting for the specified `retry-after` header value.
+
+### What is saved in the history log?
+The `sent.json` history file now stores detailed objects instead of plain IDs: `{ id, title, platform, sentAt }`. This is backward compatible with old history formats.
+
+## Release Tag v1.0.0
+To tag the first official stable release:
+```bash
+git tag -a v1.0.0 -m "Release v1.0.0 - Network retry & feature upgrades"
+git push origin v1.0.0
+```
+
 
 ## Author & Support
 

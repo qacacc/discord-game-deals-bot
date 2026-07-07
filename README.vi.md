@@ -16,6 +16,8 @@
 
 Bot Discord báo **game miễn phí**, **sự kiện sale** và **deal giảm sâu** từ **Epic Games Store** + **Steam**.
 
+![Discord Bot Demo](assets/images/demo.png)
+
 Bot dùng **Discord Webhook** và **GitHub Actions**, nên không cần VPS, database, Discord bot token, `discord.js`, hay bot online 24/7.
 
 ## Thông Tin Project
@@ -147,9 +149,11 @@ MAX_SALE_ALERTS_PER_PLATFORM=5
 | `ENABLE_EPIC` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt kiểm tra Epic, mặc định `true` |
 | `ENABLE_STEAM` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt kiểm tra Steam, mặc định `true` |
 | `ENABLE_FREE_ALERTS` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt báo game free, mặc định `true` |
+| `ENABLE_UPCOMING_ALERTS` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt báo game sắp free của Epic, mặc định `true` |
 | `ENABLE_EVENT_ALERTS` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt báo event sale, mặc định `true` |
 | `MIN_SALE_DISCOUNT_PERCENT` | Không | Local `.env` + GitHub Secrets/Variables | Mức giảm tối thiểu để báo sale, mặc định `80` |
 | `MAX_SALE_ALERTS_PER_PLATFORM` | Không | Local `.env` + GitHub Secrets/Variables | Số deal tối đa mỗi nền tảng, mặc định `5` |
+| `STEAM_PAGES_TO_SCAN` | Không | Local `.env` + GitHub Secrets/Variables | Số trang tìm kiếm Steam cần quét (mỗi trang 50 game), mặc định `3` |
 
 Khi chạy local, các biến nằm trong file `.env`. Khi chạy bằng GitHub Actions, các webhook nên nằm trong GitHub Secrets.
 
@@ -307,6 +311,28 @@ Chạy local thì không. GitHub Actions vẫn chạy vì workflow chạy trên 
 ### Có dùng một channel Discord duy nhất được không?
 
 Được. Chỉ cần dùng `DISCORD_WEBHOOK_URL`, hoặc đặt cùng một webhook cho Epic và Steam.
+
+### Làm sao để thay đổi số trang quét của Steam?
+Bạn cấu hình biến môi trường `STEAM_PAGES_TO_SCAN` trong file `.env` hoặc GitHub Variables. Giá trị mặc định là `3` (quét khoảng 150 game). Tăng số này sẽ quét sâu hơn nhưng có thể tốn thời gian hơn.
+
+### Cơ chế tự động thử lại (Retry) hoạt động như thế nào?
+Khi gặp lỗi mạng tạm thời hoặc bị giới hạn băng thông (Rate-limit) bởi Steam/Epic/Discord, bot sẽ tự động tạm dừng và thử lại tối đa 3 lần với thời gian chờ tăng dần (exponential backoff). Nếu là lỗi rate limit từ Discord Webhook, bot sẽ tự động đọc header phản hồi và chờ đúng số giây yêu cầu trước khi gửi lại.
+
+### Thông tin lịch sử gửi game lưu trữ những gì?
+Lịch sử lưu trữ trong file `src/storage/sent.json` hiện đã lưu chi tiết hơn gồm: `id` (mã định danh game), `title` (tên game/sự kiện), `platform` (nền tảng Steam/Epic), và `sentAt` (thời điểm gửi). Cấu trúc mới này hoàn toàn tương thích ngược với lịch sử cũ chỉ lưu mảng ID.
+
+## Hướng dẫn tạo Release Tag v1.0.0
+Khi bot đã chạy ổn định và bạn muốn đánh dấu mốc phiên bản chính thức đầu tiên, hãy chạy các lệnh sau trên terminal của máy tính:
+
+```bash
+# Tạo git tag local
+git tag -a v1.0.0 -m "Release v1.0.0 - Bản nâng cấp tính năng và sửa lỗi mạng"
+
+# Push tag lên GitHub
+git push origin v1.0.0
+```
+Hoặc bạn có thể truy cập vào giao diện Web GitHub của Repo, chọn **Releases** -> **Create a new release** và chọn tag là `v1.0.0`.
+
 
 ## Ủng Hộ & Liên Hệ Làm Bot Riêng
 

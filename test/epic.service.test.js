@@ -3,8 +3,10 @@ const test = require("node:test");
 
 const {
   getCurrentFreePromotion,
+  getUpcomingFreePromotion,
   getCurrentSalePromotion,
   mapEpicGame,
+  mapEpicUpcomingGame,
   mapEpicSaleGame,
 } = require("../src/services/epic.service");
 
@@ -61,6 +63,27 @@ test("bo qua promotion sale hoac chua toi han free", () => {
   );
 });
 
+test("nhan dien promotion sap free trong tuong lai", () => {
+  const upcomingPromotion = {
+    startDate: "2026-07-09T15:00:00.000Z",
+    endDate: "2026-07-16T15:00:00.000Z",
+    discountSetting: {
+      discountPercentage: 0,
+    },
+  };
+
+  const game = {
+    promotions: {
+      upcomingPromotionalOffers: [{ promotionalOffers: [upcomingPromotion] }],
+    },
+  };
+
+  assert.equal(
+    getUpcomingFreePromotion(game, new Date("2026-07-08T00:00:00.000Z")),
+    upcomingPromotion,
+  );
+});
+
 test("map Epic game thanh du lieu Discord can gui", () => {
   const result = mapEpicGame(
     {
@@ -86,6 +109,33 @@ test("map Epic game thanh du lieu Discord can gui", () => {
   assert.equal(result.url, "https://store.epicgames.com/p/river-city-girls-2-77af3a");
   assert.equal(result.appUrl, "com.epicgames.launcher://store/p/river-city-girls-2-77af3a");
   assert.equal(result.image, "https://example.com/a.png");
+});
+
+test("map Epic upcoming game thanh du lieu Discord can gui", () => {
+  const result = mapEpicUpcomingGame(
+    {
+      id: "upcoming-game-id",
+      title: "Upcoming Game",
+      offerMappings: [{ pageSlug: "upcoming-game" }],
+      keyImages: [{ type: "OfferImageWide", url: "https://example.com/upcoming.png" }],
+      price: {
+        totalPrice: {
+          fmtPrice: {
+            originalPrice: "VND 300,000",
+          },
+        },
+      },
+    },
+    {
+      startDate: "2026-07-09T15:00:00.000Z",
+      endDate: "2026-07-16T15:00:00.000Z",
+    },
+  );
+
+  assert.equal(result.id, "epic-upcoming:upcoming-game-id");
+  assert.equal(result.currentPrice, "Sắp miễn phí");
+  assert.equal(result.url, "https://store.epicgames.com/p/upcoming-game");
+  assert.equal(result.image, "https://example.com/upcoming.png");
 });
 
 test("nhan dien sale Epic dang dien ra theo nguong giam gia", () => {
