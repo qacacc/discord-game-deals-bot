@@ -92,6 +92,22 @@ function isActiveEvent(event, now = new Date()) {
  * Map dữ liệu sự kiện thô sang cấu hình hiển thị của Bot
  */
 function mapSaleEvent(event, saleGames = []) {
+  let summary = "Sự kiện sale đang diễn ra.";
+  if (saleGames.length > 0) {
+    const discounts = saleGames.map(g => g.discountPercent).filter(d => typeof d === 'number' && d > 0);
+    if (discounts.length > 0) {
+      const maxDiscount = Math.max(...discounts);
+      const minDiscount = Math.min(...discounts);
+      const avgDiscount = Math.round(discounts.reduce((sum, val) => sum + val, 0) / discounts.length);
+      
+      summary = `🔥 Đợt siêu sale này quy tụ nhiều deal game giảm giá cực sâu từ **-${minDiscount}%** trở lên.\n` +
+                `📊 Tỷ lệ giảm giá trung bình của các game đạt **-${avgDiscount}%**.\n` +
+                `💥 Mức giảm giá kỷ lục trong đợt này lên tới **-${maxDiscount}%**!`;
+    } else {
+      summary = `🔥 Đợt siêu sale này quy tụ rất nhiều deal game chất lượng cao đang được chiết khấu sâu.`;
+    }
+  }
+
   return {
     id: `event:${event.id}`,
     title: event.title,
@@ -103,9 +119,7 @@ function mapSaleEvent(event, saleGames = []) {
     appUrl: event.appUrl,
     image: event.image,
     discountPercent: saleGames[0]?.discountPercent,
-    summary: saleGames.length
-      ? `Đang có ${saleGames.length} deal nổi bật trong danh sách bot lọc.`
-      : "Sự kiện sale đang diễn ra.",
+    summary,
   };
 }
 
@@ -126,6 +140,17 @@ function getActiveSaleEvents({ steamSales = [], epicSales = [], now = new Date()
   // Nếu có Epic sales giảm sâu nhưng không có sự kiện Epic cụ thể nào diễn ra, 
   // chúng ta tạo một sự kiện chung "Epic Games Sales & Specials"
   if (epicSales.length > 0 && activeEpicEvents.length === 0) {
+    const discounts = epicSales.map(g => g.discountPercent).filter(d => typeof d === 'number' && d > 0);
+    let summary = "Nhiều deal Epic Games đang giảm giá sâu.";
+    if (discounts.length > 0) {
+      const maxDiscount = Math.max(...discounts);
+      const minDiscount = Math.min(...discounts);
+      const avgDiscount = Math.round(discounts.reduce((sum, val) => sum + val, 0) / discounts.length);
+      summary = `🔥 Các deal Epic Games đang giảm giá sâu từ **-${minDiscount}%** trở lên.\n` +
+                `📊 Tỷ lệ giảm giá trung bình đạt **-${avgDiscount}%**.\n` +
+                `💥 Giảm giá sâu nhất lên tới **-${maxDiscount}%**!`;
+    }
+
     events.push({
       id: "event:epic-sales-and-specials",
       title: "Epic Games Sales & Specials",
@@ -136,7 +161,7 @@ function getActiveSaleEvents({ steamSales = [], epicSales = [], now = new Date()
       url: "https://store.epicgames.com/sales-and-specials",
       appUrl: "com.epicgames.launcher://store",
       discountPercent: epicSales[0]?.discountPercent,
-      summary: `Đang có ${epicSales.length} deal Epic nổi bật trong danh sách bot lọc.`,
+      summary,
     });
   }
 

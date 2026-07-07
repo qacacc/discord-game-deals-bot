@@ -36,6 +36,9 @@ client.once("clientReady", () => {
   console.log(`🤖 Tiền tố lệnh (Prefix): "${prefix}"`);
   console.log(`🤖 Thời gian chờ (Cooldown): ${cooldownSec} giây`);
   console.log(`======================================================\n`);
+  
+  // Chạy quét game tự động ngay lập tức lần đầu tiên khi bot khởi động
+  runAutoChecker();
 });
 
 client.on("messageCreate", async (message) => {
@@ -327,9 +330,8 @@ client.login(token).catch((err) => {
   process.exit(1);
 });
 
-// Tự động chạy quét game mới định kỳ mỗi 4 giờ (14.400.000 ms)
-const FOUR_HOURS_MS = 4 * 60 * 60 * 1000;
-setInterval(async () => {
+// Hàm chạy kiểm tra và tự động gửi thông báo game
+async function runAutoChecker() {
   console.log("🤖 [Auto Checker] Bắt đầu tự động quét game mới...");
   try {
     const { runChecker } = require("./index");
@@ -338,4 +340,8 @@ setInterval(async () => {
   } catch (err) {
     console.error("🤖 [Auto Checker] Quét tự động gặp lỗi:", err.message);
   }
-}, FOUR_HOURS_MS);
+}
+
+// Tự động chạy quét game mới định kỳ mỗi 4 giờ (14.400.000 ms)
+const FOUR_HOURS_MS = 4 * 60 * 60 * 1000;
+setInterval(runAutoChecker, FOUR_HOURS_MS);
