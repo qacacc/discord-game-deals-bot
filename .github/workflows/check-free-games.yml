@@ -36,8 +36,28 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           EPIC_DISCORD_WEBHOOK_URL: ${{ secrets.EPIC_DISCORD_WEBHOOK_URL }}
           STEAM_DISCORD_WEBHOOK_URL: ${{ secrets.STEAM_DISCORD_WEBHOOK_URL }}
+          GOG_DISCORD_WEBHOOK_URL: ${{ secrets.GOG_DISCORD_WEBHOOK_URL }}
+          UBISOFT_DISCORD_WEBHOOK_URL: ${{ secrets.UBISOFT_DISCORD_WEBHOOK_URL }}
+          SALE_ALERTS_ENABLED: ${{ vars.SALE_ALERTS_ENABLED }}
+          ENABLE_EPIC: ${{ vars.ENABLE_EPIC }}
+          ENABLE_STEAM: ${{ vars.ENABLE_STEAM }}
+          ENABLE_GOG: ${{ vars.ENABLE_GOG }}
+          ENABLE_UBISOFT: ${{ vars.ENABLE_UBISOFT }}
+          ENABLE_FREE_ALERTS: ${{ vars.ENABLE_FREE_ALERTS }}
+          ENABLE_UPCOMING_ALERTS: ${{ vars.ENABLE_UPCOMING_ALERTS }}
+          ENABLE_EVENT_ALERTS: ${{ vars.ENABLE_EVENT_ALERTS }}
+          MIN_SALE_DISCOUNT_PERCENT: ${{ vars.MIN_SALE_DISCOUNT_PERCENT }}
+          MAX_SALE_ALERTS_PER_PLATFORM: ${{ vars.MAX_SALE_ALERTS_PER_PLATFORM }}
+          STEAM_PAGES_TO_SCAN: ${{ vars.STEAM_PAGES_TO_SCAN }}
+          CURRENCY_LOCALE: ${{ vars.CURRENCY_LOCALE }}
+          MAX_SALE_PRICE: ${{ vars.MAX_SALE_PRICE }}
+          PREFERRED_GENRES: ${{ vars.PREFERRED_GENRES }}
+          EXCLUDED_GENRES: ${{ vars.EXCLUDED_GENRES }}
+          MESSAGE_LOCALE: ${{ vars.MESSAGE_LOCALE }}
+          DISCORD_MENTION_ROLE: ${{ vars.DISCORD_MENTION_ROLE || secrets.DISCORD_MENTION_ROLE }}
 
       - name: Commit sent history
+        # Bắt đầu commit lịch sử gửi game
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
