@@ -4,6 +4,7 @@ const { getEpicFreeGames, getEpicUpcomingGames, getEpicSaleGames } = require("./
 const { getSteamFreeGames, getSteamSaleGames } = require("./services/steam.service");
 const { getGogFreeGames } = require("./services/gog.service");
 const { getUbisoftFreeGames } = require("./services/ubisoft.service");
+const { getOtherFreeGames } = require("./services/other.service");
 const { getActiveSaleEvents } = require("./services/event.service");
 const { sendGameEmbed, sendGameSalesBatch } = require("./services/discord.service");
 const { normalizeGame } = require("./utils/formatGame");
@@ -44,6 +45,7 @@ const SUMMARY_LOCALES = {
     steam: (f, s) => `- Steam Store:       ${f} Free | ${s} Sale`,
     gog: (f) => `- GOG.com:            ${f} Free`,
     ubisoft: (f) => `- Ubisoft Connect:    ${f} Free`,
+    other: (f) => `- Nền tảng khác:      ${f} Free`,
     events: (e) => `- Sự kiện Sale lớn:  ${e} đang hoạt động`,
     total_checked: "Tổng số deal quét được:  ",
     total_duplicates: "Số game trùng (đã gửi):  ",
@@ -66,6 +68,7 @@ const SUMMARY_LOCALES = {
     steam: (f, s) => `- Steam Store:       ${f} Free | ${s} Sale`,
     gog: (f) => `- GOG.com:            ${f} Free`,
     ubisoft: (f) => `- Ubisoft Connect:    ${f} Free`,
+    other: (f) => `- Other Platforms:    ${f} Free`,
     events: (e) => `- Big Sale Events:   ${e} active`,
     total_checked: "Total deals scanned:     ",
     total_duplicates: "Duplicate deals (sent):  ",
@@ -104,6 +107,7 @@ function printDetailedSummary(summary, newGames, dryRun) {
   console.log(t.steam(summary.steamFree, summary.steamSales));
   console.log(t.gog(summary.gogFree));
   console.log(t.ubisoft(summary.ubisoftFree));
+  console.log(t.other(summary.otherFree));
   console.log(t.events(summary.events));
   console.log("-------------------------------------------------------");
   console.log(`${t.total_checked}${summary.checked}`);
@@ -167,6 +171,7 @@ async function runChecker({
   getSteamGames = getSteamFreeGames,
   getGogGames = getGogFreeGames,
   getUbisoftGames = getUbisoftFreeGames,
+  getOtherGames = getOtherFreeGames,
   getEpicSales = getEpicSaleGames,
   getSteamSales = getSteamSaleGames,
   getSaleEvents = getActiveSaleEvents,
@@ -179,6 +184,7 @@ async function runChecker({
   steamEnabled = readBooleanEnv("ENABLE_STEAM", true),
   gogEnabled = readBooleanEnv("ENABLE_GOG", true),
   ubisoftEnabled = readBooleanEnv("ENABLE_UBISOFT", true),
+  otherEnabled = readBooleanEnv("ENABLE_OTHER_PLATFORMS", true),
   freeAlertsEnabled = readBooleanEnv("ENABLE_FREE_ALERTS", true),
   upcomingAlertsEnabled = readBooleanEnv("ENABLE_UPCOMING_ALERTS", true),
   eventAlertsEnabled = readBooleanEnv("ENABLE_EVENT_ALERTS", true),
@@ -210,6 +216,7 @@ async function runChecker({
   const steamGames = steamEnabled && freeAlertsEnabled ? await getSteamGames({ pages: steamPagesCount }) : [];
   const gogGames = gogEnabled && freeAlertsEnabled ? await getGogGames() : [];
   const ubisoftGames = ubisoftEnabled && freeAlertsEnabled ? await getUbisoftGames() : [];
+  const otherGames = otherEnabled && freeAlertsEnabled ? await getOtherGames() : [];
 
   const epicSales = epicEnabled && saleAlertsEnabled
     ? await getEpicSales({
@@ -240,6 +247,7 @@ async function runChecker({
     ...steamGames,
     ...gogGames,
     ...ubisoftGames,
+    ...otherGames,
     ...saleEvents,
     ...epicSales,
     ...steamSales,
@@ -266,6 +274,7 @@ async function runChecker({
     steamFree: steamGames.length,
     gogFree: gogGames.length,
     ubisoftFree: ubisoftGames.length,
+    otherFree: otherGames.length,
     events: saleEvents.length,
     epicSales: epicSales.length,
     steamSales: steamSales.length,

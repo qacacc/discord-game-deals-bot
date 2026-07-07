@@ -97,14 +97,37 @@ Yes! The bot scans Ubisoft Connect giveaways using GamerPower API and sends aler
 ### How can I change the price currency to USD?
 Set `CURRENCY_LOCALE=US` in your environment. The bot will fetch prices in USD on Steam/Epic, and `MAX_SALE_PRICE` filters will be evaluated in USD instead of VNĐ.
 
+### Does the bot support free games on Itch.io, IndieGala, Xbox or PlayStation?
+Yes! The bot automatically scans other PC freebies using GamerPower API. Alerts are sent with a custom game controller logo (`other.png`). Toggle it with `ENABLE_OTHER_PLATFORMS` and set a custom webhook via `OTHER_DISCORD_WEBHOOK_URL`.
+
+### How do random gaming GIFs work?
+To make Discord embeds more fun, the bot randomly attaches a gaming GIF (party, congratulations, win, level up...) on the right side thumbnail for every new free or upcoming game alert.
+
 ---
 
 ## 🛠️ Admin CLI Tools
-You can manage your history file or test Discord alerts using these commands in your shell:
+You can manage your history file, test Webhook health, or interactively write custom embeds using these commands:
 
 * **Show Sent Games History**:
   ```bash
   npm run show-history
+  ```
+* **Show ASCII Stats Chart**:
+  ```bash
+  npm run stats-chart
+  ```
+* **Interactive Custom Message Builder**:
+  Walk through a step-by-step console chat format to build and send custom embeds:
+  ```bash
+  npm run send-custom
+  ```
+* **Check Discord Webhooks Health**:
+  ```bash
+  npm run check-webhooks
+  ```
+* **Send Changelog v1.0.0 Info Embed**:
+  ```bash
+  npm run send-changelog
   ```
 * **Clean Up Sent History (remove sales/events > 30 days old)**:
   ```bash

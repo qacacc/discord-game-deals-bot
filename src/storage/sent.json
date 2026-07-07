@@ -1,3 +1,52 @@
 {
-  "sent": []
+  "sent": [
+    {
+      "id": "epic:game-1",
+      "title": "Epic Game Free 1",
+      "platform": "Epic Games Store",
+      "sentAt": "2026-07-08T00:00:00.000Z"
+    },
+    {
+      "id": "epic:game-2",
+      "title": "Epic Game Free 2",
+      "platform": "Epic Games Store",
+      "sentAt": "2026-07-08T00:01:00.000Z"
+    },
+    {
+      "id": "steam:game-3",
+      "title": "Steam Game Free 3",
+      "platform": "Steam",
+      "sentAt": "2026-07-08T00:02:00.000Z"
+    },
+    {
+      "id": "steam:game-4",
+      "title": "Steam Game Sale 4",
+      "platform": "Steam",
+      "sentAt": "2026-07-08T00:03:00.000Z"
+    },
+    {
+      "id": "gog:game-5",
+      "title": "GOG Game Free 5",
+      "platform": "GOG.com",
+      "sentAt": "2026-07-08T00:04:00.000Z"
+    },
+    {
+      "id": "ubisoft:game-6",
+      "title": "Ubisoft Game Free 6",
+      "platform": "Ubisoft Connect",
+      "sentAt": "2026-07-08T00:05:00.000Z"
+    },
+    {
+      "id": "other:game-7",
+      "title": "Itch.io Game Free 7",
+      "platform": "Itch.io",
+      "sentAt": "2026-07-08T00:06:00.000Z"
+    },
+    {
+      "id": "other:game-8",
+      "title": "IndieGala Game Free 8",
+      "platform": "IndieGala",
+      "sentAt": "2026-07-08T00:07:00.000Z"
+    }
+  ]
 }

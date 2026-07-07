@@ -13,7 +13,11 @@
     "clean-history": "node scripts/cli.js clean",
     "reset-history": "node scripts/cli.js reset",
     "check-game": "node scripts/cli.js check",
-    "send-test": "node scripts/cli.js send"
+    "send-test": "node scripts/cli.js send",
+    "send-custom": "node scripts/cli.js send-custom",
+    "stats-chart": "node scripts/cli.js stats-chart",
+    "check-webhooks": "node scripts/cli.js check-webhooks",
+    "send-changelog": "node scripts/cli.js send-changelog"
   },
   "keywords": [],
   "author": "",

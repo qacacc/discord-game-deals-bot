@@ -355,14 +355,37 @@ Có. Bot tự động quét các đợt phát tặng game miễn phí của Ubis
 ### Làm thế nào để đổi giá tiền sang Đô la Mỹ USD ($)?
 Bạn chỉ cần đặt biến môi trường `CURRENCY_LOCALE=US`. Lúc này bot sẽ tự động quét giá theo USD trên Steam và Epic, đồng thời bộ lọc `MAX_SALE_PRICE` cũng sẽ tính theo đơn vị USD thay vì VNĐ.
 
+### Bot có báo game miễn phí của Itch.io, IndieGala, Xbox hay PlayStation không?
+Có. Hệ thống tự động quét nguồn game PC free khác thông qua API GamerPower. Các game này sẽ được thông báo kèm logo tay cầm game (`other.png`). Bạn có thể bật/tắt qua `ENABLE_OTHER_PLATFORMS` và cấu hình webhook riêng qua `OTHER_DISCORD_WEBHOOK_URL`.
+
+### Ảnh GIF động ngẫu nhiên trong tin nhắn hoạt động thế nào?
+Để làm giao diện Discord sinh động hơn, khi có game miễn phí hoặc sắp miễn phí mới, bot sẽ tự động đính kèm ngẫu nhiên một ảnh GIF gaming động thú vị (nhận quà, chúc mừng, level up...) ở góc phải Embed.
+
 ---
 
-## 🛠️ Bộ công cụ dòng lệnh CLI
-Bạn có thể quản lý lịch sử gửi game hoặc kiểm thử gửi tin nhắn nhanh bằng các lệnh CLI sau trong terminal:
+## 🛠️ Bộ công cụ dòng lệnh CLI (Admin Tools)
+Bạn có thể ra lệnh, tương tác trò chuyện, và quản lý bot bằng các lệnh CLI trực quan sau trong terminal:
 
 * **Xem bảng lịch sử đã gửi**:
   ```bash
   npm run show-history
+  ```
+* **Vẽ biểu đồ ASCII phân bổ game theo nền tảng**:
+  ```bash
+  npm run stats-chart
+  ```
+* **Trình soạn tin tương tác (Chat-bot Custom Sender)**:
+  Bot sẽ trò chuyện hỏi-đáp từng bước một để bạn tự thiết kế và gửi tin nhắn game tùy chọn lên Discord:
+  ```bash
+  npm run send-custom
+  ```
+* **Kiểm tra sức khỏe kết nối các Webhook Discord**:
+  ```bash
+  npm run check-webhooks
+  ```
+* **Gửi tin nhắn thông báo Changelog nâng cấp v1.0.0**:
+  ```bash
+  npm run send-changelog
   ```
 * **Chủ động dọn dẹp các deal sale cũ quá 30 ngày**:
   ```bash

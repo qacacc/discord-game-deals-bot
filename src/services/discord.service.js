@@ -10,7 +10,16 @@ const ICON_FILES = {
   steam: "steam.png",
   gog: "gog.png",
   ubisoft: "ubisoft.png",
+  other: "other.png",
 };
+
+const FREE_GIFS = [
+  "https://media.giphy.com/media/l41YtZOb9EUAB5RCO/giphy.gif",
+  "https://media.giphy.com/media/l3q2zVr6cu95nF6O4/giphy.gif",
+  "https://media.giphy.com/media/26FPpSuhg0vQq9iZa/giphy.gif",
+  "https://media.giphy.com/media/3ornk57KwDXf81rjWM/giphy.gif",
+  "https://media.giphy.com/media/yoJC2GnSClbPOkV0eA/giphy.gif",
+];
 
 const LOCALES = {
   vi: {
@@ -94,12 +103,14 @@ function getWebhookUrl(game = {}) {
         ? process.env.GOG_DISCORD_WEBHOOK_URL
         : platform.includes("ubisoft")
           ? process.env.UBISOFT_DISCORD_WEBHOOK_URL
-          : "";
+          : platform.includes("itch.io") || platform.includes("indiegala") || platform.includes("xbox") || platform.includes("playstation") || platform.includes("pc game")
+            ? process.env.OTHER_DISCORD_WEBHOOK_URL
+            : "";
   const webhookUrl = platformWebhookUrl || process.env.DISCORD_WEBHOOK_URL;
 
   if (!webhookUrl) {
     throw new Error(
-      "Missing webhook URL. Set EPIC_DISCORD_WEBHOOK_URL, STEAM_DISCORD_WEBHOOK_URL, GOG_DISCORD_WEBHOOK_URL, UBISOFT_DISCORD_WEBHOOK_URL, or DISCORD_WEBHOOK_URL.",
+      "Missing webhook URL. Set EPIC_DISCORD_WEBHOOK_URL, STEAM_DISCORD_WEBHOOK_URL, GOG_DISCORD_WEBHOOK_URL, UBISOFT_DISCORD_WEBHOOK_URL, OTHER_DISCORD_WEBHOOK_URL, or DISCORD_WEBHOOK_URL.",
     );
   }
 
@@ -222,6 +233,10 @@ function getIconFileName(game) {
     return ICON_FILES.ubisoft;
   }
 
+  if (platform.includes("itch.io") || platform.includes("indiegala") || platform.includes("xbox") || platform.includes("playstation") || platform.includes("pc game")) {
+    return ICON_FILES.other;
+  }
+
   if (game.alertType === "event") {
     return ICON_FILES.event;
   }
@@ -237,10 +252,18 @@ function getIconFile(game) {
 }
 
 /**
+ * Lấy ảnh GIF gaming ngẫu nhiên
+ */
+function getRandomGif() {
+  const idx = Math.floor(Math.random() * FREE_GIFS.length);
+  return FREE_GIFS[idx];
+}
+
+/**
  * Tạo object Embed theo định dạng Discord API
  */
 function createEmbed(game) {
-  return {
+  const embed = {
     author: {
       name: getEmbedHeader(game),
       icon_url: getEmbedIconUrl(game),
@@ -253,6 +276,13 @@ function createEmbed(game) {
     image: game.image ? { url: game.image } : undefined,
     timestamp: new Date().toISOString(),
   };
+
+  // Đính kèm ảnh GIF động ở thumbnail nếu là game free hoặc upcoming free
+  if (game.alertType === "free" || game.alertType === "upcoming") {
+    embed.thumbnail = { url: getRandomGif() };
+  }
+
+  return embed;
 }
 
 /**

@@ -31,6 +31,10 @@ const icons = [
     name: "ubisoft",
     url: "https://cdn.simpleicons.org/ubisoft/ffffff",
   },
+  {
+    name: "other",
+    url: "https://cdn.simpleicons.org/itchdotio/ffffff",
+  },
 ];
 
 async function downloadIcon(url) {

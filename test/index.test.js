@@ -20,6 +20,7 @@ test("gui game moi va danh dau da gui", async () => {
     getSteamGames: async () => [],
     getGogGames: async () => [],
     getUbisoftGames: async () => [],
+    getOtherGames: async () => [],
     getEpicSales: async () => [],
     getSteamSales: async () => [],
     getSaleEvents: () => [],
@@ -51,6 +52,7 @@ test("khong gui lai game da nam trong sent.json (tuong thich nguoc lich su cu)",
     getSteamGames: async () => [],
     getGogGames: async () => [],
     getUbisoftGames: async () => [],
+    getOtherGames: async () => [],
     getEpicSales: async () => [],
     getSteamSales: async () => [],
     getSaleEvents: () => [],
@@ -82,6 +84,7 @@ test("dry-run khong gui Discord va khong ghi sent.json", async () => {
     getSteamGames: async () => [],
     getGogGames: async () => [],
     getUbisoftGames: async () => [],
+    getOtherGames: async () => [],
     getEpicSales: async () => [],
     getSteamSales: async () => [],
     getSaleEvents: () => [],
@@ -108,6 +111,7 @@ test("gui sale alert khi co deal moi", async () => {
     getSteamGames: async () => [],
     getGogGames: async () => [],
     getUbisoftGames: async () => [],
+    getOtherGames: async () => [],
     getEpicSales: async () => [
       {
         id: "epic-sale:test:90:end",
@@ -147,6 +151,7 @@ test("gui thong bao event truoc game sale", async () => {
     getSteamGames: async () => [],
     getGogGames: async () => [],
     getUbisoftGames: async () => [],
+    getOtherGames: async () => [],
     getEpicSales: async () => [],
     getSteamSales: async () => [
       {
@@ -192,6 +197,7 @@ test("co the tat Epic bang cau hinh", async () => {
     steamEnabled: false,
     gogEnabled: false,
     ubisoftEnabled: false,
+    otherEnabled: false,
     getEpicGames: async () => {
       throw new Error("Epic should be disabled");
     },
@@ -206,6 +212,9 @@ test("co the tat Epic bang cau hinh", async () => {
     },
     getUbisoftGames: async () => {
       throw new Error("Ubisoft should be disabled");
+    },
+    getOtherGames: async () => {
+      throw new Error("Other should be disabled");
     },
     getEpicSales: async () => [],
     getSteamSales: async () => [],
@@ -236,6 +245,7 @@ test("gui game sap mien phi khi co upcoming game moi", async () => {
     getSteamGames: async () => [],
     getGogGames: async () => [],
     getUbisoftGames: async () => [],
+    getOtherGames: async () => [],
     getEpicSales: async () => [],
     getSteamSales: async () => [],
     getSaleEvents: () => [],
@@ -259,6 +269,7 @@ test("gui deal sale theo nhom (batching) chu khong gui don le", async () => {
     getSteamGames: async () => [],
     getGogGames: async () => [],
     getUbisoftGames: async () => [],
+    getOtherGames: async () => [],
     getEpicSales: async () => [
       {
         id: "epic-sale:game-1:90:end",
@@ -308,6 +319,7 @@ test("gui game free tu GOG", async () => {
       }
     ],
     getUbisoftGames: async () => [],
+    getOtherGames: async () => [],
     getEpicSales: async () => [],
     getSteamSales: async () => [],
     getSaleEvents: () => [],
@@ -338,6 +350,7 @@ test("gui game free tu Ubisoft Connect", async () => {
         url: "https://example.com/ubisoft-free",
       }
     ],
+    getOtherGames: async () => [],
     getEpicSales: async () => [],
     getSteamSales: async () => [],
     getSaleEvents: () => [],
@@ -347,6 +360,37 @@ test("gui game free tu Ubisoft Connect", async () => {
   });
 
   assert.deepEqual(sentGames, ["ubisoft:12345"]);
+  assert.deepEqual(result, { checked: 1, sent: 1, pending: 0, duplicates: 0 });
+});
+
+test("gui game free tu cac nen tang khac (Itch.io)", async () => {
+  const sentData = { sent: [] };
+  const sentGames = [];
+
+  const result = await runChecker({
+    getEpicGames: async () => [],
+    getEpicUpcoming: async () => [],
+    getSteamGames: async () => [],
+    getGogGames: async () => [],
+    getUbisoftGames: async () => [],
+    getOtherGames: async () => [
+      {
+        id: "other:12345",
+        title: "Itch.io Free Game",
+        alertType: "free",
+        platform: "Itch.io",
+        url: "https://example.com/itch-free",
+      }
+    ],
+    getEpicSales: async () => [],
+    getSteamSales: async () => [],
+    getSaleEvents: () => [],
+    sendGame: async (game) => sentGames.push(game.id),
+    loadSent: () => sentData,
+    saveSent: () => {},
+  });
+
+  assert.deepEqual(sentGames, ["other:12345"]);
   assert.deepEqual(result, { checked: 1, sent: 1, pending: 0, duplicates: 0 });
 });
 
@@ -361,6 +405,7 @@ test("loc deal sale theo MAX_SALE_PRICE", async () => {
     getSteamGames: async () => [],
     getGogGames: async () => [],
     getUbisoftGames: async () => [],
+    getOtherGames: async () => [],
     getEpicSales: async () => [
       {
         id: "epic-sale:cheap:90:end",
@@ -404,6 +449,7 @@ test("loc deal sale theo PREFERRED_GENRES va EXCLUDED_GENRES", async () => {
     getSteamGames: async () => [],
     getGogGames: async () => [],
     getUbisoftGames: async () => [],
+    getOtherGames: async () => [],
     getEpicSales: async () => [
       {
         id: "epic-sale:game-action:90:end",
