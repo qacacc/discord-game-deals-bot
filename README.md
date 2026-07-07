@@ -5,7 +5,6 @@
 ![Steam](https://img.shields.io/badge/Steam-Deals-000000?logo=steam&logoColor=white)
 ![Epic Games](https://img.shields.io/badge/Epic%20Games-Free%20Games-313131?logo=epicgames&logoColor=white)
 ![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-Scheduled-2088FF?logo=githubactions&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-green)
 
 Free Discord webhook bot for Epic Games Store and Steam free games, sale events, and deep discount alerts.
 

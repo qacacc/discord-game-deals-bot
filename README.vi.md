@@ -7,7 +7,6 @@
 ![Steam](https://img.shields.io/badge/Steam-Deals-000000?logo=steam&logoColor=white)
 ![Epic Games](https://img.shields.io/badge/Epic%20Games-Free%20Games-313131?logo=epicgames&logoColor=white)
 ![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-Scheduled-2088FF?logo=githubactions&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-green)
 
 Bot Discord báo **game miễn phí**, **sự kiện sale** và **deal giảm sâu** từ **Epic Games Store** + **Steam**.
 
@@ -291,7 +290,3 @@ Nếu bạn muốn ủng hộ project hoặc cần làm bot Discord riêng, có 
 QR ủng hộ:
 
 ![QR ủng hộ](assets/support/donation-qr.jpg)
-
-## License
-
-MIT
