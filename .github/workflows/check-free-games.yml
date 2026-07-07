@@ -1,0 +1,46 @@
+name: Check Free Games
+
+on:
+  schedule:
+    - cron: "0 */12 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  check-free-games:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Run checker
+        run: npm start
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          EPIC_DISCORD_WEBHOOK_URL: ${{ secrets.EPIC_DISCORD_WEBHOOK_URL }}
+          STEAM_DISCORD_WEBHOOK_URL: ${{ secrets.STEAM_DISCORD_WEBHOOK_URL }}
+
+      - name: Commit sent history
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add src/storage/sent.json
+          git diff --cached --quiet || git commit -m "Update sent games history"
+          git push

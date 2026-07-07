@@ -1,0 +1,20 @@
+{
+  "name": "bot-game",
+  "version": "1.0.0",
+  "description": "Discord webhook bot bao game free, sale event va deal Steam/Epic bang GitHub Actions.",
+  "main": "src/index.js",
+  "scripts": {
+    "build-icons": "node scripts/build-icons.js",
+    "dry-run": "node src/index.js --dry-run",
+    "start": "node src/index.js",
+    "test": "node --test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.18.1",
+    "dotenv": "^17.4.2",
+    "sharp": "^0.35.3"
+  }
+}
