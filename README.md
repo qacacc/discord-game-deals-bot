@@ -51,3 +51,10 @@ More details:
 
 - [English guide](README.en.md)
 - [Hướng dẫn tiếng Việt](README.vi.md)
+
+## Author & Support
+
+Author: **Huỳnh Tấn Đạt**
+
+- Facebook: [tan.dat.551987](https://www.facebook.com/tan.dat.551987)
+- Donation QR: [View QR](assets/support/donation-qr.jpg)

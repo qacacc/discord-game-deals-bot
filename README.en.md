@@ -274,12 +274,14 @@ npm start
 
 ## Support & Custom Bot Requests
 
-If you want to support the project or request a custom Discord bot, add your donation QR code and Facebook contact here.
+If you want to support the project or request a custom Discord bot, contact the author:
 
-```txt
-Donation QR: pending
-Facebook: pending
-```
+- Author: **Huỳnh Tấn Đạt**
+- Facebook: [tan.dat.551987](https://www.facebook.com/tan.dat.551987)
+
+Donation QR:
+
+![Donation QR](assets/support/donation-qr.jpg)
 
 ## License
 

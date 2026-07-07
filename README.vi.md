@@ -283,12 +283,14 @@ npm start
 
 ## Ủng Hộ & Liên Hệ Làm Bot Riêng
 
-Nếu bạn muốn ủng hộ project hoặc cần làm bot Discord riêng, có thể thêm QR tài khoản ủng hộ và link Facebook tại đây.
+Nếu bạn muốn ủng hộ project hoặc cần làm bot Discord riêng, có thể liên hệ tác giả:
 
-```txt
-QR ủng hộ: chưa thêm
-Facebook: chưa thêm
-```
+- Tác giả: **Huỳnh Tấn Đạt**
+- Facebook: [tan.dat.551987](https://www.facebook.com/tan.dat.551987)
+
+QR ủng hộ:
+
+![QR ủng hộ](assets/support/donation-qr.jpg)
 
 ## License
 
