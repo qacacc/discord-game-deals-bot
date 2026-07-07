@@ -142,10 +142,9 @@ MAX_SALE_ALERTS_PER_PLATFORM=5
 
 | Variable | Required | Used in | Meaning |
 | --- | --- | --- | --- |
-| `EPIC_DISCORD_WEBHOOK_URL` | Yes | Local `.env` + GitHub Secrets | Epic channel webhook |
-| `STEAM_DISCORD_WEBHOOK_URL` | Yes | Local `.env` + GitHub Secrets | Steam channel webhook |
-| `GOG_DISCORD_WEBHOOK_URL` | No | Local `.env` + GitHub Secrets | GOG channel webhook (falls back to default webhook if empty) |
-| `UBISOFT_DISCORD_WEBHOOK_URL` | No | Local `.env` + GitHub Secrets | Ubisoft channel webhook (falls back to default webhook if empty) |
+| `EPIC_DISCORD_WEBHOOK_URL` | Yes | Local `.env` + GitHub Secrets | Webhook channel Epic (Epic sale, event, and free alerts) |
+| `STEAM_DISCORD_WEBHOOK_URL` | Yes | Local `.env` + GitHub Secrets | Webhook channel Steam (Steam sale, event, and free alerts) |
+| `OTHER_DISCORD_WEBHOOK_URL` | No | Local `.env` + GitHub Secrets | Webhook channel other (GOG, Ubisoft, Itch.io, Xbox, PlayStation...) |
 | `DISCORD_WEBHOOK_URL` | No | Local `.env` + GitHub Secrets | Fallback webhook if you do not split channels |
 | `SALE_ALERTS_ENABLED` | No | Local `.env` + GitHub Secrets/Variables | Enable sale alerts, default `true` |
 | `ENABLE_EPIC` | No | Local `.env` + GitHub Secrets/Variables | Enable Epic checks, default `true` |

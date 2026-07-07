@@ -99,18 +99,12 @@ function getWebhookUrl(game = {}) {
     ? process.env.EPIC_DISCORD_WEBHOOK_URL
     : platform.includes("steam")
       ? process.env.STEAM_DISCORD_WEBHOOK_URL
-      : platform.includes("gog")
-        ? process.env.GOG_DISCORD_WEBHOOK_URL
-        : platform.includes("ubisoft")
-          ? process.env.UBISOFT_DISCORD_WEBHOOK_URL
-          : platform.includes("itch.io") || platform.includes("indiegala") || platform.includes("xbox") || platform.includes("playstation") || platform.includes("pc game")
-            ? process.env.OTHER_DISCORD_WEBHOOK_URL
-            : "";
+      : process.env.OTHER_DISCORD_WEBHOOK_URL;
   const webhookUrl = platformWebhookUrl || process.env.DISCORD_WEBHOOK_URL;
 
   if (!webhookUrl) {
     throw new Error(
-      "Missing webhook URL. Set EPIC_DISCORD_WEBHOOK_URL, STEAM_DISCORD_WEBHOOK_URL, GOG_DISCORD_WEBHOOK_URL, UBISOFT_DISCORD_WEBHOOK_URL, OTHER_DISCORD_WEBHOOK_URL, or DISCORD_WEBHOOK_URL.",
+      "Missing webhook URL. Set EPIC_DISCORD_WEBHOOK_URL, STEAM_DISCORD_WEBHOOK_URL, OTHER_DISCORD_WEBHOOK_URL, or DISCORD_WEBHOOK_URL.",
     );
   }
 

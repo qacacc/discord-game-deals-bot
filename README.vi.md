@@ -142,11 +142,10 @@ MAX_SALE_ALERTS_PER_PLATFORM=5
 
 | Biến | Bắt buộc | Dùng ở đâu | Ý nghĩa |
 | --- | --- | --- | --- |
-| `EPIC_DISCORD_WEBHOOK_URL` | Có | Local `.env` + GitHub Secrets | Webhook channel Epic |
-| `STEAM_DISCORD_WEBHOOK_URL` | Có | Local `.env` + GitHub Secrets | Webhook channel Steam |
-| `GOG_DISCORD_WEBHOOK_URL` | Không | Local `.env` + GitHub Secrets | Webhook channel GOG (nếu trống sẽ fallback về webhook chung) |
-| `UBISOFT_DISCORD_WEBHOOK_URL` | Không | Local `.env` + GitHub Secrets | Webhook channel Ubisoft (nếu trống sẽ fallback về webhook chung) |
-| `DISCORD_WEBHOOK_URL` | Không | Local `.env` + GitHub Secrets | Webhook fallback nếu không tách kênh |
+| `EPIC_DISCORD_WEBHOOK_URL` | Có | Local `.env` + GitHub Secrets | Webhook channel Epic (nhận game sale, event, free của Epic) |
+| `STEAM_DISCORD_WEBHOOK_URL` | Có | Local `.env` + GitHub Secrets | Webhook channel Steam (nhận game sale, event, free của Steam) |
+| `OTHER_DISCORD_WEBHOOK_URL` | Không | Local `.env` + GitHub Secrets | Webhook channel còn lại (GOG, Ubisoft, Itch.io, Xbox, PlayStation...) |
+| `DISCORD_WEBHOOK_URL` | Không | Local `.env` + GitHub Secrets | Webhook fallback chung nếu không tách kênh |
 | `SALE_ALERTS_ENABLED` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt báo sale, mặc định `true` |
 | `ENABLE_EPIC` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt kiểm tra Epic, mặc định `true` |
 | `ENABLE_STEAM` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt kiểm tra Steam, mặc định `true` |
