@@ -26,7 +26,9 @@ const LOCALES = {
     field_current_price: "🏷️ Giá hiện tại",
     field_discount: "📉 Giảm giá",
     field_start_date: "📅 Bắt đầu tặng từ",
-    field_end_date: "📅 Hạn nhận",
+    field_end_date_free: "📅 Hạn nhận",
+    field_end_date_sale: "📅 Hạn giảm giá",
+    field_end_date_event: "📅 Thời gian diễn ra",
     field_link_store: "🔗 Link cửa hàng",
     field_link_claim: "🔗 Link nhận",
     field_reviews: "⭐ Đánh giá",
@@ -53,7 +55,9 @@ const LOCALES = {
     field_current_price: "🏷️ Current Price",
     field_discount: "📉 Discount",
     field_start_date: "📅 Starts At",
-    field_end_date: "📅 Ends At",
+    field_end_date_free: "📅 Claim Deadline",
+    field_end_date_sale: "📅 Sale Deadline",
+    field_end_date_event: "📅 Event Duration",
     field_link_store: "🔗 Store Link",
     field_link_claim: "🔗 Claim Link",
     field_reviews: "⭐ Reviews",
@@ -258,7 +262,7 @@ function getEmbedFields(game) {
         inline: true,
       },
       {
-        name: t.field_end_date,
+        name: t.field_end_date_event,
         value: game.endDate || "Unknown",
         inline: true,
       },
@@ -304,7 +308,7 @@ function getEmbedFields(game) {
         inline: true,
       },
       {
-        name: t.field_end_date,
+        name: t.field_end_date_free,
         value: game.endDate || "Unknown",
         inline: true,
       },
@@ -363,7 +367,7 @@ function getEmbedFields(game) {
 
   fields.push(
     {
-      name: t.field_end_date,
+      name: game.alertType === "sale" ? t.field_end_date_sale : t.field_end_date_free,
       value: game.endDate || "Unknown",
       inline: true,
     },
