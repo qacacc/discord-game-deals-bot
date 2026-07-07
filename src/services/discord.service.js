@@ -256,7 +256,7 @@ function createEmbed(game) {
 }
 
 /**
- * Tạo các trường thông tin chi tiết (fields) cho Embed Discord với bố cục lưới (inline: true)
+ * Tạo các trường thông tin chi tiết (fields) cho Embed Discord với bố cục lưới tối ưu hóa
  */
 function getEmbedFields(game) {
   const t = getLocale();
@@ -298,17 +298,6 @@ function getEmbedFields(game) {
         value: game.originalPrice || "Unknown",
         inline: true,
       },
-    ];
-
-    if (game.genres) {
-      fields.push({
-        name: t.field_genres,
-        value: game.genres,
-        inline: true,
-      });
-    }
-
-    fields.push(
       {
         name: t.field_start_date,
         value: game.startDate || "Unknown",
@@ -319,17 +308,26 @@ function getEmbedFields(game) {
         value: game.endDate || "Unknown",
         inline: true,
       },
-      {
-        name: t.field_link_store,
-        value: game.url ? `[${t.text_view_store}](${game.url})` : "Unknown",
-        inline: false,
-      }
-    );
+    ];
+
+    if (game.genres) {
+      fields.push({
+        name: t.field_genres,
+        value: game.genres,
+        inline: false, // Để thể loại dài ở dòng riêng biệt
+      });
+    }
+
+    fields.push({
+      name: t.field_link_store,
+      value: game.url ? `[${t.text_view_store}](${game.url})` : "Unknown",
+      inline: false,
+    });
 
     return fields;
   }
 
-  // Đối với game free hoặc game sale (hiển thị dạng lưới tối ưu)
+  // Đối với game free hoặc game sale
   const fields = [
     {
       name: t.field_platform,
@@ -364,26 +362,27 @@ function getEmbedFields(game) {
     });
   }
 
+  // Để ngày hết hạn ở một dòng riêng biệt, tránh bị ép chật chội
+  fields.push({
+    name: game.alertType === "sale" ? t.field_end_date_sale : t.field_end_date_free,
+    value: game.endDate || "Unknown",
+    inline: false,
+  });
+
+  // Để thể loại game ở dòng riêng biệt do chuỗi thể loại (genres) thường dài
   if (game.genres) {
     fields.push({
       name: t.field_genres,
       value: game.genres,
-      inline: true,
+      inline: false,
     });
   }
 
-  fields.push(
-    {
-      name: game.alertType === "sale" ? t.field_end_date_sale : t.field_end_date_free,
-      value: game.endDate || "Unknown",
-      inline: true,
-    },
-    {
-      name: t.field_link_claim,
-      value: game.url ? `[${t.text_claim_game}](${game.url})` : "Unknown",
-      inline: false,
-    }
-  );
+  fields.push({
+    name: t.field_link_claim,
+    value: game.url ? `[${t.text_claim_game}](${game.url})` : "Unknown",
+    inline: false,
+  });
 
   return fields;
 }
