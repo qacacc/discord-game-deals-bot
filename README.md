@@ -7,57 +7,74 @@
 ![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-Scheduled-2088FF?logo=githubactions&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-Bot Discord miễn phí để tự động báo **game free**, **sự kiện sale** và **deal giảm sâu** từ **Epic Games Store** và **Steam** bằng Discord Webhook + GitHub Actions.
+Bot Discord báo **game miễn phí**, **sự kiện sale** và **deal giảm sâu** từ **Epic Games Store** + **Steam**.
 
-Không cần VPS, database, Discord bot token, `discord.js`, hay bot online 24/7.
+Bot dùng **Discord Webhook** và **GitHub Actions**, nên không cần VPS, database, Discord bot token, `discord.js`, hay bot online 24/7.
 
-## Tổng Quan
+## Có Tốn Tiền Không?
+
+Với cách dùng mặc định: **không tốn tiền**.
+
+| Thành phần | Chi phí |
+| --- | --- |
+| Discord Webhook | Miễn phí |
+| Node.js | Miễn phí |
+| GitHub repo public | Miễn phí |
+| GitHub Actions chạy 2 lần/ngày | Miễn phí trong giới hạn GitHub |
+| VPS/database/proxy | Không cần |
+
+Bot mặc định chạy mỗi 12 tiếng, rất nhẹ. Với nhu cầu cá nhân hoặc server nhỏ, gần như dùng **0 đồng**.
+
+## Bot Làm Gì?
 
 ```txt
 GitHub Actions chạy mỗi 12 tiếng
         ↓
-Node.js script kiểm tra Epic + Steam
+Bot kiểm tra Epic + Steam
         ↓
-Lọc game free, sự kiện sale, deal giảm sâu
+Lọc game free, sale event, deal giảm sâu
         ↓
-Gửi embed vào Discord bằng Webhook
+Gửi embed vào Discord
         ↓
-Ghi sent.json để chống gửi trùng
+Lưu sent.json để không gửi trùng
 ```
 
 ## Tính Năng
 
 - Báo game free từ Epic Games Store.
-- Báo game free/deal từ Steam.
+- Báo deal từ Steam.
 - Báo sự kiện sale, ví dụ `Steam Summer Sale`.
-- Gửi deal sale mạnh theo ngưỡng giảm giá cấu hình được.
-- Tách webhook riêng cho Epic và Steam.
-- Embed Discord có logo Steam/Epic, ảnh game và banner event nếu có.
+- Tách webhook riêng cho kênh Epic và kênh Steam.
+- Có logo Steam/Epic, ảnh game và banner event nếu có.
 - Chống gửi trùng bằng `src/storage/sent.json`.
 - Chạy tự động bằng GitHub Actions.
-- Repo public được, không chứa secret.
+- Public repo an toàn vì webhook nằm trong GitHub Secrets.
 
-## Công Nghệ
+## Cần Chuẩn Bị
 
-| Thành phần | Mục đích |
-| --- | --- |
-| Node.js | Chạy bot |
-| Axios | Gọi endpoint Epic/Steam |
-| Dotenv | Đọc cấu hình local |
-| Discord Webhook | Gửi tin vào Discord |
-| GitHub Actions | Tự động chạy theo lịch |
-| GitHub Secrets | Lưu webhook an toàn |
+Cài trên máy nếu muốn chạy local:
 
-## Chuẩn Bị Discord
+- Node.js LTS
+- Git
+- Tài khoản GitHub
+- Server Discord có quyền tạo Webhook
 
-Tạo 2 channel Discord, ví dụ:
+Nếu chỉ muốn chạy tự động trên GitHub, bạn vẫn cần Git để push source lên repo.
+
+## Bước 1: Tạo Channel Discord
+
+Tạo 2 channel, ví dụ:
 
 ```txt
 #epic-alert
 #steam-alert
 ```
 
-Tạo webhook cho từng channel:
+Bạn có thể dùng 1 channel chung cũng được, nhưng khuyên tách riêng để dễ xem.
+
+## Bước 2: Tạo Webhook Discord
+
+Làm cho từng channel:
 
 1. Bấm bánh răng `Edit Channel`.
 2. Vào `Integrations`.
@@ -78,9 +95,9 @@ Attach Files
 
 Không cần bật `Manage Webhooks` cho `@everyone`.
 
-## Cài Đặt Local
+## Bước 3: Chạy Local
 
-Clone repo và cài dependencies:
+Cài dependencies:
 
 ```bash
 npm install
@@ -97,53 +114,68 @@ MIN_SALE_DISCOUNT_PERCENT=80
 MAX_SALE_ALERTS_PER_PLATFORM=5
 ```
 
-Kiểm tra bot sẽ gửi gì nhưng không gửi Discord:
+Kiểm tra bot tìm được gì nhưng chưa gửi Discord:
 
 ```bash
 npm run dry-run
 ```
 
-Chạy thật:
+Gửi thật vào Discord:
 
 ```bash
 npm start
 ```
 
-Chạy test:
+Chạy test code:
 
 ```bash
 npm test
 ```
 
-## Deploy Bằng GitHub Actions
+## Bước 4: Chạy Tự Động Miễn Phí Bằng GitHub Actions
 
-1. Push source lên GitHub.
-2. Vào repo `Settings -> Secrets and variables -> Actions`.
-3. Tạo repository secrets:
+Push source lên GitHub public/private repo.
+
+Sau đó vào GitHub repo:
+
+```txt
+Settings
+-> Secrets and variables
+-> Actions
+-> New repository secret
+```
+
+Tạo 2 secret:
 
 ```txt
 EPIC_DISCORD_WEBHOOK_URL
 STEAM_DISCORD_WEBHOOK_URL
 ```
 
-4. Dán webhook Epic vào `EPIC_DISCORD_WEBHOOK_URL`.
-5. Dán webhook Steam vào `STEAM_DISCORD_WEBHOOK_URL`.
-6. Vào tab `Actions`.
-7. Chọn workflow `Check Free Games`.
-8. Bấm `Run workflow` để chạy thử.
+Dán webhook Epic vào `EPIC_DISCORD_WEBHOOK_URL`.
 
-Workflow tự chạy lúc:
+Dán webhook Steam vào `STEAM_DISCORD_WEBHOOK_URL`.
+
+Chạy thử:
+
+```txt
+Actions
+-> Check Free Games
+-> Run workflow
+```
+
+Workflow mặc định tự chạy:
 
 ```txt
 00:00 UTC
 12:00 UTC
 ```
 
-Tương đương khoảng:
+Ở Việt Nam khoảng:
 
 ```txt
-07:00 Việt Nam
-19:00 Việt Nam
+07:00 sáng
+19:00 tối
 ```
 
 ## Cấu Hình Sale
@@ -155,21 +187,31 @@ MIN_SALE_DISCOUNT_PERCENT=80
 MAX_SALE_ALERTS_PER_PLATFORM=5
 ```
 
-Ý nghĩa:
+Nghĩa là:
 
 ```txt
 Chỉ gửi deal giảm từ 80% trở lên.
-Mỗi nền tảng gửi tối đa 5 deal/lần chạy.
+Mỗi nền tảng gửi tối đa 5 deal trong một lần chạy.
 ```
 
-Muốn nhiều deal hơn:
+Muốn bot gửi nhiều deal hơn:
 
 ```env
 MIN_SALE_DISCOUNT_PERCENT=70
 MAX_SALE_ALERTS_PER_PLATFORM=10
 ```
 
-Không nên đặt ngưỡng quá thấp vì Discord có thể bị spam.
+Không nên để ngưỡng quá thấp vì Discord sẽ bị spam.
+
+## Local Và Deploy Khác Gì Nhau?
+
+| Cách chạy | Dùng khi nào | Có tự động không? |
+| --- | --- | --- |
+| `npm run dry-run` | Kiểm tra dữ liệu | Không |
+| `npm start` | Chạy thật trên máy bạn | Không |
+| GitHub Actions | Deploy miễn phí | Có, mỗi 12 tiếng |
+
+Nếu tắt máy, local sẽ không tự chạy. Muốn tự động 24/7 miễn phí thì dùng GitHub Actions.
 
 ## Cấu Trúc Project
 
@@ -189,18 +231,18 @@ src/
 .github/workflows/check-free-games.yml
 ```
 
-## Ghi Chú Bảo Mật
+## Bảo Mật
 
 - Không commit `.env`.
-- Webhook Discord giống mật khẩu, không public.
-- Khi deploy, lưu webhook trong GitHub Secrets.
-- Nếu webhook từng bị lộ, hãy vào Discord và `Regenerate Webhook URL`.
+- Webhook Discord giống mật khẩu.
+- Luôn dùng GitHub Secrets khi deploy.
+- Nếu webhook bị lộ, vào Discord và `Regenerate Webhook URL`.
 
 ## Nguồn Dữ Liệu
 
 - Epic: endpoint public của Epic Games Store.
 - Steam: Steam Store search/specials public.
-- Steam event: lịch seasonal sale trong `src/services/event.service.js`.
+- Steam event: cấu hình trong `src/services/event.service.js`.
 - Logo Steam/Epic: Simple Icons, build thành PNG local.
 - Icon fallback: Google Fonts Icons, build thành PNG local.
 
