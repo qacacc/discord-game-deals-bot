@@ -92,7 +92,17 @@ async function runChecker({
   const sentData = loadSent();
 
   const epicGames = epicEnabled && freeAlertsEnabled ? await getEpicGames() : [];
-  const epicUpcoming = epicEnabled && freeAlertsEnabled && upcomingAlertsEnabled ? await getEpicUpcoming() : [];
+  let epicUpcoming = epicEnabled && freeAlertsEnabled && upcomingAlertsEnabled ? await getEpicUpcoming() : [];
+
+  // Loại bỏ các game sắp miễn phí trùng lặp với game đang miễn phí hiện tại để tránh tin nhắn trùng
+  if (epicGames.length > 0 && epicUpcoming.length > 0) {
+    const activeEpicIds = new Set(epicGames.map((g) => g.id.replace("epic:", "")));
+    epicUpcoming = epicUpcoming.filter((g) => {
+      const id = g.id.replace("epic-upcoming:", "");
+      return !activeEpicIds.has(id);
+    });
+  }
+
   const steamGames = steamEnabled && freeAlertsEnabled ? await getSteamGames({ pages: steamPagesCount }) : [];
 
   const epicSales = epicEnabled && saleAlertsEnabled
