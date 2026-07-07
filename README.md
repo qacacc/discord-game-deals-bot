@@ -9,6 +9,17 @@
 
 Free Discord webhook bot for Epic Games Store and Steam free games, sale events, and deep discount alerts.
 
+## Project Info
+
+| Item | Value |
+| --- | --- |
+| Author | Huỳnh Tấn Đạt |
+| Source language | JavaScript |
+| Runtime | Node.js |
+| Module style | CommonJS |
+| Automation | GitHub Actions |
+| Discord integration | Discord Webhook |
+
 ## Choose Language
 
 | Language | README |

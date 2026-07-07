@@ -13,6 +13,17 @@ A free Discord bot that posts **free games**, **sale events**, and **deep discou
 
 It uses **Discord Webhooks** and **GitHub Actions**, so you do not need a VPS, database, Discord bot token, `discord.js`, or a bot running 24/7.
 
+## Project Info
+
+| Item | Value |
+| --- | --- |
+| Author | Huỳnh Tấn Đạt |
+| Source language | JavaScript |
+| Runtime | Node.js |
+| Module style | CommonJS |
+| Automation | GitHub Actions |
+| Discord integration | Discord Webhook |
+
 ## Is It Free?
 
 With the default setup: **yes, it is free**.
@@ -259,6 +270,15 @@ npm run build-icons
 npm run dry-run
 npm test
 npm start
+```
+
+## Support & Custom Bot Requests
+
+If you want to support the project or request a custom Discord bot, add your donation QR code and Facebook contact here.
+
+```txt
+Donation QR: pending
+Facebook: pending
 ```
 
 ## License
