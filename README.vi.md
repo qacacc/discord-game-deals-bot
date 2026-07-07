@@ -144,10 +144,12 @@ MAX_SALE_ALERTS_PER_PLATFORM=5
 | --- | --- | --- | --- |
 | `EPIC_DISCORD_WEBHOOK_URL` | Có | Local `.env` + GitHub Secrets | Webhook channel Epic |
 | `STEAM_DISCORD_WEBHOOK_URL` | Có | Local `.env` + GitHub Secrets | Webhook channel Steam |
+| `GOG_DISCORD_WEBHOOK_URL` | Không | Local `.env` + GitHub Secrets | Webhook channel GOG (nếu trống sẽ fallback về webhook chung) |
 | `DISCORD_WEBHOOK_URL` | Không | Local `.env` + GitHub Secrets | Webhook fallback nếu không tách kênh |
 | `SALE_ALERTS_ENABLED` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt báo sale, mặc định `true` |
 | `ENABLE_EPIC` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt kiểm tra Epic, mặc định `true` |
 | `ENABLE_STEAM` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt kiểm tra Steam, mặc định `true` |
+| `ENABLE_GOG` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt kiểm tra GOG, mặc định `true` |
 | `ENABLE_FREE_ALERTS` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt báo game free, mặc định `true` |
 | `ENABLE_UPCOMING_ALERTS` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt báo game sắp free của Epic, mặc định `true` |
 | `ENABLE_EVENT_ALERTS` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt báo event sale, mặc định `true` |
@@ -328,6 +330,13 @@ Bạn hãy gán giá trị `@everyone`, `@here` hoặc mã Role ID của server 
 
 ### Làm thế nào để thay đổi ngôn ngữ sang Tiếng Anh?
 Bạn chỉ cần đặt biến môi trường `MESSAGE_LOCALE=en`. Bot sẽ tự động chuyển đổi ngôn ngữ của Embed trên Discord và nhật ký bảng logs trong console sang Tiếng Anh.
+
+### Tính năng gom nhóm tin nhắn (Batching) hoạt động thế nào?
+Để tránh làm loãng kênh chat Discord khi có quá nhiều game giảm giá cùng lúc, bot sẽ tự động gom các deal giảm giá (`sale`) của cùng một nền tảng (Steam hoặc Epic) vào **một tin nhắn duy nhất chứa tối đa 10 Embeds**. Game miễn phí, game sắp miễn phí và các sự kiện lớn vẫn sẽ được gửi riêng lẻ để tạo sự nổi bật.
+
+### Bot có báo game miễn phí của GOG.com không?
+Có. Hệ thống hiện đã được tích hợp nguồn game từ GOG.com. Bot sẽ tự động quét danh sách game miễn phí trên GOG và gửi thông báo kèm logo GOG.png đẹp mắt. Bạn có thể bật/tắt qua biến `ENABLE_GOG` và cấu hình webhook riêng qua `GOG_DISCORD_WEBHOOK_URL`.
+
 
 
 ## Hướng dẫn tạo Release Tag v1.0.0

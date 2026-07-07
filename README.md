@@ -79,6 +79,13 @@ Set `MESSAGE_LOCALE=en` (or `vi` for Vietnamese) in your environment variables. 
 ### Are Steam ratings displayed?
 Yes! The bot parses user review summaries (e.g., *Very Positive (88%)*) directly from Steam's search results and displays them as a field in the Discord embed.
 
+### How does message batching work?
+To keep Discord channels clean during sales, the bot batches discount deals (`sale`) from the same platform (Steam/Epic) into **a single Discord message with up to 10 Embeds**. Free games, upcoming games, and sale events are still sent as standalone messages for visibility.
+
+### Does the bot support GOG.com free games?
+Yes! The bot scans GOG.com catalog for free games. GOG support can be toggled using `ENABLE_GOG`, and you can configure a separate webhook using `GOG_DISCORD_WEBHOOK_URL`.
+
+
 
 ## Release Tag v1.0.0
 To tag the first official stable release:

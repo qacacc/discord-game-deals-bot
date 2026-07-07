@@ -2,8 +2,9 @@ require("dotenv").config({ quiet: true });
 
 const { getEpicFreeGames, getEpicUpcomingGames, getEpicSaleGames } = require("./services/epic.service");
 const { getSteamFreeGames, getSteamSaleGames } = require("./services/steam.service");
+const { getGogFreeGames } = require("./services/gog.service");
 const { getActiveSaleEvents } = require("./services/event.service");
-const { sendGameEmbed } = require("./services/discord.service");
+const { sendGameEmbed, sendGameSalesBatch } = require("./services/discord.service");
 const { normalizeGame } = require("./utils/formatGame");
 
 const {
@@ -40,6 +41,7 @@ const SUMMARY_LOCALES = {
     platforms: "Trạng thái quét các nền tảng:",
     epic: (f, u, s) => `- Epic Games Store:  ${f} Free | ${u} Sắp Free | ${s} Sale`,
     steam: (f, s) => `- Steam Store:       ${f} Free | ${s} Sale`,
+    gog: (f) => `- GOG.com:            ${f} Free`,
     events: (e) => `- Sự kiện Sale lớn:  ${e} đang hoạt động`,
     total_checked: "Tổng số deal quét được:  ",
     total_duplicates: "Số game trùng (đã gửi):  ",
@@ -60,6 +62,7 @@ const SUMMARY_LOCALES = {
     platforms: "Platform scanning status:",
     epic: (f, u, s) => `- Epic Games Store:  ${f} Free | ${u} Upcoming | ${s} Sale`,
     steam: (f, s) => `- Steam Store:       ${f} Free | ${s} Sale`,
+    gog: (f) => `- GOG.com:            ${f} Free`,
     events: (e) => `- Big Sale Events:   ${e} active`,
     total_checked: "Total deals scanned:     ",
     total_duplicates: "Duplicate deals (sent):  ",
@@ -96,6 +99,7 @@ function printDetailedSummary(summary, newGames, dryRun) {
   console.log(t.platforms);
   console.log(t.epic(summary.epicFree, summary.epicUpcoming, summary.epicSales));
   console.log(t.steam(summary.steamFree, summary.steamSales));
+  console.log(t.gog(summary.gogFree));
   console.log(t.events(summary.events));
   console.log("-------------------------------------------------------");
   console.log(`${t.total_checked}${summary.checked}`);
@@ -122,15 +126,18 @@ async function runChecker({
   getEpicGames = getEpicFreeGames,
   getEpicUpcoming = getEpicUpcomingGames,
   getSteamGames = getSteamFreeGames,
+  getGogGames = getGogFreeGames,
   getEpicSales = getEpicSaleGames,
   getSteamSales = getSteamSaleGames,
   getSaleEvents = getActiveSaleEvents,
   sendGame = sendGameEmbed,
+  sendSalesBatch = sendGameSalesBatch,
   loadSent = loadSentGames,
   saveSent = saveSentGames,
   dryRun = false,
   epicEnabled = readBooleanEnv("ENABLE_EPIC", true),
   steamEnabled = readBooleanEnv("ENABLE_STEAM", true),
+  gogEnabled = readBooleanEnv("ENABLE_GOG", true),
   freeAlertsEnabled = readBooleanEnv("ENABLE_FREE_ALERTS", true),
   upcomingAlertsEnabled = readBooleanEnv("ENABLE_UPCOMING_ALERTS", true),
   eventAlertsEnabled = readBooleanEnv("ENABLE_EVENT_ALERTS", true),
@@ -157,6 +164,7 @@ async function runChecker({
   }
 
   const steamGames = steamEnabled && freeAlertsEnabled ? await getSteamGames({ pages: steamPagesCount }) : [];
+  const gogGames = gogEnabled && freeAlertsEnabled ? await getGogGames() : [];
 
   const epicSales = epicEnabled && saleAlertsEnabled
     ? await getEpicSales({
@@ -185,6 +193,7 @@ async function runChecker({
     ...epicGames,
     ...epicUpcoming,
     ...steamGames,
+    ...gogGames,
     ...saleEvents,
     ...epicSales,
     ...steamSales,
@@ -200,6 +209,7 @@ async function runChecker({
     epicFree: epicGames.length,
     epicUpcoming: epicUpcoming.length,
     steamFree: steamGames.length,
+    gogFree: gogGames.length,
     events: saleEvents.length,
     epicSales: epicSales.length,
     steamSales: steamSales.length,
@@ -211,16 +221,19 @@ async function runChecker({
     return { checked: allGames.length, sent: 0, pending: 0, duplicates: duplicateCount };
   }
 
-  for (const game of newGames) {
+  // Phân loại game: Game sale (sẽ batching) và game khác (gửi đơn lẻ)
+  const nonSaleGames = newGames.filter((game) => game.alertType !== "sale");
+  const saleGames = newGames.filter((game) => game.alertType === "sale");
+
+  // 1. Gửi các game quan trọng đơn lẻ (Free, Upcoming, Event)
+  for (const game of nonSaleGames) {
     if (dryRun) {
       const label =
         game.alertType === "event"
           ? "Event"
-          : game.alertType === "sale"
-            ? `Sale ${game.discountPercent}%`
-            : game.alertType === "upcoming"
-              ? "Upcoming"
-              : "Free";
+          : game.alertType === "upcoming"
+            ? "Upcoming"
+            : "Free";
       console.log(`[Dry run] [${label}] ${game.title} - ${game.url}`);
       continue;
     }
@@ -231,6 +244,38 @@ async function runChecker({
       console.log(`Sent: ${game.title}`);
     } catch (error) {
       console.error(`Error sending deal ${game.title} to Discord:`, error.message);
+    }
+  }
+
+  // 2. Gửi gom nhóm các deal sale theo nền tảng (Steam hoặc Epic)
+  const epicSaleGames = saleGames.filter((g) => g.platform.toLowerCase().includes("epic"));
+  const steamSaleGames = saleGames.filter((g) => g.platform.toLowerCase().includes("steam"));
+
+  if (epicSaleGames.length > 0) {
+    if (dryRun) {
+      console.log(`[Dry run] [Batch] Epic Sales: ${epicSaleGames.map((g) => g.title).join(", ")}`);
+    } else {
+      try {
+        await sendSalesBatch(epicSaleGames);
+        epicSaleGames.forEach((g) => markGameAsSent(g, sentData));
+        console.log(`Sent Epic sales batch: ${epicSaleGames.map((g) => g.title).join(", ")}`);
+      } catch (error) {
+        console.error(`Error sending Epic sales batch to Discord:`, error.message);
+      }
+    }
+  }
+
+  if (steamSaleGames.length > 0) {
+    if (dryRun) {
+      console.log(`[Dry run] [Batch] Steam Sales: ${steamSaleGames.map((g) => g.title).join(", ")}`);
+    } else {
+      try {
+        await sendSalesBatch(steamSaleGames);
+        steamSaleGames.forEach((g) => markGameAsSent(g, sentData));
+        console.log(`Sent Steam sales batch: ${steamSaleGames.map((g) => g.title).join(", ")}`);
+      } catch (error) {
+        console.error(`Error sending Steam sales batch to Discord:`, error.message);
+      }
     }
   }
 

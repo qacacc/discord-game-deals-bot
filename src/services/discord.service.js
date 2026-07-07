@@ -8,6 +8,7 @@ const ICON_FILES = {
   free: "free.png",
   sale: "sale.png",
   steam: "steam.png",
+  gog: "gog.png",
 };
 
 const LOCALES = {
@@ -82,12 +83,14 @@ function getWebhookUrl(game = {}) {
     ? process.env.EPIC_DISCORD_WEBHOOK_URL
     : platform.includes("steam")
       ? process.env.STEAM_DISCORD_WEBHOOK_URL
-      : "";
+      : platform.includes("gog")
+        ? process.env.GOG_DISCORD_WEBHOOK_URL
+        : "";
   const webhookUrl = platformWebhookUrl || process.env.DISCORD_WEBHOOK_URL;
 
   if (!webhookUrl) {
     throw new Error(
-      "Missing webhook URL. Set EPIC_DISCORD_WEBHOOK_URL, STEAM_DISCORD_WEBHOOK_URL, or DISCORD_WEBHOOK_URL.",
+      "Missing webhook URL. Set EPIC_DISCORD_WEBHOOK_URL, STEAM_DISCORD_WEBHOOK_URL, GOG_DISCORD_WEBHOOK_URL, or DISCORD_WEBHOOK_URL.",
     );
   }
 
@@ -200,6 +203,10 @@ function getIconFileName(game) {
 
   if (platform.includes("epic")) {
     return ICON_FILES.epic;
+  }
+
+  if (platform.includes("gog")) {
+    return ICON_FILES.gog;
   }
 
   if (game.alertType === "event") {
@@ -373,9 +380,45 @@ async function sendGameEmbed(game) {
   );
 }
 
+/**
+ * Gửi gom nhóm các deal sale của cùng một nền tảng (tối đa 10 deal trong 1 payload)
+ */
+async function sendGameSalesBatch(games) {
+  if (!games || games.length === 0) {
+    return;
+  }
+
+  // Discord chỉ cho phép tối đa 10 embeds trong một tin nhắn
+  const batch = games.slice(0, 10);
+  const firstGame = batch[0];
+  const iconFile = getIconFile(firstGame);
+  const form = new FormData();
+  
+  const payload = {
+    embeds: batch.map((game) => createEmbed(game)),
+  };
+
+  const mentionRole = process.env.DISCORD_MENTION_ROLE;
+  if (mentionRole) {
+    payload.content = mentionRole;
+  }
+
+  form.append("payload_json", JSON.stringify(payload));
+  form.append("files[0]", new Blob([fs.readFileSync(iconFile)], { type: "image/png" }), path.basename(iconFile));
+
+  await postWebhook(
+    getWebhookUrl(firstGame),
+    form,
+    {
+      headers: form.getHeaders ? form.getHeaders() : undefined,
+    },
+  );
+}
+
 module.exports = {
   getWebhookUrl,
   postWebhook,
   sendDiscordMessage,
   sendGameEmbed,
+  sendGameSalesBatch,
 };

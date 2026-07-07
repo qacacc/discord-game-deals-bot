@@ -144,10 +144,12 @@ MAX_SALE_ALERTS_PER_PLATFORM=5
 | --- | --- | --- | --- |
 | `EPIC_DISCORD_WEBHOOK_URL` | Yes | Local `.env` + GitHub Secrets | Epic channel webhook |
 | `STEAM_DISCORD_WEBHOOK_URL` | Yes | Local `.env` + GitHub Secrets | Steam channel webhook |
+| `GOG_DISCORD_WEBHOOK_URL` | No | Local `.env` + GitHub Secrets | GOG channel webhook (falls back to default webhook if empty) |
 | `DISCORD_WEBHOOK_URL` | No | Local `.env` + GitHub Secrets | Fallback webhook if you do not split channels |
 | `SALE_ALERTS_ENABLED` | No | Local `.env` + GitHub Secrets/Variables | Enable sale alerts, default `true` |
 | `ENABLE_EPIC` | No | Local `.env` + GitHub Secrets/Variables | Enable Epic checks, default `true` |
 | `ENABLE_STEAM` | No | Local `.env` + GitHub Secrets/Variables | Enable Steam checks, default `true` |
+| `ENABLE_GOG` | No | Local `.env` + GitHub Secrets/Variables | Enable GOG checks, default `true` |
 | `ENABLE_FREE_ALERTS` | No | Local `.env` + GitHub Secrets/Variables | Enable free game alerts, default `true` |
 | `ENABLE_UPCOMING_ALERTS` | No | Local `.env` + GitHub Secrets/Variables | Enable Epic upcoming free game alerts, default `true` |
 | `ENABLE_EVENT_ALERTS` | No | Local `.env` + GitHub Secrets/Variables | Enable sale event alerts, default `true` |
@@ -319,6 +321,13 @@ Assign `@everyone`, `@here`, or a specific role tag `<@&YOUR_ROLE_ID>` to the `D
 
 ### How to change the bot's language?
 Set `MESSAGE_LOCALE=en` (or `vi` for Vietnamese) in your environment variables. This localizes both the Discord embeds and the CLI console logs.
+
+### How does message batching work?
+To keep Discord channels clean during sales, the bot batches discount deals (`sale`) from the same platform (Steam/Epic) into **a single Discord message with up to 10 Embeds**. Free games, upcoming games, and sale events are still sent as standalone messages for visibility.
+
+### Does the bot support GOG.com free games?
+Yes! The bot scans GOG.com catalog for free games. GOG support can be toggled using `ENABLE_GOG`, and you can configure a separate webhook using `GOG_DISCORD_WEBHOOK_URL`.
+
 
 ### Are Steam ratings displayed?
 Yes! The bot parses user review summaries (e.g., *Very Positive (88%)*) directly from Steam's search results and displays them as a field in the Discord embed.
