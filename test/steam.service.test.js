@@ -4,6 +4,7 @@ const test = require("node:test");
 const {
   parseSteamSaleResults,
   parseSteamSearchResults,
+  parseReviewsTooltip,
 } = require("../src/services/steam.service");
 
 test("parse Steam game dang giam ve mien phi", () => {
@@ -11,15 +12,16 @@ test("parse Steam game dang giam ve mien phi", () => {
     <a href="https://store.steampowered.com/app/123456/Test_Game/?snr=1"
        data-ds-appid="123456"
        class="search_result_row ds_collapse_flag">
-      <div class="search_capsule">
-        <img src="https://example.com/capsule.jpg">
-      </div>
-      <span class="title">Test &amp; Game</span>
-      <div class="search_price_discount_combined" data-price-final="0">
-        <div class="discount_original_price">100.000₫</div>
-        <div class="discount_final_price">Free</div>
-      </div>
-    </a>
+       <div class="search_capsule">
+         <img src="https://example.com/capsule.jpg">
+       </div>
+       <span class="title">Test &amp; Game</span>
+       <div class="search_review_summary positive" data-tooltip-html="Very Positive<br>85% of the 1,234 user reviews for this game are positive."></div>
+       <div class="search_price_discount_combined" data-price-final="0">
+         <div class="discount_original_price">100.000₫</div>
+         <div class="discount_final_price">Free</div>
+       </div>
+     </a>
   `;
 
   const games = parseSteamSearchResults(html);
@@ -36,6 +38,7 @@ test("parse Steam game dang giam ve mien phi", () => {
     url: "https://store.steampowered.com/app/123456/Test_Game/",
     appUrl: "steam://store/123456",
     image: "https://example.com/capsule.jpg",
+    reviews: "Very Positive (85%)",
   });
 });
 
@@ -44,12 +47,12 @@ test("bo qua Steam game chi sale nhung khong free", () => {
     <a href="https://store.steampowered.com/app/999999/Paid_Game/"
        data-ds-appid="999999"
        class="search_result_row">
-      <span class="title">Paid Game</span>
-      <div class="search_price_discount_combined" data-price-final="9900000">
-        <div class="discount_original_price">165.000₫</div>
-        <div class="discount_final_price">99.000₫</div>
-      </div>
-    </a>
+       <span class="title">Paid Game</span>
+       <div class="search_price_discount_combined" data-price-final="9900000">
+         <div class="discount_original_price">165.000₫</div>
+         <div class="discount_final_price">99.000₫</div>
+       </div>
+     </a>
   `;
 
   assert.deepEqual(parseSteamSearchResults(html), []);
@@ -60,14 +63,15 @@ test("parse Steam sale giam sau theo nguong", () => {
     <a href="https://store.steampowered.com/app/777777/Sale_Game/?snr=1"
        data-ds-appid="777777"
        class="search_result_row ds_collapse_flag">
-      <img src="https://example.com/sale.jpg">
-      <span class="title">Sale Game</span>
-      <div class="search_price_discount_combined" data-price-final="5000000">
-        <div class="discount_pct">-90%</div>
-        <div class="discount_original_price">500.000₫</div>
-        <div class="discount_final_price">50.000₫</div>
-      </div>
-    </a>
+       <img src="https://example.com/sale.jpg">
+       <span class="title">Sale Game</span>
+       <div class="search_review_summary mixed" data-tooltip-html="Mixed<br>60% of the 100 user reviews for this game are positive."></div>
+       <div class="search_price_discount_combined" data-price-final="5000000">
+         <div class="discount_pct">-90%</div>
+         <div class="discount_original_price">500.000₫</div>
+         <div class="discount_final_price">50.000₫</div>
+       </div>
+     </a>
   `;
 
   const games = parseSteamSaleResults(html, { minDiscountPercent: 80, limit: 5 });
@@ -77,4 +81,20 @@ test("parse Steam sale giam sau theo nguong", () => {
   assert.equal(games[0].alertType, "sale");
   assert.equal(games[0].discountPercent, 90);
   assert.equal(games[0].appUrl, "steam://store/777777");
+  assert.equal(games[0].reviews, "Mixed (60%)");
+});
+
+test("parse review tooltip sang dang rut gon", () => {
+  assert.equal(
+    parseReviewsTooltip("Very Positive<br>85% of the 1,234 user reviews for this game are positive."),
+    "Very Positive (85%)"
+  );
+  assert.equal(
+    parseReviewsTooltip("Mixed<br>60% of the 10 user reviews are positive."),
+    "Mixed (60%)"
+  );
+  assert.equal(
+    parseReviewsTooltip("Positive"),
+    "Positive"
+  );
 });

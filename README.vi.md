@@ -154,6 +154,8 @@ MAX_SALE_ALERTS_PER_PLATFORM=5
 | `MIN_SALE_DISCOUNT_PERCENT` | Không | Local `.env` + GitHub Secrets/Variables | Mức giảm tối thiểu để báo sale, mặc định `80` |
 | `MAX_SALE_ALERTS_PER_PLATFORM` | Không | Local `.env` + GitHub Secrets/Variables | Số deal tối đa mỗi nền tảng, mặc định `5` |
 | `STEAM_PAGES_TO_SCAN` | Không | Local `.env` + GitHub Secrets/Variables | Số trang tìm kiếm Steam cần quét (mỗi trang 50 game), mặc định `3` |
+| `MESSAGE_LOCALE` | Không | Local `.env` + GitHub Secrets/Variables | Ngôn ngữ hiển thị Embed Discord và logs (`vi` hoặc `en`), mặc định `vi` |
+| `DISCORD_MENTION_ROLE` | Không | Local `.env` + GitHub Secrets/Variables | Role cần ping trên Discord (ví dụ: `@everyone`, `@here`, hoặc `<@&id_role>`), mặc định không ping |
 
 Khi chạy local, các biến nằm trong file `.env`. Khi chạy bằng GitHub Actions, các webhook nên nằm trong GitHub Secrets.
 
@@ -319,7 +321,14 @@ Bạn cấu hình biến môi trường `STEAM_PAGES_TO_SCAN` trong file `.env` 
 Khi gặp lỗi mạng tạm thời hoặc bị giới hạn băng thông (Rate-limit) bởi Steam/Epic/Discord, bot sẽ tự động tạm dừng và thử lại tối đa 3 lần với thời gian chờ tăng dần (exponential backoff). Nếu là lỗi rate limit từ Discord Webhook, bot sẽ tự động đọc header phản hồi và chờ đúng số giây yêu cầu trước khi gửi lại.
 
 ### Thông tin lịch sử gửi game lưu trữ những gì?
-Lịch sử lưu trữ trong file `src/storage/sent.json` hiện đã lưu chi tiết hơn gồm: `id` (mã định danh game), `title` (tên game/sự kiện), `platform` (nền tảng Steam/Epic), và `sentAt` (thời điểm gửi). Cấu trúc mới này hoàn toàn tương thích ngược với lịch sử cũ chỉ lưu mảng ID.
+Lịch sử lưu trữ trong file `src/storage/sent.json` hiện đã lưu chi tiết hơn gồm: `id` (mã định danh game), `title` (tên game/sự kiện), `platform` (nền tảng Steam/Epic), và `sentAt` (thời điểm gửi). Cấu trúc mới này hoàn toàn tương thích ngược với lịch sử cũ chỉ lưu mảng ID. Các deal giảm giá sale và event đã gửi quá 30 ngày sẽ tự động được dọn dẹp để file lịch sử luôn nhẹ.
+
+### Làm sao để tag/ping tất cả mọi người khi có game mới?
+Bạn hãy gán giá trị `@everyone`, `@here` hoặc mã Role ID của server dưới dạng `<@&123456789>` vào biến môi trường `DISCORD_MENTION_ROLE`. Bot sẽ tự động gửi kèm tin nhắn ping này cùng với tin nhắn Embed.
+
+### Làm thế nào để thay đổi ngôn ngữ sang Tiếng Anh?
+Bạn chỉ cần đặt biến môi trường `MESSAGE_LOCALE=en`. Bot sẽ tự động chuyển đổi ngôn ngữ của Embed trên Discord và nhật ký bảng logs trong console sang Tiếng Anh.
+
 
 ## Hướng dẫn tạo Release Tag v1.0.0
 Khi bot đã chạy ổn định và bạn muốn đánh dấu mốc phiên bản chính thức đầu tiên, hãy chạy các lệnh sau trên terminal của máy tính:

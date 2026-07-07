@@ -38,6 +38,31 @@ function getSteamAppUrl(appId) {
 }
 
 /**
+ * Phân tích cú pháp chuỗi tooltip review của Steam sang định dạng ngắn gọn
+ * Ví dụ: "Very Positive<br>85% of the 1,234 user reviews..." -> "Very Positive (85%)"
+ */
+function parseReviewsTooltip(tooltip = "") {
+  const decoded = decodeHtml(tooltip)
+    .replace(/<br>/gi, "\n")
+    .replace(/<br\s*\/>/gi, "\n");
+
+  const lines = decoded.split("\n").map((l) => l.trim()).filter(Boolean);
+  if (lines.length === 0) {
+    return "";
+  }
+
+  const rating = lines[0];
+  if (lines.length > 1) {
+    const percentMatch = lines[1].match(/(\d+)%/);
+    if (percentMatch) {
+      return `${rating} (${percentMatch[1]}%)`;
+    }
+  }
+
+  return rating;
+}
+
+/**
  * Phân tích cú pháp HTML từ kết quả tìm kiếm của Steam để lọc game miễn phí
  */
 function parseSteamSearchResults(html = "") {
@@ -56,6 +81,12 @@ function parseSteamSearchResults(html = "") {
       const finalPrice = extractFirst(/<div class="discount_final_price">([\s\S]*?)<\/div>/, row);
       const finalValue = Number(extractFirst(/data-price-final="(\d+)"/, row));
 
+      const reviewsTooltip = extractFirst(
+        /class="[^"]*search_review_summary[^"]*"[^>]*data-tooltip-html="([^"]+)"/,
+        row,
+      );
+      const reviews = reviewsTooltip ? parseReviewsTooltip(reviewsTooltip) : "";
+
       if (!appId || !title || finalValue !== 0) {
         return null;
       }
@@ -71,6 +102,7 @@ function parseSteamSearchResults(html = "") {
         url,
         appUrl: getSteamAppUrl(appId),
         image,
+        reviews: reviews || undefined,
       };
     })
     .filter(Boolean);
@@ -96,6 +128,12 @@ function parseSteamSaleResults(html = "", { minDiscountPercent = 80, limit = 5 }
       const finalValue = Number(extractFirst(/data-price-final="(\d+)"/, row));
       const discountPercent = Number(extractFirst(/<div class="discount_pct">-(\d+)%<\/div>/, row));
 
+      const reviewsTooltip = extractFirst(
+        /class="[^"]*search_review_summary[^"]*"[^>]*data-tooltip-html="([^"]+)"/,
+        row,
+      );
+      const reviews = reviewsTooltip ? parseReviewsTooltip(reviewsTooltip) : "";
+
       if (!appId || !title || finalValue <= 0 || discountPercent < minDiscountPercent) {
         return null;
       }
@@ -112,6 +150,7 @@ function parseSteamSaleResults(html = "", { minDiscountPercent = 80, limit = 5 }
         url,
         appUrl: getSteamAppUrl(appId),
         image,
+        reviews: reviews || undefined,
       };
     })
     .filter(Boolean)
@@ -253,4 +292,5 @@ module.exports = {
   getSteamAppUrl,
   parseSteamSaleResults,
   parseSteamSearchResults,
+  parseReviewsTooltip,
 };

@@ -154,6 +154,8 @@ MAX_SALE_ALERTS_PER_PLATFORM=5
 | `MIN_SALE_DISCOUNT_PERCENT` | No | Local `.env` + GitHub Secrets/Variables | Minimum sale discount, default `80` |
 | `MAX_SALE_ALERTS_PER_PLATFORM` | No | Local `.env` + GitHub Secrets/Variables | Max deals per platform, default `5` |
 | `STEAM_PAGES_TO_SCAN` | No | Local `.env` + GitHub Secrets/Variables | Number of Steam search pages to scan (50 games/page), default `3` |
+| `MESSAGE_LOCALE` | No | Local `.env` + GitHub Secrets/Variables | Language for Discord Embeds and logs (`vi` or `en`), default `vi` |
+| `DISCORD_MENTION_ROLE` | No | Local `.env` + GitHub Secrets/Variables | Discord role to ping (e.g. `@everyone`, `@here`, or `<@&id_role>`), default none |
 
 Preview what the bot finds without sending Discord messages:
 
@@ -310,7 +312,17 @@ Configure the `STEAM_PAGES_TO_SCAN` environment variable in your `.env` or GitHu
 When the bot faces network outages or is rate-limited by Discord/Steam/Epic, it automatically pauses and retries up to 3 times with exponential backoff. It automatically waits for the duration specified in Discord's `retry-after` header when rate limit 429 happens.
 
 ### What information is stored in the sent history?
-The `src/storage/sent.json` file now logs more details including: `id` (game ID), `title` (game name or event title), `platform` (Steam/Epic), and `sentAt` (timestamp). The new format is fully backward compatible with the older ID-only string array format.
+The `src/storage/sent.json` file now logs more details including: `id` (game ID), `title` (game name or event title), `platform` (Steam/Epic), and `sentAt` (timestamp). The new format is fully backward compatible with the older ID-only string array format. Deals and events older than 30 days are automatically deleted to optimize file space.
+
+### How to tag/ping server roles when a new game drops?
+Assign `@everyone`, `@here`, or a specific role tag `<@&YOUR_ROLE_ID>` to the `DISCORD_MENTION_ROLE` environment variable. The bot will automatically send the mention along with the game embed.
+
+### How to change the bot's language?
+Set `MESSAGE_LOCALE=en` (or `vi` for Vietnamese) in your environment variables. This localizes both the Discord embeds and the CLI console logs.
+
+### Are Steam ratings displayed?
+Yes! The bot parses user review summaries (e.g., *Very Positive (88%)*) directly from Steam's search results and displays them as a field in the Discord embed.
+
 
 ## Creating Release Tag v1.0.0
 To mark your repository with the official `v1.0.0` stable release version, run the following commands in your local shell:

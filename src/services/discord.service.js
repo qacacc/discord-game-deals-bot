@@ -10,6 +10,69 @@ const ICON_FILES = {
   steam: "steam.png",
 };
 
+const LOCALES = {
+  vi: {
+    header_event: "Sự Kiện Sale Đang Diễn Ra",
+    header_sale: "Game Đang Sale Mạnh",
+    header_upcoming: "Game Sắp Miễn Phí",
+    header_free: "Game Miễn Phí",
+    desc_event: (platform) => `Sự kiện sale đang diễn ra trên **${platform}**.`,
+    desc_sale: "Game đang giảm giá mạnh.",
+    desc_upcoming: "Game sắp được nhận miễn phí trên Epic Games Store.",
+    desc_free: "Game đang miễn phí để nhận.",
+    field_platform: "Nền tảng",
+    field_original_price: "Giá gốc",
+    field_current_price: "Giá hiện tại",
+    field_discount: "Giảm giá",
+    field_start_date: "Bắt đầu tặng từ",
+    field_end_date: "Hạn nhận",
+    field_link_store: "Link cửa hàng",
+    field_link_claim: "Link nhận",
+    field_reviews: "Đánh giá",
+    field_notes: "Ghi chú",
+    field_event_page: "Trang sự kiện",
+    text_open_sale: "Mở trang sale",
+    text_view_store: "Xem trên cửa hàng",
+    text_claim_game: "Nhận game",
+    default_summary: "Bot sẽ gửi các deal nổi bật sau thông báo này.",
+    current_free: "Free",
+  },
+  en: {
+    header_event: "Ongoing Sale Event",
+    header_sale: "Hot Game Sale",
+    header_upcoming: "Upcoming Free Game",
+    header_free: "Free Game Alert",
+    desc_event: (platform) => `Sale event is live on **${platform}**.`,
+    desc_sale: "This game is deeply discounted.",
+    desc_upcoming: "This game will be free soon on Epic Games Store.",
+    desc_free: "This game is currently free to claim.",
+    field_platform: "Platform",
+    field_original_price: "Original Price",
+    field_current_price: "Current Price",
+    field_discount: "Discount",
+    field_start_date: "Starts At",
+    field_end_date: "Ends At",
+    field_link_store: "Store Link",
+    field_link_claim: "Claim Link",
+    field_reviews: "Reviews",
+    field_notes: "Notes",
+    field_event_page: "Event Page",
+    text_open_sale: "Open sale page",
+    text_view_store: "View on store",
+    text_claim_game: "Claim game",
+    default_summary: "Featured deals will be sent after this announcement.",
+    current_free: "Free",
+  },
+};
+
+/**
+ * Lấy ngôn ngữ cấu hình hiển thị
+ */
+function getLocale() {
+  const locale = (process.env.MESSAGE_LOCALE || "vi").toLowerCase();
+  return LOCALES[locale] || LOCALES.vi;
+}
+
 /**
  * Lấy Webhook URL tương ứng với nền tảng của game
  */
@@ -61,19 +124,21 @@ function getEmbedTitle(game) {
  * Lấy mô tả tóm tắt cho từng loại Alert
  */
 function getEmbedDescription(game) {
+  const t = getLocale();
+
   if (game.alertType === "event") {
-    return `Sự kiện sale đang diễn ra trên **${game.platform}**.`;
+    return t.desc_event(game.platform);
   }
 
   if (game.alertType === "sale") {
-    return "Game đang giảm giá mạnh.";
+    return t.desc_sale;
   }
 
   if (game.alertType === "upcoming") {
-    return "Game sắp được nhận miễn phí trên Epic Games Store.";
+    return t.desc_upcoming;
   }
 
-  return "Game đang miễn phí để nhận.";
+  return t.desc_free;
 }
 
 /**
@@ -106,19 +171,21 @@ function getEmbedIconUrl(game) {
  * Lấy tiêu đề đề mục cho tác giả (Author Header)
  */
 function getEmbedHeader(game) {
+  const t = getLocale();
+
   if (game.alertType === "event") {
-    return "Sự Kiện Sale Đang Diễn Ra";
+    return t.header_event;
   }
 
   if (game.alertType === "sale") {
-    return "Game Đang Sale Mạnh";
+    return t.header_sale;
   }
 
   if (game.alertType === "upcoming") {
-    return "Game Sắp Miễn Phí";
+    return t.header_upcoming;
   }
 
-  return "Game Miễn Phí";
+  return t.header_free;
 }
 
 /**
@@ -172,26 +239,28 @@ function createEmbed(game) {
  * Tạo các trường thông tin chi tiết (fields) cho Embed Discord
  */
 function getEmbedFields(game) {
+  const t = getLocale();
+
   if (game.alertType === "event") {
     return [
       {
-        name: "Nền tảng",
+        name: t.field_platform,
         value: game.platform || "Unknown",
         inline: true,
       },
       {
-        name: "Thời gian",
+        name: t.field_end_date,
         value: game.endDate || "Unknown",
         inline: true,
       },
       {
-        name: "Ghi chú",
-        value: game.summary || "Bot sẽ gửi các deal nổi bật sau thông báo này.",
+        name: t.field_notes,
+        value: game.summary || t.default_summary,
         inline: false,
       },
       {
-        name: "Trang sự kiện",
-        value: game.url ? `[Mở trang sale](${game.url})` : "Unknown",
+        name: t.field_event_page,
+        value: game.url ? `[${t.text_open_sale}](${game.url})` : "Unknown",
         inline: false,
       },
     ];
@@ -200,28 +269,28 @@ function getEmbedFields(game) {
   if (game.alertType === "upcoming") {
     return [
       {
-        name: "Nền tảng",
+        name: t.field_platform,
         value: game.platform || "Unknown",
         inline: false,
       },
       {
-        name: "Giá gốc",
+        name: t.field_original_price,
         value: game.originalPrice || "Unknown",
         inline: false,
       },
       {
-        name: "Bắt đầu tặng từ",
+        name: t.field_start_date,
         value: game.startDate || "Unknown",
         inline: false,
       },
       {
-        name: "Hạn nhận",
+        name: t.field_end_date,
         value: game.endDate || "Unknown",
         inline: false,
       },
       {
-        name: "Link cửa hàng",
-        value: game.url ? `[Xem trên cửa hàng](${game.url})` : "Unknown",
+        name: t.field_link_store,
+        value: game.url ? `[${t.text_view_store}](${game.url})` : "Unknown",
         inline: false,
       },
     ];
@@ -229,39 +298,47 @@ function getEmbedFields(game) {
 
   const fields = [
     {
-      name: "Nền tảng",
+      name: t.field_platform,
       value: game.platform || "Unknown",
       inline: false,
     },
     {
-      name: "Giá gốc",
+      name: t.field_original_price,
       value: game.originalPrice || "Unknown",
       inline: false,
     },
     {
-      name: "Giá hiện tại",
-      value: game.currentPrice || "Free",
+      name: t.field_current_price,
+      value: game.currentPrice || t.current_free,
       inline: false,
     },
   ];
 
   if (game.discountPercent) {
     fields.push({
-      name: "Giảm giá",
+      name: t.field_discount,
       value: `${game.discountPercent}%`,
+      inline: false,
+    });
+  }
+
+  if (game.reviews) {
+    fields.push({
+      name: t.field_reviews,
+      value: game.reviews,
       inline: false,
     });
   }
 
   fields.push(
     {
-      name: "Hạn nhận",
+      name: t.field_end_date,
       value: game.endDate || "Unknown",
       inline: false,
     },
     {
-      name: "Link nhận",
-      value: game.url ? `[Nhận game](${game.url})` : "Unknown",
+      name: t.field_link_claim,
+      value: game.url ? `[${t.text_claim_game}](${game.url})` : "Unknown",
       inline: false,
     },
   );
@@ -275,13 +352,16 @@ function getEmbedFields(game) {
 async function sendGameEmbed(game) {
   const iconFile = getIconFile(game);
   const form = new FormData();
+  const payload = {
+    embeds: [createEmbed(game)],
+  };
 
-  form.append(
-    "payload_json",
-    JSON.stringify({
-      embeds: [createEmbed(game)],
-    }),
-  );
+  const mentionRole = process.env.DISCORD_MENTION_ROLE;
+  if (mentionRole) {
+    payload.content = mentionRole;
+  }
+
+  form.append("payload_json", JSON.stringify(payload));
   form.append("files[0]", new Blob([fs.readFileSync(iconFile)], { type: "image/png" }), path.basename(iconFile));
 
   await postWebhook(

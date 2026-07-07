@@ -12,12 +12,16 @@ function createEmptyStore() {
 
 /**
  * Chuẩn hóa dữ liệu lịch sử để đảm bảo tương thích ngược
- * Chuyển các ID dạng chuỗi cũ sang cấu trúc object chi tiết
+ * Chuyển các ID dạng chuỗi cũ sang cấu trúc object chi tiết.
+ * Đồng thời tự động dọn dẹp các deal sale/event cũ hơn 30 ngày để tối ưu dung lượng.
  */
 function normalizeStore(data) {
   if (!data || !Array.isArray(data.sent)) {
     return createEmptyStore();
   }
+
+  const cutoffTime = new Date();
+  cutoffTime.setDate(cutoffTime.getDate() - 30); // Ngưỡng dọn dẹp: 30 ngày
 
   const normalizedSent = data.sent
     .filter(Boolean)
@@ -36,6 +40,15 @@ function normalizeStore(data) {
         platform: item.platform || "Unknown",
         sentAt: item.sentAt || new Date().toISOString(),
       };
+    })
+    .filter((item) => {
+      const isSaleOrEvent = item.id.includes("sale") || item.id.includes("event");
+      if (isSaleOrEvent) {
+        // Loại bỏ các deal sale và thông báo event cũ hơn 30 ngày
+        return new Date(item.sentAt) >= cutoffTime;
+      }
+      // Giữ lại các game free và game sắp free để tránh báo trùng lặp
+      return true;
     });
 
   // Lọc trùng lặp theo ID

@@ -68,7 +68,17 @@ By default, the bot scans `3` pages of Steam search results (about 150 games). Y
 If Steam, Epic Store, or Discord webhooks encounter network errors or temporary outages, the bot will automatically retry up to 3 times with exponential backoff. It also handles Discord's 429 rate limit by waiting for the specified `retry-after` header value.
 
 ### What is saved in the history log?
-The `sent.json` history file now stores detailed objects instead of plain IDs: `{ id, title, platform, sentAt }`. This is backward compatible with old history formats.
+The `sent.json` history file now stores detailed objects instead of plain IDs: `{ id, title, platform, sentAt }`. This is backward compatible with old history formats. Sales and event deals older than 30 days are automatically cleaned up to keep the file size minimal.
+
+### How to tag/ping server roles when a new game drops?
+Assign `@everyone`, `@here`, or a specific role tag `<@&YOUR_ROLE_ID>` to the `DISCORD_MENTION_ROLE` environment variable. The bot will automatically send the mention along with the game embed.
+
+### How to change the bot's language?
+Set `MESSAGE_LOCALE=en` (or `vi` for Vietnamese) in your environment variables. This localizes both the Discord embeds and the CLI console logs.
+
+### Are Steam ratings displayed?
+Yes! The bot parses user review summaries (e.g., *Very Positive (88%)*) directly from Steam's search results and displays them as a field in the Discord embed.
+
 
 ## Release Tag v1.0.0
 To tag the first official stable release:

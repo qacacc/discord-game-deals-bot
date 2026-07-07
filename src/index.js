@@ -34,29 +34,81 @@ function readNumberEnv(name, defaultValue) {
   return Number.isFinite(value) && value > 0 ? value : defaultValue;
 }
 
+const SUMMARY_LOCALES = {
+  vi: {
+    title: "                BÁO CÁO THỐNG KÊ (SUMMARY)",
+    platforms: "Trạng thái quét các nền tảng:",
+    epic: (f, u, s) => `- Epic Games Store:  ${f} Free | ${u} Sắp Free | ${s} Sale`,
+    steam: (f, s) => `- Steam Store:       ${f} Free | ${s} Sale`,
+    events: (e) => `- Sự kiện Sale lớn:  ${e} đang hoạt động`,
+    total_checked: "Tổng số deal quét được:  ",
+    total_duplicates: "Số game trùng (đã gửi):  ",
+    total_new: "Số game mới phát hiện:   ",
+    list_header_dry: "Danh sách game mới phát hiện (Chạy thử - Dry Run):",
+    list_header_real: "Danh sách game mới đã gửi lên Discord:",
+    free: "Miễn phí",
+    upcoming: "Sắp miễn phí",
+    sale: (d) => `Giảm giá ${d}%`,
+    event: "Sự kiện",
+    none: "Không phát hiện game mới hoặc ưu đãi giảm giá mới.",
+    dry_done: "Chạy thử hoàn tất. Không có tin nhắn Discord nào được gửi và sent.json không đổi.",
+    done: "Hoàn tất xử lý.",
+    start_scanning: "Đang bắt đầu quét game miễn phí và ưu đãi giảm giá sâu..."
+  },
+  en: {
+    title: "                     STATISTICS SUMMARY",
+    platforms: "Platform scanning status:",
+    epic: (f, u, s) => `- Epic Games Store:  ${f} Free | ${u} Upcoming | ${s} Sale`,
+    steam: (f, s) => `- Steam Store:       ${f} Free | ${s} Sale`,
+    events: (e) => `- Big Sale Events:   ${e} active`,
+    total_checked: "Total deals scanned:     ",
+    total_duplicates: "Duplicate deals (sent):  ",
+    total_new: "New deals discovered:    ",
+    list_header_dry: "List of new deals (Dry Run):",
+    list_header_real: "List of new deals sent to Discord:",
+    free: "Free",
+    upcoming: "Upcoming Free",
+    sale: (d) => `Sale ${d}%`,
+    event: "Event",
+    none: "No new games or deep discount deals found.",
+    dry_done: "Dry run completed. No Discord messages sent and sent.json was not modified.",
+    done: "Processing completed.",
+    start_scanning: "Starting to scan for free games and deep discount deals..."
+  }
+};
+
 /**
- * Hàm in ra thống kê chi tiết ở dạng bảng và Tiếng Việt đẹp mắt
+ * Lấy ngôn ngữ thống kê log
+ */
+function getSummaryLocale() {
+  const locale = (process.env.MESSAGE_LOCALE || "vi").toLowerCase();
+  return SUMMARY_LOCALES[locale] || SUMMARY_LOCALES.vi;
+}
+
+/**
+ * Hàm in ra thống kê chi tiết ở dạng bảng đa ngôn ngữ
  */
 function printDetailedSummary(summary, newGames, dryRun) {
+  const t = getSummaryLocale();
   console.log("\n=======================================================");
-  console.log("                BÁO CÁO THỐNG KÊ (SUMMARY)");
+  console.log(t.title);
   console.log("=======================================================");
-  console.log("Trạng thái quét các nền tảng:");
-  console.log(`- Epic Games Store:  ${summary.epicFree} Free | ${summary.epicUpcoming} Sắp Free | ${summary.epicSales} Sale`);
-  console.log(`- Steam Store:       ${summary.steamFree} Free | ${summary.steamSales} Sale`);
-  console.log(`- Sự kiện Sale lớn:  ${summary.events} đang hoạt động`);
+  console.log(t.platforms);
+  console.log(t.epic(summary.epicFree, summary.epicUpcoming, summary.epicSales));
+  console.log(t.steam(summary.steamFree, summary.steamSales));
+  console.log(t.events(summary.events));
   console.log("-------------------------------------------------------");
-  console.log(`Tổng số deal quét được:  ${summary.checked}`);
-  console.log(`Số game trùng (đã gửi):  ${summary.duplicates}`);
-  console.log(`Số game mới phát hiện:   ${newGames.length}`);
+  console.log(`${t.total_checked}${summary.checked}`);
+  console.log(`${t.total_duplicates}${summary.duplicates}`);
+  console.log(`${t.total_new}${newGames.length}`);
   
   if (newGames.length > 0) {
     console.log("-------------------------------------------------------");
-    console.log(dryRun ? "Danh sách game mới phát hiện (Chạy thử - Dry Run):" : "Danh sách game mới đã gửi lên Discord:");
+    console.log(dryRun ? t.list_header_dry : t.list_header_real);
     newGames.forEach((game, idx) => {
-      const typeLabel = game.alertType === "free" ? "Miễn phí" : 
-                        game.alertType === "upcoming" ? "Sắp miễn phí" : 
-                        game.alertType === "sale" ? `Giảm giá ${game.discountPercent}%` : "Sự kiện";
+      const typeLabel = game.alertType === "free" ? t.free : 
+                        game.alertType === "upcoming" ? t.upcoming : 
+                        game.alertType === "sale" ? t.sale(game.discountPercent) : t.event;
       console.log(`  ${idx + 1}. [${typeLabel}] [${game.platform}] ${game.title}`);
     });
   }
@@ -87,7 +139,8 @@ async function runChecker({
   maxSaleAlertsPerPlatform = readNumberEnv("MAX_SALE_ALERTS_PER_PLATFORM", 5),
   steamPagesCount = readNumberEnv("STEAM_PAGES_TO_SCAN", 3),
 } = {}) {
-  console.log("Đang bắt đầu quét game miễn phí và ưu đãi giảm giá sâu...");
+  const t = getSummaryLocale();
+  console.log(t.start_scanning);
 
   const sentData = loadSent();
 
@@ -153,7 +206,7 @@ async function runChecker({
   };
 
   if (newGames.length === 0) {
-    console.log("Không phát hiện game mới hoặc ưu đãi giảm giá mới.");
+    console.log(t.none);
     printDetailedSummary({ ...summary, sent: 0 }, [], dryRun);
     return { checked: allGames.length, sent: 0, pending: 0, duplicates: duplicateCount };
   }
@@ -175,21 +228,21 @@ async function runChecker({
     try {
       await sendGame(game);
       markGameAsSent(game, sentData);
-      console.log(`Đã gửi thành công: ${game.title}`);
+      console.log(`Sent: ${game.title}`);
     } catch (error) {
-      console.error(`Lỗi khi gửi deal ${game.title} lên Discord:`, error.message);
+      console.error(`Error sending deal ${game.title} to Discord:`, error.message);
     }
   }
 
   if (dryRun) {
-    console.log("Chạy thử hoàn tất. Không có tin nhắn Discord nào được gửi và sent.json không đổi.");
+    console.log(t.dry_done);
     printDetailedSummary({ ...summary, sent: 0, pending: newGames.length }, newGames, dryRun);
     return { checked: allGames.length, sent: 0, pending: newGames.length, duplicates: duplicateCount };
   }
 
   saveSent(sentData);
 
-  console.log("Hoàn tất xử lý.");
+  console.log(t.done);
   printDetailedSummary({ ...summary, sent: newGames.length }, newGames, dryRun);
 
   return { checked: allGames.length, sent: newGames.length, pending: 0, duplicates: duplicateCount };
@@ -199,7 +252,7 @@ if (require.main === module) {
   runChecker({
     dryRun: process.argv.includes("--dry-run"),
   }).catch((error) => {
-    console.error("Bot gặp lỗi nghiêm trọng:", error.message);
+    console.error("Critical error:", error.message);
     process.exit(1);
   });
 }
