@@ -114,6 +114,19 @@ MIN_SALE_DISCOUNT_PERCENT=80
 MAX_SALE_ALERTS_PER_PLATFORM=5
 ```
 
+### Biến Môi Trường
+
+| Biến | Bắt buộc | Dùng ở đâu | Ý nghĩa |
+| --- | --- | --- | --- |
+| `EPIC_DISCORD_WEBHOOK_URL` | Có | Local `.env` + GitHub Secrets | Webhook channel Epic |
+| `STEAM_DISCORD_WEBHOOK_URL` | Có | Local `.env` + GitHub Secrets | Webhook channel Steam |
+| `DISCORD_WEBHOOK_URL` | Không | Local `.env` + GitHub Secrets | Webhook fallback nếu không tách kênh |
+| `SALE_ALERTS_ENABLED` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt báo sale, mặc định `true` |
+| `MIN_SALE_DISCOUNT_PERCENT` | Không | Local `.env` + GitHub Secrets/Variables | Mức giảm tối thiểu để báo sale, mặc định `80` |
+| `MAX_SALE_ALERTS_PER_PLATFORM` | Không | Local `.env` + GitHub Secrets/Variables | Số deal tối đa mỗi nền tảng, mặc định `5` |
+
+Khi chạy local, các biến nằm trong file `.env`. Khi chạy bằng GitHub Actions, các webhook nên nằm trong GitHub Secrets.
+
 Kiểm tra bot tìm được gì nhưng chưa gửi Discord:
 
 ```bash
