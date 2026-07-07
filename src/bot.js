@@ -29,7 +29,7 @@ const client = new Client({
 // Map lưu trữ thời gian cooldown của người dùng
 const cooldowns = new Map();
 
-client.once("ready", () => {
+client.once("clientReady", () => {
   console.log(`\n======================================================`);
   console.log(`🤖 Discord Bot Client đã trực tuyến thành công!`);
   console.log(`🤖 Tên Bot: ${client.user.tag}`);
