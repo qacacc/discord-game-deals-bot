@@ -163,7 +163,32 @@ MAX_SALE_ALERTS_PER_PLATFORM=5
 | `EXCLUDED_GENRES` | No | Local `.env` + GitHub Secrets/Variables | Excluded game genres to ignore (e.g. `Hentai, Anime`), default none |
 | `MESSAGE_LOCALE` | No | Local `.env` + GitHub Secrets/Variables | Language for Discord Embeds and logs (`vi` or `en`), default `vi` |
 | `DISCORD_MENTION_ROLE` | No | Local `.env` + GitHub Secrets/Variables | Discord role to ping (e.g. `@everyone`, `@here`, or `<@&id_role>`), default none |
+| `DISCORD_BOT_TOKEN` | No | Local `.env` | Discord Bot token for direct gateway commands chat listener |
+| `DISCORD_BOT_PREFIX` | No | Local `.env` | Discord Bot command prefix (default: `!`) |
+| `DISCORD_BOT_COOLDOWN_SEC` | No | Local `.env` | Cooldown duration for anti-spam command execution (default: `5` seconds) |
 
+---
+
+## 🤖 Discord Bot Client (Direct Chat Commands)
+To interact directly with the bot on your Discord channel, follow these steps:
+
+### 1. Set Up A Discord Bot Token
+1. Open the [Discord Developer Portal](https://discord.com/developers/applications).
+2. Create a **New Application** and go to the **Bot** tab.
+3. Under **Privileged Gateway Intents**, enable **MESSAGE CONTENT INTENT** (along with Server Members and Presence intents).
+4. Reset and copy the **Bot Token**, then paste it as `DISCORD_BOT_TOKEN=` in your `.env`.
+5. Invite the bot to your server using the OAuth2 URL Generator (select `bot` scope and necessary permissions).
+
+### 2. Start the Bot Daemon
+Run the listener using:
+```bash
+npm run discord-bot
+```
+You can now type commands like `!help`, `!stats`, `!webhooks`, or `!check Portal 2` directly in your Discord channels!
+
+---
+
+## ⚙️ General Run Commands
 Preview what the bot finds without sending Discord messages:
 
 ```bash

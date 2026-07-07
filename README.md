@@ -105,6 +105,25 @@ To make Discord embeds more fun, the bot randomly attaches a gaming GIF (party, 
 
 ---
 
+## 🤖 Discord Bot Client (Direct Chat Commands)
+To interact directly with the bot on your Discord channel, follow these steps:
+
+### 1. Set Up A Discord Bot Token
+1. Open the [Discord Developer Portal](https://discord.com/developers/applications).
+2. Create a **New Application** and go to the **Bot** tab.
+3. Under **Privileged Gateway Intents**, enable **MESSAGE CONTENT INTENT** (along with Server Members and Presence intents).
+4. Reset and copy the **Bot Token**, then paste it as `DISCORD_BOT_TOKEN=` in your `.env`.
+5. Invite the bot to your server using the OAuth2 URL Generator (select `bot` scope and necessary permissions).
+
+### 2. Start the Bot Daemon
+Run the listener using:
+```bash
+npm run discord-bot
+```
+You can now type commands like `!help`, `!stats`, `!webhooks`, or `!check Portal 2` directly in your Discord channels!
+
+---
+
 ## 🛠️ Admin CLI Tools
 You can manage your history file, test Webhook health, or interactively write custom embeds using these commands:
 

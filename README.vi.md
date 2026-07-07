@@ -163,9 +163,38 @@ MAX_SALE_ALERTS_PER_PLATFORM=5
 | `EXCLUDED_GENRES` | Không | Local `.env` + GitHub Secrets/Variables | Thể loại game muốn loại trừ (ví dụ `Hentai, Anime`), mặc định không loại trừ |
 | `MESSAGE_LOCALE` | Không | Local `.env` + GitHub Secrets/Variables | Ngôn ngữ hiển thị Embed Discord và logs (`vi` hoặc `en`), mặc định `vi` |
 | `DISCORD_MENTION_ROLE` | Không | Local `.env` + GitHub Secrets/Variables | Role cần ping trên Discord (ví dụ: `@everyone`, `@here`, hoặc `<@&id_role>`), mặc định không ping |
+| `DISCORD_BOT_TOKEN` | Không | Local `.env` | Token của Discord Bot Gateway để chat và ra lệnh trực tiếp trên Discord |
+| `DISCORD_BOT_PREFIX` | Không | Local `.env` | Tiền tố lệnh của Bot Client (mặc định: `!`) |
+| `DISCORD_BOT_COOLDOWN_SEC` | Không | Local `.env` | Thời gian cooldown chống spam lệnh trên Discord (mặc định: `5` giây) |
 
 Khi chạy local, các biến nằm trong file `.env`. Khi chạy bằng GitHub Actions, các webhook nên nằm trong GitHub Secrets.
 
+---
+
+## 🤖 Cách chạy Discord Bot Client (Chat trực tiếp trên Discord)
+Để chat và ra lệnh trực tiếp cho bot trên kênh Discord, bạn hãy thực hiện:
+
+### 1. Tạo Bot Token trên Discord
+1. Truy cập [Discord Developer Portal](https://discord.com/developers/applications).
+2. Bấm **New Application**, đặt tên cho bot.
+3. Vào tab **Bot** (bên trái), kéo xuống phần **Privileged Gateway Intents** và **bật các tùy chọn**:
+   * **PRESENCE INTENT**
+   * **SERVER MEMBERS INTENT**
+   * **MESSAGE CONTENT INTENT** (Quan trọng nhất để bot đọc được lệnh chat).
+4. Kéo lên bấm **Reset Token** để lấy mã bảo mật Bot Token.
+5. Dán token này vào biến `DISCORD_BOT_TOKEN` trong file `.env`.
+6. Sang tab **OAuth2** -> **URL Generator** -> Chọn scope `bot` và các bot permissions: `Read Messages/View Channels`, `Send Messages`, `Embed Links`, `Read Message History`, `Attach Files` -> Copy link ở dưới cùng dán vào trình duyệt để mời bot vào Server Discord của bạn.
+
+### 2. Khởi động bot lắng nghe lệnh chat
+Chạy lệnh sau trên terminal của bạn:
+```bash
+npm run discord-bot
+```
+Sau đó bạn có thể chat các lệnh trực tiếp trên kênh Discord như: `!help`, `!stats`, `!webhooks`, `!check Portal 2`, v.v.
+
+---
+
+## ⚙️ Các lệnh chạy thông thường khác
 Kiểm tra bot tìm được gì nhưng chưa gửi Discord:
 
 ```bash
