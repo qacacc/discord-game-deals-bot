@@ -145,18 +145,21 @@ MAX_SALE_ALERTS_PER_PLATFORM=5
 | `EPIC_DISCORD_WEBHOOK_URL` | Có | Local `.env` + GitHub Secrets | Webhook channel Epic |
 | `STEAM_DISCORD_WEBHOOK_URL` | Có | Local `.env` + GitHub Secrets | Webhook channel Steam |
 | `GOG_DISCORD_WEBHOOK_URL` | Không | Local `.env` + GitHub Secrets | Webhook channel GOG (nếu trống sẽ fallback về webhook chung) |
+| `UBISOFT_DISCORD_WEBHOOK_URL` | Không | Local `.env` + GitHub Secrets | Webhook channel Ubisoft (nếu trống sẽ fallback về webhook chung) |
 | `DISCORD_WEBHOOK_URL` | Không | Local `.env` + GitHub Secrets | Webhook fallback nếu không tách kênh |
 | `SALE_ALERTS_ENABLED` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt báo sale, mặc định `true` |
 | `ENABLE_EPIC` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt kiểm tra Epic, mặc định `true` |
 | `ENABLE_STEAM` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt kiểm tra Steam, mặc định `true` |
 | `ENABLE_GOG` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt kiểm tra GOG, mặc định `true` |
+| `ENABLE_UBISOFT` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt kiểm tra Ubisoft Connect, mặc định `true` |
 | `ENABLE_FREE_ALERTS` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt báo game free, mặc định `true` |
 | `ENABLE_UPCOMING_ALERTS` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt báo game sắp free của Epic, mặc định `true` |
 | `ENABLE_EVENT_ALERTS` | Không | Local `.env` + GitHub Secrets/Variables | Bật/tắt báo event sale, mặc định `true` |
 | `MIN_SALE_DISCOUNT_PERCENT` | Không | Local `.env` + GitHub Secrets/Variables | Mức giảm tối thiểu để báo sale, mặc định `80` |
 | `MAX_SALE_ALERTS_PER_PLATFORM` | Không | Local `.env` + GitHub Secrets/Variables | Số deal tối đa mỗi nền tảng, mặc định `5` |
 | `STEAM_PAGES_TO_SCAN` | Không | Local `.env` + GitHub Secrets/Variables | Số trang tìm kiếm Steam cần quét (mỗi trang 50 game), mặc định `3` |
-| `MAX_SALE_PRICE` | Không | Local `.env` + GitHub Secrets/Variables | Giá tối đa của deal sale muốn nhận thông báo (đơn vị VNĐ, ví dụ `150000`), mặc định không giới hạn |
+| `CURRENCY_LOCALE` | Không | Local `.env` + GitHub Secrets/Variables | Cấu hình tiền tệ hiển thị (`VN` - VNĐ hoặc `US` - USD), mặc định `VN` |
+| `MAX_SALE_PRICE` | Không | Local `.env` + GitHub Secrets/Variables | Giá tối đa của deal sale muốn nhận thông báo (đơn vị VNĐ hoặc USD tương ứng), mặc định không giới hạn |
 | `PREFERRED_GENRES` | Không | Local `.env` + GitHub Secrets/Variables | Thể loại game yêu thích muốn nhận (ví dụ `Action, RPG`), mặc định không lọc |
 | `EXCLUDED_GENRES` | Không | Local `.env` + GitHub Secrets/Variables | Thể loại game muốn loại trừ (ví dụ `Hentai, Anime`), mặc định không loại trừ |
 | `MESSAGE_LOCALE` | Không | Local `.env` + GitHub Secrets/Variables | Ngôn ngữ hiển thị Embed Discord và logs (`vi` hoặc `en`), mặc định `vi` |
@@ -345,6 +348,40 @@ Bạn có thể cấu hình các biến sau trong file `.env` hoặc GitHub Vari
 * `MAX_SALE_PRICE`: Đặt mức giá tối đa (ví dụ `150000` để chỉ nhận các deal sale giá từ 150k đổ xuống).
 * `PREFERRED_GENRES`: Nhập các thể loại game yêu thích (ví dụ `RPG, Strategy`) để chỉ nhận tin các game thuộc nhóm này (với Epic và GOG).
 * `EXCLUDED_GENRES`: Nhập thể loại muốn bỏ qua (ví dụ `Anime, Casual`) để loại trừ.
+
+### Bot có hỗ trợ game free của Ubisoft Connect không?
+Có. Bot tự động quét các đợt phát tặng game miễn phí của Ubisoft Connect thông qua API GamerPower và thông báo kèm logo Ubisoft.png đẹp mắt. Bạn có thể bật/tắt qua `ENABLE_UBISOFT` và cấu hình webhook riêng qua `UBISOFT_DISCORD_WEBHOOK_URL`.
+
+### Làm thế nào để đổi giá tiền sang Đô la Mỹ USD ($)?
+Bạn chỉ cần đặt biến môi trường `CURRENCY_LOCALE=US`. Lúc này bot sẽ tự động quét giá theo USD trên Steam và Epic, đồng thời bộ lọc `MAX_SALE_PRICE` cũng sẽ tính theo đơn vị USD thay vì VNĐ.
+
+---
+
+## 🛠️ Bộ công cụ dòng lệnh CLI
+Bạn có thể quản lý lịch sử gửi game hoặc kiểm thử gửi tin nhắn nhanh bằng các lệnh CLI sau trong terminal:
+
+* **Xem bảng lịch sử đã gửi**:
+  ```bash
+  npm run show-history
+  ```
+* **Chủ động dọn dẹp các deal sale cũ quá 30 ngày**:
+  ```bash
+  npm run clean-history
+  ```
+* **Reset toàn bộ lịch sử gửi (làm trống sent.json)**:
+  ```bash
+  npm run reset-history
+  ```
+* **Kiểm tra xem một game đã được gửi chưa**:
+  ```bash
+  npm run check-game -- "Tên game hoặc ID"
+  ```
+* **Gửi tin nhắn test nhanh game tùy chỉnh lên Discord**:
+  ```bash
+  npm run send-test -- "Tên game test" "https://link-game.com" "Steam" "sale"
+  ```
+  *(Các tham số tùy chọn: Nền tảng mặc định: Steam, loại alert mặc định: free)*
+
 
 
 

@@ -230,14 +230,19 @@ function mapEpicSaleGame(game, promotion) {
 /**
  * Gửi request lấy dữ liệu từ catalog của Epic Games Store
  */
-async function fetchEpicGames({ country = "VN", locale = "en-US" } = {}) {
+async function fetchEpicGames({ country, locale } = {}) {
+  const currencyLocale = (process.env.CURRENCY_LOCALE || "VN").toUpperCase();
+  const defaultCountry = currencyLocale === "US" ? "US" : "VN";
+  const finalCountry = country || defaultCountry;
+  const finalLocale = locale || "en-US";
+
   const response = await fetchWithRetry(EPIC_FREE_GAMES_URL, {
     method: "GET",
     timeout: 20_000,
     params: {
-      locale,
-      country,
-      allowCountries: country,
+      locale: finalLocale,
+      country: finalCountry,
+      allowCountries: finalCountry,
     },
   });
 
@@ -276,8 +281,8 @@ async function getEpicUpcomingGames(options = {}) {
  * Lấy danh sách game đang giảm giá mạnh trên Epic Store
  */
 async function getEpicSaleGames({
-  country = "VN",
-  locale = "en-US",
+  country,
+  locale,
   minDiscountPercent = 80,
   limit = 5,
 } = {}) {

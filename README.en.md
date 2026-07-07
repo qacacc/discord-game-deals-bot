@@ -145,18 +145,21 @@ MAX_SALE_ALERTS_PER_PLATFORM=5
 | `EPIC_DISCORD_WEBHOOK_URL` | Yes | Local `.env` + GitHub Secrets | Epic channel webhook |
 | `STEAM_DISCORD_WEBHOOK_URL` | Yes | Local `.env` + GitHub Secrets | Steam channel webhook |
 | `GOG_DISCORD_WEBHOOK_URL` | No | Local `.env` + GitHub Secrets | GOG channel webhook (falls back to default webhook if empty) |
+| `UBISOFT_DISCORD_WEBHOOK_URL` | No | Local `.env` + GitHub Secrets | Ubisoft channel webhook (falls back to default webhook if empty) |
 | `DISCORD_WEBHOOK_URL` | No | Local `.env` + GitHub Secrets | Fallback webhook if you do not split channels |
 | `SALE_ALERTS_ENABLED` | No | Local `.env` + GitHub Secrets/Variables | Enable sale alerts, default `true` |
 | `ENABLE_EPIC` | No | Local `.env` + GitHub Secrets/Variables | Enable Epic checks, default `true` |
 | `ENABLE_STEAM` | No | Local `.env` + GitHub Secrets/Variables | Enable Steam checks, default `true` |
 | `ENABLE_GOG` | No | Local `.env` + GitHub Secrets/Variables | Enable GOG checks, default `true` |
+| `ENABLE_UBISOFT` | No | Local `.env` + GitHub Secrets/Variables | Enable Ubisoft Connect checks, default `true` |
 | `ENABLE_FREE_ALERTS` | No | Local `.env` + GitHub Secrets/Variables | Enable free game alerts, default `true` |
 | `ENABLE_UPCOMING_ALERTS` | No | Local `.env` + GitHub Secrets/Variables | Enable Epic upcoming free game alerts, default `true` |
 | `ENABLE_EVENT_ALERTS` | No | Local `.env` + GitHub Secrets/Variables | Enable sale event alerts, default `true` |
 | `MIN_SALE_DISCOUNT_PERCENT` | No | Local `.env` + GitHub Secrets/Variables | Minimum sale discount, default `80` |
 | `MAX_SALE_ALERTS_PER_PLATFORM` | No | Local `.env` + GitHub Secrets/Variables | Max deals per platform, default `5` |
 | `STEAM_PAGES_TO_SCAN` | No | Local `.env` + GitHub Secrets/Variables | Number of Steam search pages to scan (50 games/page), default `3` |
-| `MAX_SALE_PRICE` | No | Local `.env` + GitHub Secrets/Variables | Maximum price limit for sale alerts (e.g. `150000` VNĐ), default unlimited |
+| `CURRENCY_LOCALE` | No | Local `.env` + GitHub Secrets/Variables | Currency display setting (`VN` - VNĐ or `US` - USD), default `VN` |
+| `MAX_SALE_PRICE` | No | Local `.env` + GitHub Secrets/Variables | Maximum price limit for sale alerts (in matching currency), default unlimited |
 | `PREFERRED_GENRES` | No | Local `.env` + GitHub Secrets/Variables | Preferred game genres to receive (e.g. `Action, RPG`), default all |
 | `EXCLUDED_GENRES` | No | Local `.env` + GitHub Secrets/Variables | Excluded game genres to ignore (e.g. `Hentai, Anime`), default none |
 | `MESSAGE_LOCALE` | No | Local `.env` + GitHub Secrets/Variables | Language for Discord Embeds and logs (`vi` or `en`), default `vi` |
@@ -336,6 +339,40 @@ You can customize your feed by setting the following environment variables:
 * `MAX_SALE_PRICE`: Maximum price to receive alerts for sale deals (e.g. `150000` VNĐ).
 * `PREFERRED_GENRES`: Preferred game categories (e.g. `Action, RPG`) to restrict alerts to specific tags.
 * `EXCLUDED_GENRES`: Genre tags to exclude from alerts (e.g. `Casual, Sports`).
+
+### Does the bot support Ubisoft Connect free games?
+Yes! The bot scans Ubisoft Connect giveaways using GamerPower API and sends alerts with the Ubisoft logo. You can configure `UBISOFT_DISCORD_WEBHOOK_URL` for separate alerts and toggle it with `ENABLE_UBISOFT`.
+
+### How can I change the price currency to USD?
+Set `CURRENCY_LOCALE=US` in your environment. The bot will fetch prices in USD on Steam/Epic, and `MAX_SALE_PRICE` filters will be evaluated in USD instead of VNĐ.
+
+---
+
+## 🛠️ Admin CLI Tools
+You can manage your history file or test Discord alerts using these commands in your shell:
+
+* **Show Sent Games History**:
+  ```bash
+  npm run show-history
+  ```
+* **Clean Up Sent History (remove sales/events > 30 days old)**:
+  ```bash
+  npm run clean-history
+  ```
+* **Reset Sent History (clear sent.json)**:
+  ```bash
+  npm run reset-history
+  ```
+* **Check If A Game Has Been Sent**:
+  ```bash
+  npm run check-game -- "Game Name or ID"
+  ```
+* **Send A Custom Test Message To Discord**:
+  ```bash
+  npm run send-test -- "Test Game" "https://store.steampowered.com/" "Steam" "sale"
+  ```
+  *(Parameters: Name, URL, Platform (default: Steam), Alert Type (default: free))*
+
 
 
 

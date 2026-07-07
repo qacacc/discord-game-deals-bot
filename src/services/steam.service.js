@@ -162,7 +162,11 @@ function parseSteamSaleResults(html = "", { minDiscountPercent = 80, limit = 5 }
 /**
  * Lấy danh sách game miễn phí trên Steam (quét nhiều trang kết quả)
  */
-async function getSteamFreeGames({ country = "vn", language = "english", pages = 3 } = {}) {
+async function getSteamFreeGames({
+  country = (process.env.CURRENCY_LOCALE || "VN").toUpperCase() === "US" ? "us" : "vn",
+  language = (process.env.CURRENCY_LOCALE || "VN").toUpperCase() === "US" ? "english" : "vietnamese",
+  pages = 3,
+} = {}) {
   let allGames = [];
 
   for (let page = 0; page < pages; page += 1) {
@@ -223,8 +227,8 @@ async function getSteamFreeGames({ country = "vn", language = "english", pages =
  * Lấy danh sách game giảm giá mạnh trên Steam (quét nhiều trang kết quả)
  */
 async function getSteamSaleGames({
-  country = "vn",
-  language = "english",
+  country = (process.env.CURRENCY_LOCALE || "VN").toUpperCase() === "US" ? "us" : "vn",
+  language = (process.env.CURRENCY_LOCALE || "VN").toUpperCase() === "US" ? "english" : "vietnamese",
   minDiscountPercent = 80,
   limit = 5,
   pages = 3,

@@ -7,7 +7,13 @@
     "build-icons": "node scripts/build-icons.js",
     "dry-run": "node src/index.js --dry-run",
     "start": "node src/index.js",
-    "test": "node --test"
+    "test": "node --test",
+    "cli-tool": "node scripts/cli.js",
+    "show-history": "node scripts/cli.js show",
+    "clean-history": "node scripts/cli.js clean",
+    "reset-history": "node scripts/cli.js reset",
+    "check-game": "node scripts/cli.js check",
+    "send-test": "node scripts/cli.js send"
   },
   "keywords": [],
   "author": "",

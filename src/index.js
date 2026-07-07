@@ -3,6 +3,7 @@ require("dotenv").config({ quiet: true });
 const { getEpicFreeGames, getEpicUpcomingGames, getEpicSaleGames } = require("./services/epic.service");
 const { getSteamFreeGames, getSteamSaleGames } = require("./services/steam.service");
 const { getGogFreeGames } = require("./services/gog.service");
+const { getUbisoftFreeGames } = require("./services/ubisoft.service");
 const { getActiveSaleEvents } = require("./services/event.service");
 const { sendGameEmbed, sendGameSalesBatch } = require("./services/discord.service");
 const { normalizeGame } = require("./utils/formatGame");
@@ -42,6 +43,7 @@ const SUMMARY_LOCALES = {
     epic: (f, u, s) => `- Epic Games Store:  ${f} Free | ${u} Sắp Free | ${s} Sale`,
     steam: (f, s) => `- Steam Store:       ${f} Free | ${s} Sale`,
     gog: (f) => `- GOG.com:            ${f} Free`,
+    ubisoft: (f) => `- Ubisoft Connect:    ${f} Free`,
     events: (e) => `- Sự kiện Sale lớn:  ${e} đang hoạt động`,
     total_checked: "Tổng số deal quét được:  ",
     total_duplicates: "Số game trùng (đã gửi):  ",
@@ -63,6 +65,7 @@ const SUMMARY_LOCALES = {
     epic: (f, u, s) => `- Epic Games Store:  ${f} Free | ${u} Upcoming | ${s} Sale`,
     steam: (f, s) => `- Steam Store:       ${f} Free | ${s} Sale`,
     gog: (f) => `- GOG.com:            ${f} Free`,
+    ubisoft: (f) => `- Ubisoft Connect:    ${f} Free`,
     events: (e) => `- Big Sale Events:   ${e} active`,
     total_checked: "Total deals scanned:     ",
     total_duplicates: "Duplicate deals (sent):  ",
@@ -100,6 +103,7 @@ function printDetailedSummary(summary, newGames, dryRun) {
   console.log(t.epic(summary.epicFree, summary.epicUpcoming, summary.epicSales));
   console.log(t.steam(summary.steamFree, summary.steamSales));
   console.log(t.gog(summary.gogFree));
+  console.log(t.ubisoft(summary.ubisoftFree));
   console.log(t.events(summary.events));
   console.log("-------------------------------------------------------");
   console.log(`${t.total_checked}${summary.checked}`);
@@ -162,6 +166,7 @@ async function runChecker({
   getEpicUpcoming = getEpicUpcomingGames,
   getSteamGames = getSteamFreeGames,
   getGogGames = getGogFreeGames,
+  getUbisoftGames = getUbisoftFreeGames,
   getEpicSales = getEpicSaleGames,
   getSteamSales = getSteamSaleGames,
   getSaleEvents = getActiveSaleEvents,
@@ -173,6 +178,7 @@ async function runChecker({
   epicEnabled = readBooleanEnv("ENABLE_EPIC", true),
   steamEnabled = readBooleanEnv("ENABLE_STEAM", true),
   gogEnabled = readBooleanEnv("ENABLE_GOG", true),
+  ubisoftEnabled = readBooleanEnv("ENABLE_UBISOFT", true),
   freeAlertsEnabled = readBooleanEnv("ENABLE_FREE_ALERTS", true),
   upcomingAlertsEnabled = readBooleanEnv("ENABLE_UPCOMING_ALERTS", true),
   eventAlertsEnabled = readBooleanEnv("ENABLE_EVENT_ALERTS", true),
@@ -180,7 +186,7 @@ async function runChecker({
   minSaleDiscountPercent = readNumberEnv("MIN_SALE_DISCOUNT_PERCENT", 80),
   maxSaleAlertsPerPlatform = readNumberEnv("MAX_SALE_ALERTS_PER_PLATFORM", 5),
   steamPagesCount = readNumberEnv("STEAM_PAGES_TO_SCAN", 3),
-  maxSalePrice = readNumberEnv("MAX_SALE_PRICE", 0), // 0 là không giới hạn giá
+  maxSalePrice = readNumberEnv("MAX_SALE_PRICE", 0),
   preferredGenresStr = process.env.PREFERRED_GENRES || "",
   excludedGenresStr = process.env.EXCLUDED_GENRES || "",
 } = {}) {
@@ -203,6 +209,7 @@ async function runChecker({
 
   const steamGames = steamEnabled && freeAlertsEnabled ? await getSteamGames({ pages: steamPagesCount }) : [];
   const gogGames = gogEnabled && freeAlertsEnabled ? await getGogGames() : [];
+  const ubisoftGames = ubisoftEnabled && freeAlertsEnabled ? await getUbisoftGames() : [];
 
   const epicSales = epicEnabled && saleAlertsEnabled
     ? await getEpicSales({
@@ -232,6 +239,7 @@ async function runChecker({
     ...epicUpcoming,
     ...steamGames,
     ...gogGames,
+    ...ubisoftGames,
     ...saleEvents,
     ...epicSales,
     ...steamSales,
@@ -257,6 +265,7 @@ async function runChecker({
     epicUpcoming: epicUpcoming.length,
     steamFree: steamGames.length,
     gogFree: gogGames.length,
+    ubisoftFree: ubisoftGames.length,
     events: saleEvents.length,
     epicSales: epicSales.length,
     steamSales: steamSales.length,

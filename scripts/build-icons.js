@@ -27,6 +27,10 @@ const icons = [
     name: "gog",
     url: "https://cdn.simpleicons.org/gogdotcom/ffffff",
   },
+  {
+    name: "ubisoft",
+    url: "https://cdn.simpleicons.org/ubisoft/ffffff",
+  },
 ];
 
 async function downloadIcon(url) {

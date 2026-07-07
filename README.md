@@ -91,6 +91,40 @@ You can customize your feed by setting the following environment variables:
 * `PREFERRED_GENRES`: Preferred game categories (e.g. `Action, RPG`) to restrict alerts to specific tags.
 * `EXCLUDED_GENRES`: Genre tags to exclude from alerts (e.g. `Casual, Sports`).
 
+### Does the bot support Ubisoft Connect free games?
+Yes! The bot scans Ubisoft Connect giveaways using GamerPower API and sends alerts with the Ubisoft logo. You can configure `UBISOFT_DISCORD_WEBHOOK_URL` for separate alerts and toggle it with `ENABLE_UBISOFT`.
+
+### How can I change the price currency to USD?
+Set `CURRENCY_LOCALE=US` in your environment. The bot will fetch prices in USD on Steam/Epic, and `MAX_SALE_PRICE` filters will be evaluated in USD instead of VNĐ.
+
+---
+
+## 🛠️ Admin CLI Tools
+You can manage your history file or test Discord alerts using these commands in your shell:
+
+* **Show Sent Games History**:
+  ```bash
+  npm run show-history
+  ```
+* **Clean Up Sent History (remove sales/events > 30 days old)**:
+  ```bash
+  npm run clean-history
+  ```
+* **Reset Sent History (clear sent.json)**:
+  ```bash
+  npm run reset-history
+  ```
+* **Check If A Game Has Been Sent**:
+  ```bash
+  npm run check-game -- "Game Name or ID"
+  ```
+* **Send A Custom Test Message To Discord**:
+  ```bash
+  npm run send-test -- "Test Game" "https://store.steampowered.com/" "Steam" "sale"
+  ```
+  *(Parameters: Name, URL, Platform (default: Steam), Alert Type (default: free))*
+
+
 
 
 
