@@ -18,7 +18,7 @@ A free Discord bot that posts **free games**, **sale events**, and **deep discou
 
 ![Discord Bot Demo](assets/images/demo.png)
 
-> Demo image is for illustration only. It was captured from a real Discord run and is not AI-generated.
+> Demo image shows the Discord interface from a real run. Features are implemented as described in this README; the image is not AI-generated.
 
 It uses **Discord Webhooks** and **GitHub Actions**, so you do not need a VPS, database, Discord bot token, `discord.js`, or a bot running 24/7.
 

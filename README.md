@@ -16,7 +16,7 @@ Free Discord webhook bot for Epic Games Store and Steam free games, sale events,
 
 ![Discord Bot Demo](assets/images/demo.png)
 
-> Demo image is for illustration only. It was captured from a real Discord run and is not AI-generated.
+> Demo image shows the Discord interface from a real run. Features are implemented as described in this README; the image is not AI-generated.
 
 ## Project Info
 
