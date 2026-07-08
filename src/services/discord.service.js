@@ -172,7 +172,11 @@ function getEmbedColor(game) {
  * Rút gọn text để embed không bị phình quá dài.
  */
 function truncateText(text, maxLength = 700) {
-  const cleanText = String(text || "").replace(/\s+/g, " ").trim();
+  const cleanText = String(text || "")
+    .split(/\r?\n/)
+    .map((line) => line.replace(/[ \t]+/g, " ").trim())
+    .join("\n")
+    .trim();
 
   if (cleanText.length <= maxLength) {
     return cleanText;
@@ -187,7 +191,7 @@ function truncateText(text, maxLength = 700) {
 function formatQuote(text) {
   return truncateText(text, 900)
     .split("\n")
-    .map((line) => `> ${line}`)
+    .map((line) => (line ? `> ${line}` : ">"))
     .join("\n");
 }
 

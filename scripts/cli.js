@@ -289,29 +289,21 @@ async function main() {
         eventName: "Bản Cập Nhật Bot Game v1.0.0",
         alertType: "event",
         platform: "Hệ thống Bot",
-        endDate: "Thông tin nâng cấp",
-        summary: `🎉 Bot đã được nâng cấp thành công lên phiên bản **v1.0.0** với các tính năng mới:
-• 🎮 **Hỗ trợ thêm nguồn game**: Ubisoft Connect, GOG.com, Itch.io, IndieGala, Xbox.
-• 📉 **Bộ lọc thông minh**: Lọc theo giá bán tối đa mong muốn và thể loại game yêu thích.
-• 💵 **Đa tiền tệ**: Tự động chuyển vùng giá giữa VNĐ (₫) và USD ($).
-• 📦 **Gom nhóm tin nhắn**: Gộp nhiều deal sale cùng lúc giúp kênh chat gọn gàng.
-• 🛠️ **Công cụ quản trị CLI**: Hỗ trợ xem bảng thống kê, tìm kiếm deal, kiểm tra webhook và chat-bot tự động gửi tin nhắn tùy chọn từ console.
-
-💻 **BỘ LỆNH ĐIỀU KHIỂN CLI NHANH (ADMIN TOOLS):**
-\`\`\`bash
-# Xem bảng lịch sử game đã gửi
-npm run show-history
-
-# Vẽ biểu đồ ASCII thống kê game
-npm run stats-chart
-
-# Trình soạn tin tương tác gửi game
-npm run send-custom
-
-# Kiểm tra sức khỏe các Webhook
-npm run check-webhooks
-\`\`\``,
-        url: "https://github.com/",
+        endDate: "v1.0.0",
+        summary: [
+          "Bot đã được cập nhật lên **v1.0.0**.",
+          "",
+          "**Điểm mới chính**",
+          "• Báo game miễn phí và game sắp miễn phí.",
+          "• Báo sự kiện Steam/Epic đang diễn ra.",
+          "• Tách webhook theo từng nền tảng.",
+          "• Chống gửi trùng bằng `sent.json`.",
+          "• Thêm bộ lệnh quản trị: `!help`, `!mode`, `!stats`, `!webhooks`, `!search`.",
+          "",
+          "**Chế độ mặc định**",
+          "Bot tự động gửi Steam/Epic event + game free, không spam sale detail.",
+        ].join("\n"),
+        url: "https://github.com/qacacc/discord-game-deals-bot",
       };
       try {
         await sendGameEmbed(changelogMock);
