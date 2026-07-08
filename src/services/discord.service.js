@@ -27,9 +27,9 @@ const LOCALES = {
     field_platform: "Nền tảng",
     field_price: "Giá",
     field_discount: "Giảm giá",
-    field_start_date: "Bắt đầu",
-    field_end_date_free: "Hạn nhận",
-    field_end_date_sale: "Hạn giảm giá",
+    field_start_date: "Ngày nhận",
+    field_end_date_free: "Hạn hết",
+    field_end_date_sale: "Hạn hết",
     field_end_date_event: "Thời gian",
     field_link_store: "Mở liên kết",
     field_reviews: "Đánh giá",
@@ -44,6 +44,7 @@ const LOCALES = {
     label_sale: "Đang giảm giá",
     current_free: "Free",
     footer_source: "Bot Game Deal",
+    time_prefix: "Thời gian",
   },
   en: {
     header_event: "Live event",
@@ -58,9 +59,9 @@ const LOCALES = {
     field_platform: "Platform",
     field_price: "Price",
     field_discount: "Discount",
-    field_start_date: "Starts",
-    field_end_date_free: "Claim deadline",
-    field_end_date_sale: "Sale deadline",
+    field_start_date: "Claim starts",
+    field_end_date_free: "Ends",
+    field_end_date_sale: "Ends",
     field_end_date_event: "Duration",
     field_link_store: "Open link",
     field_reviews: "Reviews",
@@ -75,6 +76,7 @@ const LOCALES = {
     label_sale: "On sale",
     current_free: "Free",
     footer_source: "Bot Game Deal",
+    time_prefix: "Time",
   },
 };
 
@@ -163,19 +165,7 @@ function getEmbedDescription(game) {
  * Lấy mã màu sắc tương ứng cho Embed
  */
 function getEmbedColor(game) {
-  if (game.alertType === "event") {
-    return 0x3498db; // Xanh dương
-  }
-
-  if (game.alertType === "sale") {
-    return 0xf1c40f; // Vàng
-  }
-
-  if (game.alertType === "upcoming") {
-    return 0x9b59b6; // Tím cho game sắp ra mắt
-  }
-
-  return 0x2ecc71; // Xanh lá
+  return 0x2f81f7; // Xanh chủ đạo, tối giản theo style đen/trắng/xanh.
 }
 
 /**
@@ -233,6 +223,48 @@ function formatPriceLine(game) {
   }
 
   return `**${currentPrice}**`;
+}
+
+/**
+ * Định dạng ngày hiển thị gọn: "Thời gian: 22:00 | 8/7/2026".
+ */
+function formatDisplayDate(value) {
+  const t = getLocale();
+
+  if (!value || value === "Unknown") {
+    return "Unknown";
+  }
+
+  const rawValue = String(value).trim();
+  const parsedDate = new Date(rawValue);
+
+  if (!Number.isNaN(parsedDate.getTime()) && /T|\d{4}-\d{2}-\d{2}/.test(rawValue)) {
+    const time = new Intl.DateTimeFormat("vi-VN", {
+      timeZone: "Asia/Ho_Chi_Minh",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).format(parsedDate);
+    const date = new Intl.DateTimeFormat("vi-VN", {
+      timeZone: "Asia/Ho_Chi_Minh",
+      day: "numeric",
+      month: "numeric",
+      year: "numeric",
+    }).format(parsedDate);
+
+    return `${t.time_prefix}: ${time} | ${date}`;
+  }
+
+  const normalized = rawValue.replace(",", " ");
+  const match = normalized.match(/(\d{1,2}:\d{2})\s+(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
+
+  if (match) {
+    const [, time, day, month, year] = match;
+    const fullYear = year.length === 2 ? `20${year}` : year;
+    return `${t.time_prefix}: ${time} | ${Number(day)}/${Number(month)}/${fullYear}`;
+  }
+
+  return rawValue;
 }
 
 /**
@@ -359,7 +391,7 @@ function getEmbedFields(game) {
       },
       {
         name: t.field_end_date_event,
-        value: game.endDate || "Unknown",
+        value: formatDisplayDate(game.endDate),
         inline: true,
       },
       {
@@ -388,6 +420,16 @@ function getEmbedFields(game) {
         inline: false,
       },
       {
+        name: t.field_start_date,
+        value: formatDisplayDate(game.startDate),
+        inline: true,
+      },
+      {
+        name: t.field_end_date_free,
+        value: formatDisplayDate(game.endDate),
+        inline: true,
+      },
+      {
         name: t.field_platform,
         value: game.platform || "Unknown",
         inline: true,
@@ -395,16 +437,6 @@ function getEmbedFields(game) {
       {
         name: t.field_price,
         value: formatPriceLine(game),
-        inline: true,
-      },
-      {
-        name: t.field_start_date,
-        value: game.startDate || "Unknown",
-        inline: true,
-      },
-      {
-        name: t.field_end_date_free,
-        value: game.endDate || "Unknown",
         inline: true,
       },
     ];
@@ -433,6 +465,22 @@ function getEmbedFields(game) {
       value: game.alertType === "sale" ? `**${t.label_sale}**` : `**${t.label_free_now}**`,
       inline: false,
     },
+  ];
+
+  if (game.startDate) {
+    fields.push({
+      name: t.field_start_date,
+      value: formatDisplayDate(game.startDate),
+      inline: true,
+    });
+  }
+
+  fields.push(
+    {
+      name: game.alertType === "sale" ? t.field_end_date_sale : t.field_end_date_free,
+      value: formatDisplayDate(game.endDate),
+      inline: true,
+    },
     {
       name: t.field_platform,
       value: game.platform || "Unknown",
@@ -443,7 +491,7 @@ function getEmbedFields(game) {
       value: formatPriceLine(game),
       inline: true,
     },
-  ];
+  );
 
   if (game.discountPercent) {
     fields.push({
@@ -460,13 +508,6 @@ function getEmbedFields(game) {
       inline: true,
     });
   }
-
-  // Để ngày hết hạn ở một dòng riêng biệt, tránh bị ép chật chội
-  fields.push({
-    name: game.alertType === "sale" ? t.field_end_date_sale : t.field_end_date_free,
-    value: game.endDate || "Unknown",
-    inline: false,
-  });
 
   // Để thể loại game ở dòng riêng biệt do chuỗi thể loại (genres) thường dài
   if (game.genres) {

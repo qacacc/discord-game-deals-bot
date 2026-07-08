@@ -18,6 +18,8 @@ A free Discord bot that posts **free games**, **sale events**, and **deep discou
 
 ![Discord Bot Demo](assets/images/demo.png)
 
+> Demo image is captured from a real Discord run, not AI-generated artwork.
+
 It uses **Discord Webhooks** and **GitHub Actions**, so you do not need a VPS, database, Discord bot token, `discord.js`, or a bot running 24/7.
 
 ## Project Info
@@ -166,7 +168,7 @@ MAX_SALE_ALERTS_PER_PLATFORM=5
 | `DISCORD_BOT_TOKEN` | No | Local `.env` | Discord Bot token for direct gateway commands chat listener |
 | `DISCORD_BOT_PREFIX` | No | Local `.env` | Discord Bot command prefix (default: `!`) |
 | `DISCORD_BOT_COOLDOWN_SEC` | No | Local `.env` | Cooldown duration for anti-spam command execution (default: `5` seconds) |
-| `DISCORD_BOT_FREE_EVENT_ONLY` | No | Local `.env` | When running `npm run discord-bot`, auto-send only Steam/Epic events and free games, default `true` |
+| `DISCORD_BOT_FREE_EVENT_ONLY` | No | Local `.env` | Only applies to `npm run discord-bot`: default `true` makes the Bot Client auto-send only Steam/Epic events and free/upcoming free games |
 
 ---
 
@@ -202,6 +204,13 @@ In this mode, the Discord Bot Client does not auto-send detailed sale deals or o
 ```env
 DISCORD_BOT_FREE_EVENT_ONLY=false
 ```
+
+Short version:
+
+| Value | Meaning |
+| --- | --- |
+| `true` | The live Discord Bot Client only auto-sends Steam/Epic events and free/upcoming free games |
+| `false` | The live Discord Bot Client follows the full `.env` configuration, including sale details and other platforms if enabled |
 
 Check the current mode from Discord:
 
@@ -396,8 +405,8 @@ Set `CURRENCY_LOCALE=US` in your environment. The bot will fetch prices in USD o
 ### Does the bot support free games on Itch.io, IndieGala, Xbox or PlayStation?
 Yes! The bot automatically scans other PC freebies using GamerPower API. Alerts are sent with a custom game controller logo (`other.png`). Toggle it with `ENABLE_OTHER_PLATFORMS` and set a custom webhook via `OTHER_DISCORD_WEBHOOK_URL`.
 
-### How do random gaming GIFs work?
-To make Discord embeds more fun, the bot randomly attaches a gaming GIF (party, congratulations, win, level up...) on the right side thumbnail for every new free or upcoming game alert.
+### How are Discord embeds styled?
+Embeds use a clean one-color style with black/white/blue priority, platform icons, real game images when provided by the source, price, claim start date, end date, and a direct store link.
 
 ---
 
