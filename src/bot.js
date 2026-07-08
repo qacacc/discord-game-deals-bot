@@ -10,6 +10,7 @@ require("dotenv").config({ quiet: true });
 const token = process.env.DISCORD_BOT_TOKEN;
 const prefix = process.env.DISCORD_BOT_PREFIX || "!";
 const cooldownSec = Number(process.env.DISCORD_BOT_COOLDOWN_SEC) || 5;
+const botFreeEventOnly = (process.env.DISCORD_BOT_FREE_EVENT_ONLY || "true").toLowerCase() !== "false";
 
 if (!token) {
   console.error("Lỗi: Chưa cấu hình DISCORD_BOT_TOKEN trong file .env!");
@@ -35,6 +36,7 @@ client.once("clientReady", () => {
   console.log(`🤖 Tên Bot: ${client.user.tag}`);
   console.log(`🤖 Tiền tố lệnh (Prefix): "${prefix}"`);
   console.log(`🤖 Thời gian chờ (Cooldown): ${cooldownSec} giây`);
+  console.log(`🤖 Chế độ auto: ${botFreeEventOnly ? "Chỉ Steam/Epic event + game free" : "Theo cấu hình .env đầy đủ"}`);
   console.log(`======================================================\n`);
   
   // Chạy quét game tự động ngay lập tức lần đầu tiên khi bot khởi động
@@ -79,10 +81,30 @@ client.on("messageCreate", async (message) => {
           { name: `\`${prefix}check <tên game>\``, value: "Tra cứu lịch sử xem game đã được gửi hay chưa.", inline: false },
           { name: `\`${prefix}search <tên game>\``, value: "Tìm kiếm so sánh giá game trực tuyến trên Steam và Epic.", inline: false },
           { name: `\`${prefix}webhooks\``, value: "Kiểm tra kết nối và trạng thái hoạt động các Webhook.", inline: false },
+          { name: `\`${prefix}mode\``, value: "Hiển thị chế độ tự động hiện tại của Discord Bot Client.", inline: false },
           { name: `\`${prefix}changelog\``, value: "Gửi tin thông báo cập nhật v1.0.0 lên Discord.", inline: false },
           { name: `\`${prefix}send <tên> | <url> | [nền tảng] | [loại]\``, value: "Gửi nhanh một tin nhắn game tùy chọn lên Discord (Ngăn cách các tham số bằng dấu `|`).", inline: false }
         )
         .setFooter({ text: "Bot Game v1.0.0 - Advanced Coding Team" })
+        .setTimestamp();
+
+      await message.reply({ embeds: [embed] });
+      break;
+    }
+
+    case "mode": {
+      const embed = new EmbedBuilder()
+        .setTitle("⚙️ CHẾ ĐỘ TỰ ĐỘNG CỦA BOT")
+        .setColor(botFreeEventOnly ? 0x2ecc71 : 0xf1c40f)
+        .setDescription(
+          botFreeEventOnly
+            ? "Bot đang chỉ tự động thông báo **Steam/Epic event + game free**. Sale deal chi tiết và nền tảng khác không được gửi trong chế độ này."
+            : "Bot đang chạy theo cấu hình `.env` đầy đủ.",
+        )
+        .addFields(
+          { name: "Biến cấu hình", value: "`DISCORD_BOT_FREE_EVENT_ONLY`", inline: false },
+          { name: "Giá trị hiện tại", value: String(botFreeEventOnly), inline: true },
+        )
         .setTimestamp();
 
       await message.reply({ embeds: [embed] });
@@ -335,7 +357,22 @@ async function runAutoChecker() {
   console.log("🤖 [Auto Checker] Bắt đầu tự động quét game mới...");
   try {
     const { runChecker } = require("./index");
-    await runChecker();
+    await runChecker(
+      botFreeEventOnly
+        ? {
+            epicEnabled: true,
+            steamEnabled: true,
+            gogEnabled: false,
+            ubisoftEnabled: false,
+            otherEnabled: false,
+            freeAlertsEnabled: true,
+            upcomingAlertsEnabled: true,
+            eventAlertsEnabled: true,
+            saleAlertsEnabled: true,
+            sendSaleDetailsToDiscord: false,
+          }
+        : {},
+    );
     console.log("🤖 [Auto Checker] Quét tự động hoàn tất!");
   } catch (err) {
     console.error("🤖 [Auto Checker] Quét tự động gặp lỗi:", err.message);

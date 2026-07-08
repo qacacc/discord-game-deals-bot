@@ -250,8 +250,8 @@ async function runChecker({
     ...ubisoftGames,
     ...otherGames,
     ...saleEvents,
-    ...epicSales,
-    ...steamSales,
+    ...(sendSaleDetailsToDiscord ? epicSales : []),
+    ...(sendSaleDetailsToDiscord ? steamSales : []),
   ].map(normalizeGame);
 
   // Phân tích danh sách cấu hình thể loại

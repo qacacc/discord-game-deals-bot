@@ -166,6 +166,7 @@ MAX_SALE_ALERTS_PER_PLATFORM=5
 | `DISCORD_BOT_TOKEN` | No | Local `.env` | Discord Bot token for direct gateway commands chat listener |
 | `DISCORD_BOT_PREFIX` | No | Local `.env` | Discord Bot command prefix (default: `!`) |
 | `DISCORD_BOT_COOLDOWN_SEC` | No | Local `.env` | Cooldown duration for anti-spam command execution (default: `5` seconds) |
+| `DISCORD_BOT_FREE_EVENT_ONLY` | No | Local `.env` | When running `npm run discord-bot`, auto-send only Steam/Epic events and free games, default `true` |
 
 ---
 
@@ -185,6 +186,28 @@ Run the listener using:
 npm run discord-bot
 ```
 You can now type commands like `!help`, `!stats`, `!webhooks`, or `!check Portal 2` directly in your Discord channels!
+
+By default, the Discord Bot Client only sends automatic alerts for:
+
+```txt
+Steam events
+Epic events
+Steam free games
+Epic free games
+Epic upcoming free games
+```
+
+In this mode, the Discord Bot Client does not auto-send detailed sale deals or other platforms. To make it follow the full `.env` configuration, set:
+
+```env
+DISCORD_BOT_FREE_EVENT_ONLY=false
+```
+
+Check the current mode from Discord:
+
+```txt
+!mode
+```
 
 ---
 

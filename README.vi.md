@@ -166,6 +166,7 @@ MAX_SALE_ALERTS_PER_PLATFORM=5
 | `DISCORD_BOT_TOKEN` | Không | Local `.env` | Token của Discord Bot Gateway để chat và ra lệnh trực tiếp trên Discord |
 | `DISCORD_BOT_PREFIX` | Không | Local `.env` | Tiền tố lệnh của Bot Client (mặc định: `!`) |
 | `DISCORD_BOT_COOLDOWN_SEC` | Không | Local `.env` | Thời gian cooldown chống spam lệnh trên Discord (mặc định: `5` giây) |
+| `DISCORD_BOT_FREE_EVENT_ONLY` | Không | Local `.env` | Khi chạy Bot Discord bằng `npm run discord-bot`, chỉ tự động báo Steam/Epic event + game free, mặc định `true` |
 
 Khi chạy local, các biến nằm trong file `.env`. Khi chạy bằng GitHub Actions, các webhook nên nằm trong GitHub Secrets.
 
@@ -191,6 +192,28 @@ Chạy lệnh sau trên terminal của bạn:
 npm run discord-bot
 ```
 Sau đó bạn có thể chat các lệnh trực tiếp trên kênh Discord như: `!help`, `!stats`, `!webhooks`, `!check Portal 2`, v.v.
+
+Mặc định Bot Discord chỉ tự động thông báo:
+
+```txt
+Steam event
+Epic event
+Steam game free
+Epic game free
+Epic upcoming free
+```
+
+Bot Discord sẽ không tự động gửi sale deal chi tiết hoặc nền tảng khác trong chế độ này. Nếu muốn Bot Discord chạy theo toàn bộ cấu hình `.env`, đặt:
+
+```env
+DISCORD_BOT_FREE_EVENT_ONLY=false
+```
+
+Kiểm tra chế độ hiện tại ngay trong Discord:
+
+```txt
+!mode
+```
 
 ---
 

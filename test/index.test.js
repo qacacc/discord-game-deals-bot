@@ -196,6 +196,53 @@ test("gui thong bao event truoc game sale", async () => {
   assert.deepEqual(result, { checked: 2, sent: 2, pending: 0, duplicates: 0 });
 });
 
+test("tat sale detail thi chi gui event va khong luu sale game", async () => {
+  const sentData = { sent: [] };
+  const sentGames = [];
+  let batchedGames = [];
+
+  const result = await runChecker({
+    sendSaleDetailsToDiscord: false,
+    getEpicGames: async () => [],
+    getEpicUpcoming: async () => [],
+    getSteamGames: async () => [],
+    getGogGames: async () => [],
+    getUbisoftGames: async () => [],
+    getOtherGames: async () => [],
+    getEpicSales: async () => [],
+    getSteamSales: async () => [
+      {
+        id: "steam-sale:hidden:90:1000",
+        title: "Hidden Steam Sale Game",
+        alertType: "sale",
+        platform: "Steam",
+        discountPercent: 90,
+        url: "https://example.com/hidden-steam-sale",
+      },
+    ],
+    getSaleEvents: () => [
+      {
+        id: "event:steam-summer-sale-2026",
+        title: "Steam Summer Sale 2026",
+        alertType: "event",
+        platform: "Steam",
+        url: "https://store.steampowered.com/",
+      },
+    ],
+    sendGame: async (game) => sentGames.push(game.id),
+    sendSalesBatch: async (games) => {
+      batchedGames = games.map(g => g.id);
+    },
+    loadSent: () => sentData,
+    saveSent: () => {},
+  });
+
+  assert.deepEqual(sentGames, ["event:steam-summer-sale-2026"]);
+  assert.deepEqual(batchedGames, []);
+  assert.deepEqual(sentData.sent.map((game) => game.id), ["event:steam-summer-sale-2026"]);
+  assert.deepEqual(result, { checked: 1, sent: 1, pending: 0, duplicates: 0 });
+});
+
 test("co the tat Epic bang cau hinh", async () => {
   const result = await runChecker({
     epicEnabled: false,
