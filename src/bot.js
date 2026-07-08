@@ -73,19 +73,38 @@ client.on("messageCreate", async (message) => {
   switch (command) {
     case "help": {
       const embed = new EmbedBuilder()
-        .setTitle("🤖 HƯỚNG DẪN ĐIỀU KHIỂN BOT GAME")
-        .setDescription(`Chào **${message.author.username}**, dưới đây là danh sách các lệnh bạn có thể nhắn trực tiếp để ra lệnh cho bot:`)
+        .setAuthor({ name: "Bot Game Deal", iconURL: client.user.displayAvatarURL() })
+        .setTitle("Bảng điều khiển")
+        .setDescription(`Xin chào **${message.author.username}**. Dùng các lệnh dưới đây để kiểm tra trạng thái và điều khiển bot.`)
         .setColor(0x3498db)
         .addFields(
-          { name: `\`${prefix}stats\``, value: "Hiển thị biểu đồ ASCII thống kê tỉ lệ game đã gửi.", inline: false },
-          { name: `\`${prefix}check <tên game>\``, value: "Tra cứu lịch sử xem game đã được gửi hay chưa.", inline: false },
-          { name: `\`${prefix}search <tên game>\``, value: "Tìm kiếm so sánh giá game trực tuyến trên Steam và Epic.", inline: false },
-          { name: `\`${prefix}webhooks\``, value: "Kiểm tra kết nối và trạng thái hoạt động các Webhook.", inline: false },
-          { name: `\`${prefix}mode\``, value: "Hiển thị chế độ tự động hiện tại của Discord Bot Client.", inline: false },
-          { name: `\`${prefix}changelog\``, value: "Gửi tin thông báo cập nhật v1.0.0 lên Discord.", inline: false },
-          { name: `\`${prefix}send <tên> | <url> | [nền tảng] | [loại]\``, value: "Gửi nhanh một tin nhắn game tùy chọn lên Discord (Ngăn cách các tham số bằng dấu `|`).", inline: false }
+          {
+            name: "Giám sát",
+            value: [
+              `\`${prefix}mode\` - Xem chế độ tự động hiện tại`,
+              `\`${prefix}stats\` - Xem thống kê game đã gửi`,
+              `\`${prefix}webhooks\` - Kiểm tra kết nối webhook`,
+            ].join("\n"),
+            inline: false,
+          },
+          {
+            name: "Tra cứu",
+            value: [
+              `\`${prefix}check <tên game>\` - Kiểm tra lịch sử đã gửi`,
+              `\`${prefix}search <tên game>\` - Tìm giá trên Steam/Epic`,
+            ].join("\n"),
+            inline: false,
+          },
+          {
+            name: "Quản trị",
+            value: [
+              `\`${prefix}send <tên> | <url> | [nền tảng] | [loại]\` - Gửi tin thủ công`,
+              `\`${prefix}changelog\` - Gửi thông báo cập nhật`,
+            ].join("\n"),
+            inline: false,
+          },
         )
-        .setFooter({ text: "Bot Game v1.0.0 - Advanced Coding Team" })
+        .setFooter({ text: `Prefix hiện tại: ${prefix}  •  Bot Game Deal` })
         .setTimestamp();
 
       await message.reply({ embeds: [embed] });
@@ -125,21 +144,27 @@ client.on("messageCreate", async (message) => {
       });
 
       const total = list.length;
-      let chartText = "======================================================\n";
-      chartText += "          BIỂU ĐỒ PHÂN BỔ GAME ĐÃ GỬI (STATS CHART)\n";
-      chartText += "======================================================\n\n";
+      const embed = new EmbedBuilder()
+        .setAuthor({ name: "Bot Game Deal", iconURL: client.user.displayAvatarURL() })
+        .setTitle("Thống kê lịch sử gửi")
+        .setDescription(`Bot đã ghi nhận **${total}** game/sự kiện trong lịch sử.`)
+        .setColor(0x2ecc71)
+        .setFooter({ text: "Dữ liệu lấy từ sent.json" })
+        .setTimestamp();
 
       Object.entries(stats).forEach(([platform, count]) => {
         const percent = Math.round((count / total) * 100);
-        const barLength = Math.round(percent / 5);
-        const bar = "█".repeat(barLength) + "░".repeat(20 - barLength);
-        chartText += `${platform.padEnd(20)}: ${bar} ${count} game (${percent}%)\n`;
-      });
-      
-      chartText += `\nTổng số game đã ghi nhận: ${total} game.\n`;
-      chartText += "======================================================";
+        const barLength = Math.max(1, Math.round(percent / 10));
+        const bar = "■".repeat(barLength) + "□".repeat(10 - barLength);
 
-      await message.reply(`\`\`\`text\n${chartText}\n\`\`\``);
+        embed.addFields({
+          name: platform,
+          value: `${bar} **${count}** mục (${percent}%)`,
+          inline: false,
+        });
+      });
+
+      await message.reply({ embeds: [embed] });
       break;
     }
 
