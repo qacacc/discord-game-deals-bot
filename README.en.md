@@ -177,17 +177,95 @@ To interact directly with the bot on your Discord channel, follow these steps:
 
 ### 1. Set Up A Discord Bot Token
 1. Open the [Discord Developer Portal](https://discord.com/developers/applications).
-2. Create a **New Application** and go to the **Bot** tab.
-3. Under **Privileged Gateway Intents**, enable **MESSAGE CONTENT INTENT** (along with Server Members and Presence intents).
-4. Reset and copy the **Bot Token**, then paste it as `DISCORD_BOT_TOKEN=` in your `.env`.
-5. Invite the bot to your server using the OAuth2 URL Generator (select `bot` scope and necessary permissions).
+2. Create a **New Application**.
+3. Open **General Information**:
+   * Set a clear bot icon/avatar.
+   * Set a clear name, for example `Bot Game Deal`.
+   * Description example: `Discord bot for Steam/Epic free game and event alerts`.
+4. Open the **Bot** tab, scroll to **Privileged Gateway Intents**, and enable:
+   * **PRESENCE INTENT**
+   * **SERVER MEMBERS INTENT**
+   * **MESSAGE CONTENT INTENT** (required for reading chat commands).
+5. Reset and copy the **Bot Token**, then paste it as `DISCORD_BOT_TOKEN=` in your `.env`.
 
-### 2. Start the Bot Daemon
+### 2. Invite The Bot With Correct Permissions
+In Discord Developer Portal:
+
+```txt
+OAuth2
+-> URL Generator
+```
+
+Select scope:
+
+```txt
+bot
+```
+
+Select bot permissions:
+
+```txt
+View Channels
+Send Messages
+Embed Links
+Attach Files
+Read Message History
+Use External Emojis
+```
+
+Copy the generated link, open it in your browser, and invite the bot to your Discord server.
+
+Recommended channel permissions:
+
+```txt
+View Channel
+Send Messages
+Embed Links
+Attach Files
+Read Message History
+```
+
+### 3. Configure `.env` For Discord Bot Client
+Minimum example:
+
+```env
+DISCORD_BOT_TOKEN=your_discord_bot_token_here
+DISCORD_BOT_PREFIX=!
+DISCORD_BOT_COOLDOWN_SEC=5
+DISCORD_BOT_FREE_EVENT_ONLY=true
+
+EPIC_DISCORD_WEBHOOK_URL=your_epic_webhook_here
+STEAM_DISCORD_WEBHOOK_URL=your_steam_webhook_here
+```
+
+### 4. Start the Bot Daemon
 Run the listener using:
 ```bash
 npm run discord-bot
 ```
 You can now type commands like `!help`, `!stats`, `!webhooks`, or `!check Portal 2` directly in your Discord channels!
+
+Command usage note:
+
+```txt
+!search Palworld
+!check Palworld
+```
+
+You do not need to type `< >`. If you type `!search <Palworld>`, the bot will still read it as `Palworld`.
+
+### 5. Test The Bot After Setup
+Run these commands in Discord:
+
+```txt
+!help
+!mode
+!stats
+!webhooks
+!search Palworld
+```
+
+If `!webhooks` reports an error, re-check your webhook URLs in `.env`. If the bot does not reply to chat commands, check `MESSAGE CONTENT INTENT`, channel permissions, and `DISCORD_BOT_TOKEN`.
 
 By default, the Discord Bot Client only sends automatic alerts for:
 

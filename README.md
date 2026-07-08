@@ -76,6 +76,13 @@ More details:
 
 `npm run discord-bot` requires `DISCORD_BOT_TOKEN`. The default `DISCORD_BOT_FREE_EVENT_ONLY=true` mode makes the online bot auto-send only Steam/Epic events and free/upcoming free games.
 
+## Discord Bot Client Setup
+
+To make the bot appear online and respond to commands like `!help`, `!mode`, `!stats`, and `!search Palworld`, follow the full setup guide:
+
+- [Discord Bot Client setup in English](README.en.md#-discord-bot-client-direct-chat-commands)
+- [Hướng dẫn setup Bot Discord bằng tiếng Việt](README.vi.md#-cách-chạy-discord-bot-client-chat-trực-tiếp-trên-discord)
+
 ## FAQ & Features
 
 ### How many Steam pages are scanned?

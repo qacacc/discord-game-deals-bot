@@ -180,20 +180,95 @@ Khi chạy local, các biến nằm trong file `.env`. Khi chạy bằng GitHub 
 ### 1. Tạo Bot Token trên Discord
 1. Truy cập [Discord Developer Portal](https://discord.com/developers/applications).
 2. Bấm **New Application**, đặt tên cho bot.
-3. Vào tab **Bot** (bên trái), kéo xuống phần **Privileged Gateway Intents** và **bật các tùy chọn**:
+3. Vào **General Information**:
+   * Đặt icon/avatar cho bot.
+   * Đặt tên dễ hiểu, ví dụ `Bot Game Deal`.
+   * Mục Description có thể ghi: `Bot báo game miễn phí và sự kiện Steam/Epic vào Discord`.
+4. Vào tab **Bot** (bên trái), kéo xuống phần **Privileged Gateway Intents** và **bật các tùy chọn**:
    * **PRESENCE INTENT**
    * **SERVER MEMBERS INTENT**
    * **MESSAGE CONTENT INTENT** (Quan trọng nhất để bot đọc được lệnh chat).
-4. Kéo lên bấm **Reset Token** để lấy mã bảo mật Bot Token.
-5. Dán token này vào biến `DISCORD_BOT_TOKEN` trong file `.env`.
-6. Sang tab **OAuth2** -> **URL Generator** -> Chọn scope `bot` và các bot permissions: `Read Messages/View Channels`, `Send Messages`, `Embed Links`, `Read Message History`, `Attach Files` -> Copy link ở dưới cùng dán vào trình duyệt để mời bot vào Server Discord của bạn.
+5. Kéo lên bấm **Reset Token** để lấy mã bảo mật Bot Token.
+6. Dán token này vào biến `DISCORD_BOT_TOKEN` trong file `.env`.
 
-### 2. Khởi động bot lắng nghe lệnh chat
+### 2. Mời bot vào server đúng quyền
+Trong Discord Developer Portal:
+
+```txt
+OAuth2
+-> URL Generator
+```
+
+Chọn scope:
+
+```txt
+bot
+```
+
+Chọn bot permissions:
+
+```txt
+View Channels
+Send Messages
+Embed Links
+Attach Files
+Read Message History
+Use External Emojis
+```
+
+Sau đó copy link ở cuối trang, mở bằng trình duyệt và mời bot vào server Discord của bạn.
+
+Trong channel muốn dùng bot, nên bật các quyền:
+
+```txt
+View Channel
+Send Messages
+Embed Links
+Attach Files
+Read Message History
+```
+
+### 3. Cấu hình `.env` cho Bot Discord Client
+Ví dụ cấu hình tối thiểu:
+
+```env
+DISCORD_BOT_TOKEN=your_discord_bot_token_here
+DISCORD_BOT_PREFIX=!
+DISCORD_BOT_COOLDOWN_SEC=5
+DISCORD_BOT_FREE_EVENT_ONLY=true
+
+EPIC_DISCORD_WEBHOOK_URL=your_epic_webhook_here
+STEAM_DISCORD_WEBHOOK_URL=your_steam_webhook_here
+```
+
+### 4. Khởi động bot lắng nghe lệnh chat
 Chạy lệnh sau trên terminal của bạn:
 ```bash
 npm run discord-bot
 ```
 Sau đó bạn có thể chat các lệnh trực tiếp trên kênh Discord như: `!help`, `!stats`, `!webhooks`, `!check Portal 2`, v.v.
+
+Lưu ý khi dùng lệnh:
+
+```txt
+!search Palworld
+!check Palworld
+```
+
+Không cần nhập dấu `< >`. Nếu lỡ nhập `!search <Palworld>`, bot vẫn tự hiểu là `Palworld`.
+
+### 5. Kiểm tra bot sau khi setup
+Gõ các lệnh này trong Discord:
+
+```txt
+!help
+!mode
+!stats
+!webhooks
+!search Palworld
+```
+
+Nếu `!webhooks` báo lỗi, kiểm tra lại webhook trong `.env`. Nếu bot không phản hồi lệnh chat, kiểm tra lại `MESSAGE CONTENT INTENT`, quyền channel và `DISCORD_BOT_TOKEN`.
 
 Mặc định Bot Discord chỉ tự động thông báo:
 

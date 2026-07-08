@@ -12,6 +12,19 @@ const prefix = process.env.DISCORD_BOT_PREFIX || "!";
 const cooldownSec = Number(process.env.DISCORD_BOT_COOLDOWN_SEC) || 5;
 const botFreeEventOnly = (process.env.DISCORD_BOT_FREE_EVENT_ONLY || "true").toLowerCase() !== "false";
 
+/**
+ * Làm sạch tham số lệnh Discord.
+ * Ví dụ: người dùng gõ theo mẫu `!search <Palworld>` thì bot chỉ lấy `Palworld`.
+ */
+function cleanCommandQuery(value) {
+  return String(value || "")
+    .trim()
+    .replace(/^<+/, "")
+    .replace(/>+$/, "")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
 if (!token) {
   console.error("Lỗi: Chưa cấu hình DISCORD_BOT_TOKEN trong file .env!");
   console.error("Vui lòng cấu hình token bot trước khi khởi động.");
@@ -169,7 +182,7 @@ client.on("messageCreate", async (message) => {
     }
 
     case "check": {
-      const query = args.join(" ");
+      const query = cleanCommandQuery(args.join(" "));
       if (!query) {
         return message.reply(`⚠️ Cú pháp sai! Vui lòng nhập: \`${prefix}check <tên game>\``);
       }
@@ -324,7 +337,7 @@ npm run check-webhooks
     }
 
     case "search": {
-      const query = args.join(" ");
+      const query = cleanCommandQuery(args.join(" "));
       if (!query) {
         return message.reply(`⚠️ Cú pháp sai! Vui lòng nhập: \`${prefix}search <tên game>\``);
       }
