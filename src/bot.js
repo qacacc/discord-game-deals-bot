@@ -7,6 +7,16 @@ const { sendGameEmbed } = require("./services/discord.service");
 // Nạp file cấu hình .env
 require("dotenv").config({ quiet: true });
 
+// Tạo HTTP server nhỏ phục vụ việc deploy cloud miễn phí (như Render, Koyeb) để giữ kết nối
+const http = require("http");
+const HTTP_PORT = process.env.PORT || 3000;
+http.createServer((req, res) => {
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.end("Bot is online!");
+}).listen(HTTP_PORT, () => {
+  console.log(`🤖 Mini HTTP Server đang chạy trên cổng ${HTTP_PORT} để duy trì online.`);
+});
+
 const token = process.env.DISCORD_BOT_TOKEN;
 const prefix = process.env.DISCORD_BOT_PREFIX || "!";
 const cooldownSec = Number(process.env.DISCORD_BOT_COOLDOWN_SEC) || 5;
