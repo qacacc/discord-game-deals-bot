@@ -220,24 +220,97 @@ Check the current mode from Discord:
 
 ---
 
-## ⚙️ General Run Commands
-Preview what the bot finds without sending Discord messages:
+## Which Run Mode Should You Use?
+
+This project supports 3 practical run modes:
+
+| Mode | Command / place | Needs online bot? | Sends Discord? | Use case |
+| --- | --- | --- | --- | --- |
+| Local preview | `npm run dry-run` | No | No | Check what the bot finds before sending |
+| Local one-shot run | `npm start` | No | Yes | Test webhooks or send alerts once from your machine |
+| Free scheduled automation | GitHub Actions | No | Yes | Free deployment, runs every 12 hours |
+| Discord Bot Client | `npm run discord-bot` | Yes | Yes | Use chat commands like `!help`, `!mode`, `!stats` in Discord |
+
+Recommendation:
+
+- For a free automatic alert bot: use **GitHub Actions**.
+- For testing before deployment: run `npm run dry-run`.
+- For an online Discord bot that responds to chat commands: run `npm run discord-bot` on a machine/VPS that stays on.
+
+## ⚙️ Command Reference
+
+### `npm install`
+Install all dependencies from `package.json`. Run this once after cloning/downloading the project:
+
+```bash
+npm install
+```
+
+### `npm run dry-run`
+Preview what the bot finds without sending Discord messages and without writing `sent.json`:
 
 ```bash
 npm run dry-run
 ```
 
-Send real Discord alerts:
+### `npm start`
+Run the main checker once, send real Discord webhook alerts, and write sent history to `src/storage/sent.json`:
 
 ```bash
 npm start
 ```
 
-Run tests:
+### `npm run discord-bot`
+Start the Discord Bot Client so the bot appears online and listens for chat commands:
+
+```bash
+npm run discord-bot
+```
+
+This requires `DISCORD_BOT_TOKEN` in `.env`. By default it auto-sends only Steam/Epic events and free/upcoming free games because `DISCORD_BOT_FREE_EVENT_ONLY=true`.
+
+### `npm test`
+Run the full test suite:
 
 ```bash
 npm test
 ```
+
+### `npm run check-webhooks`
+Check whether Discord webhook URLs are still working:
+
+```bash
+npm run check-webhooks
+```
+
+### `npm run show-history`
+Show sent game/event history:
+
+```bash
+npm run show-history
+```
+
+### `npm run reset-history`
+Clear `src/storage/sent.json`. Use this when you want the bot to send everything again:
+
+```bash
+npm run reset-history
+```
+
+### `npm run send-test`
+Send a custom test alert to Discord:
+
+```bash
+npm run send-test -- "Test Game" "https://game-link.com" "Steam" "free"
+```
+
+Argument order:
+
+```txt
+game title | claim link | platform | alert type
+```
+
+Alert type can be `free`, `upcoming`, `sale`, or `event`.
 
 ## Step 4: Free Scheduled Deployment With GitHub Actions
 

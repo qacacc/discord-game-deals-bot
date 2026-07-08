@@ -61,6 +61,21 @@ More details:
 - [English guide](README.en.md)
 - [Hướng dẫn tiếng Việt](README.vi.md)
 
+## Run Modes
+
+| Need | Command / place |
+| --- | --- |
+| Preview without sending Discord messages | `npm run dry-run` |
+| Send alerts once using Discord webhooks | `npm start` |
+| Run an online Discord bot with chat commands | `npm run discord-bot` |
+| Run free scheduled alerts every 12 hours | GitHub Actions |
+| Check webhook health | `npm run check-webhooks` |
+| Show sent history | `npm run show-history` |
+| Clear sent history | `npm run reset-history` |
+| Send a custom test alert | `npm run send-test -- "Test Game" "https://game-link.com" "Steam" "free"` |
+
+`npm run discord-bot` requires `DISCORD_BOT_TOKEN`. The default `DISCORD_BOT_FREE_EVENT_ONLY=true` mode makes the online bot auto-send only Steam/Epic events and free/upcoming free games.
+
 ## FAQ & Features
 
 ### How many Steam pages are scanned?

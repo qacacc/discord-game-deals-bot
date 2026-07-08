@@ -226,24 +226,97 @@ Kiểm tra chế độ hiện tại ngay trong Discord:
 
 ---
 
-## ⚙️ Các lệnh chạy thông thường khác
-Kiểm tra bot tìm được gì nhưng chưa gửi Discord:
+## Nên Chạy Bot Theo Cách Nào?
+
+Project này có 3 cách chạy, tùy nhu cầu:
+
+| Cách chạy | Lệnh / nơi chạy | Cần bot online? | Có gửi Discord? | Dùng khi nào |
+| --- | --- | --- | --- | --- |
+| Chạy thử local | `npm run dry-run` | Không | Không | Kiểm tra bot tìm thấy dữ liệu gì trước khi gửi thật |
+| Chạy thật local một lần | `npm start` | Không | Có | Test webhook hoặc gửi ngay một lần từ máy bạn |
+| Chạy tự động miễn phí | GitHub Actions | Không | Có | Deploy free, tự chạy mỗi 12 tiếng |
+| Bot Discord chat trực tiếp | `npm run discord-bot` | Có | Có | Muốn gõ lệnh `!help`, `!mode`, `!stats` trong Discord |
+
+Khuyến nghị:
+
+- Muốn bot báo tự động 0 đồng: dùng **GitHub Actions**.
+- Muốn test trước khi deploy: chạy `npm run dry-run`.
+- Muốn có bot hiện online để chat lệnh như ảnh: chạy `npm run discord-bot` trên máy/VPS đang bật.
+
+## ⚙️ Giải Thích Các Lệnh Chạy
+
+### `npm install`
+Cài toàn bộ package cần thiết từ `package.json`. Chạy một lần sau khi tải source về:
+
+```bash
+npm install
+```
+
+### `npm run dry-run`
+Kiểm tra bot tìm được gì nhưng **không gửi Discord** và **không ghi `sent.json`**:
 
 ```bash
 npm run dry-run
 ```
 
-Gửi thật vào Discord:
+### `npm start`
+Chạy bot chính một lần, gửi thật vào Discord qua webhook và ghi lịch sử vào `src/storage/sent.json`:
 
 ```bash
 npm start
 ```
 
-Chạy test code:
+### `npm run discord-bot`
+Chạy Discord Bot Client để bot hiện online và nhận lệnh chat trong Discord:
+
+```bash
+npm run discord-bot
+```
+
+Lệnh này cần `DISCORD_BOT_TOKEN` trong `.env`. Mặc định bot chỉ tự động báo Steam/Epic event + game free/upcoming free vì `DISCORD_BOT_FREE_EVENT_ONLY=true`.
+
+### `npm test`
+Chạy toàn bộ test code để kiểm tra chức năng không bị lỗi:
 
 ```bash
 npm test
 ```
+
+### `npm run check-webhooks`
+Kiểm tra webhook Discord còn hoạt động không:
+
+```bash
+npm run check-webhooks
+```
+
+### `npm run show-history`
+Xem lịch sử game/sự kiện đã gửi:
+
+```bash
+npm run show-history
+```
+
+### `npm run reset-history`
+Xóa lịch sử trong `src/storage/sent.json`. Dùng khi muốn bot gửi lại từ đầu:
+
+```bash
+npm run reset-history
+```
+
+### `npm run send-test`
+Gửi một tin test tùy chỉnh lên Discord:
+
+```bash
+npm run send-test -- "Tên game test" "https://link-game.com" "Steam" "free"
+```
+
+Thứ tự tham số:
+
+```txt
+tên game | link nhận | nền tảng | loại alert
+```
+
+Loại alert có thể là `free`, `upcoming`, `sale`, hoặc `event`.
 
 ## Bước 4: Chạy Tự Động Miễn Phí Bằng GitHub Actions
 
