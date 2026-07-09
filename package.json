@@ -1,7 +1,7 @@
 {
   "name": "bot-game",
   "version": "1.0.0",
-  "description": "Discord webhook bot bao game free, sale event va deal Steam/Epic bang GitHub Actions.",
+  "description": "Steam/Epic Discord alerts via webhooks and optional bot commands.",
   "main": "src/index.js",
   "scripts": {
     "build-icons": "node scripts/build-icons.js",
@@ -21,8 +21,14 @@
     "discord-bot": "node src/bot.js",
     "search-deal": "node scripts/cli.js search-deal"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "discord",
+    "steam",
+    "epic-games",
+    "webhook",
+    "github-actions"
+  ],
+  "author": "Huynh Tan Dat",
   "license": "MIT",
   "dependencies": {
     "axios": "^1.18.1",

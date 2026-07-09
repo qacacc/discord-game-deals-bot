@@ -89,6 +89,38 @@ function isActiveEvent(event, now = new Date()) {
 }
 
 /**
+ * Kiểm tra mốc nhắc trước khi sự kiện kết thúc 24 giờ.
+ */
+function isEndingSoon(event, now = new Date()) {
+  const endTime = new Date(event.endsAt).getTime();
+  const nowTime = now.getTime();
+  const oneDayMs = 24 * 60 * 60 * 1000;
+
+  return endTime - oneDayMs <= nowTime && nowTime < endTime;
+}
+
+/**
+ * Tạo thông báo nhắc sự kiện sắp kết thúc.
+ */
+function mapEventEndReminder(event) {
+  return {
+    id: `event-reminder:${event.id}`,
+    title: `${event.title} sắp kết thúc`,
+    alertType: "event",
+    platform: event.platform,
+    eventName: `${event.title} sắp kết thúc`,
+    endDate: formatDateRange(event),
+    url: event.url,
+    appUrl: event.appUrl,
+    image: event.image,
+    summary: [
+      "Sự kiện sale này sẽ kết thúc trong khoảng 24 giờ.",
+      "Nếu muốn xem hoặc nhận game/deal phù hợp, bạn nên kiểm tra trước khi hết hạn.",
+    ].join("\n"),
+  };
+}
+
+/**
  * Map dữ liệu sự kiện thô sang cấu hình hiển thị của Bot
  */
 function mapSaleEvent(event, saleGames = []) {
@@ -127,13 +159,19 @@ function mapSaleEvent(event, saleGames = []) {
  * Lấy danh sách các sự kiện sale đang active của Steam và Epic Games Store
  */
 function getActiveSaleEvents({ steamSales = [], epicSales = [], now = new Date() } = {}) {
-  const activeSteamEvents = STEAM_2026_EVENTS.filter((event) => isActiveEvent(event, now)).map((event) =>
-    mapSaleEvent(event, steamSales),
-  );
+  const activeSteamEvents = STEAM_2026_EVENTS
+    .filter((event) => isActiveEvent(event, now))
+    .flatMap((event) => [
+      mapSaleEvent(event, steamSales),
+      ...(isEndingSoon(event, now) ? [mapEventEndReminder(event)] : []),
+    ]);
 
-  const activeEpicEvents = EPIC_2026_EVENTS.filter((event) => isActiveEvent(event, now)).map((event) =>
-    mapSaleEvent(event, epicSales),
-  );
+  const activeEpicEvents = EPIC_2026_EVENTS
+    .filter((event) => isActiveEvent(event, now))
+    .flatMap((event) => [
+      mapSaleEvent(event, epicSales),
+      ...(isEndingSoon(event, now) ? [mapEventEndReminder(event)] : []),
+    ]);
 
   const events = [...activeSteamEvents, ...activeEpicEvents];
 
@@ -173,5 +211,7 @@ module.exports = {
   EPIC_2026_EVENTS,
   getActiveSaleEvents,
   isActiveEvent,
+  isEndingSoon,
   mapSaleEvent,
+  mapEventEndReminder,
 };

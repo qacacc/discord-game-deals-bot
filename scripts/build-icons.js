@@ -23,18 +23,6 @@ const icons = [
     name: "epic",
     url: "https://cdn.simpleicons.org/epicgames/ffffff",
   },
-  {
-    name: "gog",
-    url: "https://cdn.simpleicons.org/gogdotcom/ffffff",
-  },
-  {
-    name: "ubisoft",
-    url: "https://cdn.simpleicons.org/ubisoft/ffffff",
-  },
-  {
-    name: "other",
-    url: "https://cdn.simpleicons.org/itchdotio/ffffff",
-  },
 ];
 
 async function downloadIcon(url) {

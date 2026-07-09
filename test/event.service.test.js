@@ -33,3 +33,13 @@ test("tao event Epic Sales & Specials khi Epic co deal sale", () => {
 
   assert.equal(events.some((event) => event.id === "event:epic-sales-and-specials"), true);
 });
+
+test("tao reminder truoc khi event ket thuc 1 ngay", () => {
+  const events = getActiveSaleEvents({
+    steamSales: [],
+    now: new Date("2026-07-09T00:00:00.000Z"),
+  });
+
+  assert.equal(events.some((event) => event.id === "event:steam-summer-sale-2026"), true);
+  assert.equal(events.some((event) => event.id === "event-reminder:steam-summer-sale-2026"), true);
+});

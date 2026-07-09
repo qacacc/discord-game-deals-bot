@@ -36,24 +36,21 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           EPIC_DISCORD_WEBHOOK_URL: ${{ secrets.EPIC_DISCORD_WEBHOOK_URL }}
           STEAM_DISCORD_WEBHOOK_URL: ${{ secrets.STEAM_DISCORD_WEBHOOK_URL }}
-          OTHER_DISCORD_WEBHOOK_URL: ${{ secrets.OTHER_DISCORD_WEBHOOK_URL }}
-          SALE_ALERTS_ENABLED: ${{ vars.SALE_ALERTS_ENABLED }}
-          SEND_SALE_DETAILS_TO_DISCORD: ${{ vars.SEND_SALE_DETAILS_TO_DISCORD }}
-          ENABLE_EPIC: ${{ vars.ENABLE_EPIC }}
-          ENABLE_STEAM: ${{ vars.ENABLE_STEAM }}
-          ENABLE_GOG: ${{ vars.ENABLE_GOG }}
-          ENABLE_UBISOFT: ${{ vars.ENABLE_UBISOFT }}
-          ENABLE_FREE_ALERTS: ${{ vars.ENABLE_FREE_ALERTS }}
-          ENABLE_UPCOMING_ALERTS: ${{ vars.ENABLE_UPCOMING_ALERTS }}
-          ENABLE_EVENT_ALERTS: ${{ vars.ENABLE_EVENT_ALERTS }}
-          MIN_SALE_DISCOUNT_PERCENT: ${{ vars.MIN_SALE_DISCOUNT_PERCENT }}
-          MAX_SALE_ALERTS_PER_PLATFORM: ${{ vars.MAX_SALE_ALERTS_PER_PLATFORM }}
-          STEAM_PAGES_TO_SCAN: ${{ vars.STEAM_PAGES_TO_SCAN }}
-          CURRENCY_LOCALE: ${{ vars.CURRENCY_LOCALE }}
+          SALE_ALERTS_ENABLED: ${{ vars.SALE_ALERTS_ENABLED || 'true' }}
+          SEND_SALE_DETAILS_TO_DISCORD: ${{ vars.SEND_SALE_DETAILS_TO_DISCORD || 'true' }}
+          ENABLE_EPIC: ${{ vars.ENABLE_EPIC || 'true' }}
+          ENABLE_STEAM: ${{ vars.ENABLE_STEAM || 'true' }}
+          ENABLE_FREE_ALERTS: ${{ vars.ENABLE_FREE_ALERTS || 'true' }}
+          ENABLE_UPCOMING_ALERTS: ${{ vars.ENABLE_UPCOMING_ALERTS || 'true' }}
+          ENABLE_EVENT_ALERTS: ${{ vars.ENABLE_EVENT_ALERTS || 'true' }}
+          MIN_SALE_DISCOUNT_PERCENT: ${{ vars.MIN_SALE_DISCOUNT_PERCENT || '80' }}
+          MAX_SALE_ALERTS_PER_PLATFORM: ${{ vars.MAX_SALE_ALERTS_PER_PLATFORM || '5' }}
+          STEAM_PAGES_TO_SCAN: ${{ vars.STEAM_PAGES_TO_SCAN || '3' }}
+          CURRENCY_LOCALE: ${{ vars.CURRENCY_LOCALE || 'VN' }}
           MAX_SALE_PRICE: ${{ vars.MAX_SALE_PRICE }}
           PREFERRED_GENRES: ${{ vars.PREFERRED_GENRES }}
           EXCLUDED_GENRES: ${{ vars.EXCLUDED_GENRES }}
-          MESSAGE_LOCALE: ${{ vars.MESSAGE_LOCALE }}
+          MESSAGE_LOCALE: ${{ vars.MESSAGE_LOCALE || 'vi' }}
           DISCORD_MENTION_ROLE: ${{ vars.DISCORD_MENTION_ROLE || secrets.DISCORD_MENTION_ROLE }}
 
       - name: Commit sent history
@@ -61,9 +58,9 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
+          git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
           git add src/storage/sent.json
           git diff --cached --quiet || {
             git commit -m "Update sent games history"
-            git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
             git push origin HEAD:"${GITHUB_REF_NAME}"
           }

@@ -162,7 +162,7 @@ async function main() {
         discountPercent: alertType === "sale" ? 80 : undefined,
         endDate: alertType === "event" ? "Thời gian sự kiện" : "Xem trên store",
         url,
-        image: "https://images.gog-statics.com/cover.jpg",
+        image: "",
         genres: "Action, Adventure, Indie",
       };
 
@@ -192,13 +192,13 @@ async function main() {
         return;
       }
 
-      const platform = await askQuestion("3. Chọn nền tảng (Steam/Epic/GOG/Ubisoft/Other) [Steam]: ") || "Steam";
+      const platform = await askQuestion("3. Chọn nền tảng (Steam/Epic) [Steam]: ") || "Steam";
       const alertType = await askQuestion("4. Chọn loại alert (free/sale/upcoming/event) [free]: ") || "free";
       const originalPrice = await askQuestion("5. Nhập giá gốc (ví dụ: 100.000₫ hoặc 10 USD) [Free]: ") || "Free";
       const currentPrice = await askQuestion("6. Nhập giá khuyến mại [Free]: ") || "Free";
       const discountPercent = alertType === "sale" ? (Number(await askQuestion("7. Nhập tỷ lệ giảm giá % (ví dụ: 80): ")) || undefined) : undefined;
       const genres = await askQuestion("8. Nhập thể loại game (ví dụ: Action, RPG): ") || undefined;
-      const image = await askQuestion("9. Nhập URL ảnh bìa (để trống nếu dùng ảnh mặc định): ") || "https://images.gog-statics.com/cover.jpg";
+      const image = await askQuestion("9. Nhập URL ảnh bìa (có thể để trống): ") || "";
 
       const gameMock = {
         id: `custom:interactive-${Date.now()}`,
@@ -258,7 +258,6 @@ async function main() {
         DISCORD_WEBHOOK_URL: process.env.DISCORD_WEBHOOK_URL,
         EPIC_DISCORD_WEBHOOK_URL: process.env.EPIC_DISCORD_WEBHOOK_URL,
         STEAM_DISCORD_WEBHOOK_URL: process.env.STEAM_DISCORD_WEBHOOK_URL,
-        OTHER_DISCORD_WEBHOOK_URL: process.env.OTHER_DISCORD_WEBHOOK_URL,
       };
 
       for (const [name, url] of Object.entries(webhooks)) {
@@ -294,14 +293,15 @@ async function main() {
           "Bot đã được cập nhật lên **v1.0.0**.",
           "",
           "**Điểm mới chính**",
-          "• Báo game miễn phí và game sắp miễn phí.",
+          "• Báo game miễn phí, game sắp miễn phí và game sale.",
           "• Báo sự kiện Steam/Epic đang diễn ra.",
+          "• Nhắc sự kiện sale trước khi kết thúc 24 giờ.",
           "• Tách webhook theo từng nền tảng.",
           "• Chống gửi trùng bằng `sent.json`.",
           "• Thêm bộ lệnh quản trị: `!help`, `!mode`, `!stats`, `!webhooks`, `!search`.",
           "",
           "**Chế độ mặc định**",
-          "Bot tự động gửi Steam/Epic event + game free, không spam sale detail.",
+          "Webhook chạy theo lịch. Bot token dùng khi cần lệnh Discord trực tiếp.",
         ].join("\n"),
         url: "https://github.com/qacacc/discord-game-deals-bot",
       };

@@ -20,7 +20,7 @@ http.createServer((req, res) => {
 const token = process.env.DISCORD_BOT_TOKEN;
 const prefix = process.env.DISCORD_BOT_PREFIX || "!";
 const cooldownSec = Number(process.env.DISCORD_BOT_COOLDOWN_SEC) || 5;
-const botFreeEventOnly = (process.env.DISCORD_BOT_FREE_EVENT_ONLY || "true").toLowerCase() !== "false";
+const botFreeEventOnly = (process.env.DISCORD_BOT_FREE_EVENT_ONLY || "false").toLowerCase() === "true";
 
 /**
  * Làm sạch tham số lệnh Discord.
@@ -59,7 +59,7 @@ client.once("clientReady", () => {
   console.log(`🤖 Tên Bot: ${client.user.tag}`);
   console.log(`🤖 Tiền tố lệnh (Prefix): "${prefix}"`);
   console.log(`🤖 Thời gian chờ (Cooldown): ${cooldownSec} giây`);
-  console.log(`🤖 Chế độ auto: ${botFreeEventOnly ? "Chỉ Steam/Epic event + game free" : "Theo cấu hình .env đầy đủ"}`);
+  console.log(`🤖 Chế độ auto: ${botFreeEventOnly ? "Rút gọn: Steam/Epic event + game free" : "Đầy đủ: event/free/sale theo .env"}`);
   console.log(`======================================================\n`);
   
   // Chạy quét game tự động ngay lập tức lần đầu tiên khi bot khởi động
@@ -141,7 +141,7 @@ client.on("messageCreate", async (message) => {
         .setDescription(
           botFreeEventOnly
             ? "Bot đang chỉ tự động thông báo **Steam/Epic event + game free**. Sale deal chi tiết và nền tảng khác không được gửi trong chế độ này."
-            : "Bot đang chạy theo cấu hình `.env` đầy đủ.",
+            : "Bot đang chạy theo cấu hình `.env` đầy đủ: **Steam/Epic event + game free + game sale**.",
         )
         .addFields(
           { name: "Biến cấu hình", value: "`DISCORD_BOT_FREE_EVENT_ONLY`", inline: false },
@@ -240,7 +240,6 @@ client.on("messageCreate", async (message) => {
         DISCORD_WEBHOOK_URL: process.env.DISCORD_WEBHOOK_URL,
         EPIC_DISCORD_WEBHOOK_URL: process.env.EPIC_DISCORD_WEBHOOK_URL,
         STEAM_DISCORD_WEBHOOK_URL: process.env.STEAM_DISCORD_WEBHOOK_URL,
-        OTHER_DISCORD_WEBHOOK_URL: process.env.OTHER_DISCORD_WEBHOOK_URL,
       };
 
       let resultText = "📡 **BÁO CÁO TRẠNG THÁI WEBHOOKS:**\n";
@@ -278,14 +277,15 @@ client.on("messageCreate", async (message) => {
           "Bot đã được cập nhật lên **v1.0.0**.",
           "",
           "**Điểm mới chính**",
-          "• Báo game miễn phí và game sắp miễn phí.",
+          "• Báo game miễn phí, game sắp miễn phí và game sale.",
           "• Báo sự kiện Steam/Epic đang diễn ra.",
+          "• Nhắc sự kiện sale trước khi kết thúc 24 giờ.",
           "• Tách webhook theo từng nền tảng.",
           "• Chống gửi trùng bằng `sent.json`.",
           "• Thêm bộ lệnh quản trị: `!help`, `!mode`, `!stats`, `!webhooks`, `!search`.",
           "",
           "**Chế độ mặc định**",
-          "Bot tự động gửi Steam/Epic event + game free, không spam sale detail.",
+          "Webhook chạy theo lịch. Bot token dùng khi cần lệnh Discord trực tiếp.",
         ].join("\n"),
         url: "https://github.com/qacacc/discord-game-deals-bot",
       };
@@ -325,7 +325,7 @@ client.on("messageCreate", async (message) => {
         discountPercent: alertType === "sale" ? 80 : undefined,
         endDate: alertType === "event" ? "Thời gian sự kiện" : "Xem trên store",
         url,
-        image: "https://images.gog-statics.com/cover.jpg",
+        image: "",
         genres: "Action, Adventure",
       };
 
@@ -402,9 +402,6 @@ async function runAutoChecker() {
         ? {
             epicEnabled: true,
             steamEnabled: true,
-            gogEnabled: false,
-            ubisoftEnabled: false,
-            otherEnabled: false,
             freeAlertsEnabled: true,
             upcomingAlertsEnabled: true,
             eventAlertsEnabled: true,

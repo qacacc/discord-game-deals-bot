@@ -8,9 +8,6 @@ const ICON_FILES = {
   free: "free.png",
   sale: "sale.png",
   steam: "steam.png",
-  gog: "gog.png",
-  ubisoft: "ubisoft.png",
-  other: "other.png",
 };
 
 const LOCALES = {
@@ -97,12 +94,12 @@ function getWebhookUrl(game = {}) {
     ? process.env.EPIC_DISCORD_WEBHOOK_URL
     : platform.includes("steam")
       ? process.env.STEAM_DISCORD_WEBHOOK_URL
-      : process.env.OTHER_DISCORD_WEBHOOK_URL;
+      : undefined;
   const webhookUrl = platformWebhookUrl || process.env.DISCORD_WEBHOOK_URL;
 
   if (!webhookUrl) {
     throw new Error(
-      "Missing webhook URL. Set EPIC_DISCORD_WEBHOOK_URL, STEAM_DISCORD_WEBHOOK_URL, OTHER_DISCORD_WEBHOOK_URL, or DISCORD_WEBHOOK_URL.",
+      "Missing webhook URL. Set EPIC_DISCORD_WEBHOOK_URL, STEAM_DISCORD_WEBHOOK_URL, or DISCORD_WEBHOOK_URL.",
     );
   }
 
@@ -327,18 +324,6 @@ function getIconFileName(game) {
 
   if (platform.includes("epic")) {
     return ICON_FILES.epic;
-  }
-
-  if (platform.includes("gog")) {
-    return ICON_FILES.gog;
-  }
-
-  if (platform.includes("ubisoft")) {
-    return ICON_FILES.ubisoft;
-  }
-
-  if (platform.includes("itch.io") || platform.includes("indiegala") || platform.includes("xbox") || platform.includes("playstation") || platform.includes("pc game")) {
-    return ICON_FILES.other;
   }
 
   if (game.alertType === "event") {
