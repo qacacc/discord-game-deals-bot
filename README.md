@@ -12,29 +12,38 @@
 
 ![Check Free Games](https://github.com/qacacc/discord-game-deals-bot/actions/workflows/check-free-games.yml/badge.svg)
 
-Free Discord webhook bot for Epic Games Store and Steam free games, sale events, and deep discount alerts.
+Discord Game Deals Bot is a Steam/Epic notification project with two clear modes:
+
+| Mode | Purpose | Runs 24/7? |
+| --- | --- | --- |
+| Webhook / GitHub Actions | Scheduled alerts for event, free games, upcoming free games, and sale deals | No |
+| Discord Bot App / Token | Online bot with commands like `!help`, `!search`, `!stats` | Yes |
 
 ![Discord Bot Demo](assets/images/demo.png)
 
-> Demo image shows the Discord interface from a real run. Features are implemented as described in this README; the image is not AI-generated.
+> Demo image was captured from a real Discord run. Features are implemented as described in the README; the image is not AI-generated.
 
-## Project Info
-
-| Item | Value |
-| --- | --- |
-| Author | Huỳnh Tấn Đạt |
-| Source language | JavaScript |
-| Runtime | Node.js |
-| Module style | CommonJS |
-| Automation | GitHub Actions |
-| Discord integration | Discord Webhook |
-
-## Choose Language
+## Languages
 
 | Language | README |
 | --- | --- |
-| English | [Read in English](README.en.md) |
-| Tiếng Việt | [Đọc bằng tiếng Việt](README.vi.md) |
+| English | [README.en.md](README.en.md) |
+| Tiếng Việt | [README.vi.md](README.vi.md) |
+
+## Scope
+
+This project is intentionally fixed to two platforms:
+
+- Steam
+- Epic Games Store
+
+The core alert types are:
+
+- Sale event alerts
+- Event ending reminders before the last 24 hours
+- Free game alerts
+- Upcoming free Epic game alerts
+- Sale deal alerts
 
 ## Quick Start
 
@@ -43,177 +52,51 @@ npm install
 npm run dry-run
 ```
 
-Create `.env` from `.env.example`, add your Discord webhooks, then run:
+For local webhook testing:
 
 ```bash
+copy .env.example .env
 npm start
 ```
 
-For automatic free deployment, use GitHub Actions and set these repository secrets:
-
-```txt
-EPIC_DISCORD_WEBHOOK_URL
-STEAM_DISCORD_WEBHOOK_URL
-```
-
-More details:
+For free scheduled deployment, use GitHub Actions and set repository secrets/variables as documented in:
 
 - [English guide](README.en.md)
 - [Hướng dẫn tiếng Việt](README.vi.md)
 
-## Run Modes
+## Main Commands
 
-| Need | Command / place |
+| Command | Meaning |
 | --- | --- |
-| Preview without sending Discord messages | `npm run dry-run` |
-| Send alerts once using Discord webhooks | `npm start` |
-| Run an online Discord bot with chat commands | `npm run discord-bot` |
-| Run free scheduled alerts every 12 hours | GitHub Actions |
-| Check webhook health | `npm run check-webhooks` |
-| Show sent history | `npm run show-history` |
-| Clear sent history | `npm run reset-history` |
-| Send a custom test alert | `npm run send-test -- "Test Game" "https://game-link.com" "Steam" "free"` |
+| `npm start` | Run one webhook scan |
+| `npm run dry-run` | Preview without sending Discord messages |
+| `npm test` | Run test suite |
+| `npm run discord-bot` | Run Discord Bot App with token |
+| `npm run check-webhooks` | Check configured webhooks |
+| `npm run show-history` | Show sent history |
 
-`npm run discord-bot` requires `DISCORD_BOT_TOKEN`. The default `DISCORD_BOT_FREE_EVENT_ONLY=true` mode makes the online bot auto-send only Steam/Epic events and free/upcoming free games.
+## Language & Currency Customization
 
-## Discord Bot Client Setup
+By default, the system outputs messages in **Vietnamese (`vi-VN`)**, sets the timezone to **`Asia/Ho_Chi_Minh`**, and formats prices in **Vietnamese Dong (`₫` / `VND`)**.
 
-To make the bot appear online and respond to commands like `!help`, `!mode`, `!stats`, and `!search Palworld`, follow the full setup guide:
+If you wish to change the language or currency, you can modify the following source files:
 
-- [Discord Bot Client setup in English](README.en.md#-discord-bot-client-direct-chat-commands)
-- [Hướng dẫn setup Bot Discord bằng tiếng Việt](README.vi.md#-cách-chạy-discord-bot-client-chat-trực-tiếp-trên-discord)
+1. **Currency and Price Formatting**:
+   * File: [search.service.js](file:///c:/Users/PC/Downloads/bot%20game/src/services/search.service.js)
+   * Modify the `.toLocaleString("vi-VN")` and the suffix symbol `₫` to your preferred locale and symbol (e.g., `.toLocaleString("en-US")` and `$` for USD).
 
-## FAQ & Features
+2. **Date and Time Formatting**:
+   * Files:
+     * [event.service.js](file:///c:/Users/PC/Downloads/bot%20game/src/services/event.service.js)
+     * [epic.service.js](file:///c:/Users/PC/Downloads/bot%20game/src/services/epic.service.js)
+     * [discord.service.js](file:///c:/Users/PC/Downloads/bot%20game/src/services/discord.service.js)
+     * [bot.js](file:///c:/Users/PC/Downloads/bot%20game/src/bot.js)
+   * Locate `Intl.DateTimeFormat("vi-VN", ...)` or `new Date().toLocaleString("vi-VN")` in these files and replace `"vi-VN"` with your target locale (e.g., `"en-US"`).
 
-### How many Steam pages are scanned?
-By default, the bot scans `3` pages of Steam search results (about 150 games). You can customize this by setting the `STEAM_PAGES_TO_SCAN` environment variable.
+## Author
 
-### How does the retry logic work?
-If Steam, Epic Store, or Discord webhooks encounter network errors or temporary outages, the bot will automatically retry up to 3 times with exponential backoff. It also handles Discord's 429 rate limit by waiting for the specified `retry-after` header value.
+Huỳnh Tấn Đạt
 
-### What is saved in the history log?
-The `sent.json` history file now stores detailed objects instead of plain IDs: `{ id, title, platform, sentAt }`. This is backward compatible with old history formats. Sales and event deals older than 30 days are automatically cleaned up to keep the file size minimal.
+## License
 
-### How to tag/ping server roles when a new game drops?
-Assign `@everyone`, `@here`, or a specific role tag `<@&YOUR_ROLE_ID>` to the `DISCORD_MENTION_ROLE` environment variable. The bot will automatically send the mention along with the game embed.
-
-### How to change the bot's language?
-Set `MESSAGE_LOCALE=en` (or `vi` for Vietnamese) in your environment variables. This localizes both the Discord embeds and the CLI console logs.
-
-### What does `DISCORD_BOT_FREE_EVENT_ONLY` mean?
-This setting only affects `npm run discord-bot`.
-
-```env
-DISCORD_BOT_FREE_EVENT_ONLY=true
-```
-
-When enabled, the live Discord Bot Client auto-sends only Steam/Epic events, Steam/Epic free games, and Epic upcoming free games. It does not auto-send detailed sale deals or other platforms. Set it to `false` if you want the Bot Client to follow your full `.env` configuration.
-
-### Are Steam ratings displayed?
-Yes! The bot parses user review summaries (e.g., *Very Positive (88%)*) directly from Steam's search results and displays them as a field in the Discord embed.
-
-### How does message batching work?
-To keep Discord channels clean during sales, the bot batches discount deals (`sale`) from the same platform (Steam/Epic) into **a single Discord message with up to 10 Embeds**. Free games, upcoming games, and sale events are still sent as standalone messages for visibility.
-
-### Does the bot support GOG.com free games?
-Yes! The bot scans GOG.com catalog for free games. GOG support can be toggled using `ENABLE_GOG`, and you can configure a separate webhook using `GOG_DISCORD_WEBHOOK_URL`.
-
-### How can I filter deals by price and genre?
-You can customize your feed by setting the following environment variables:
-* `MAX_SALE_PRICE`: Maximum price to receive alerts for sale deals (e.g. `150000` VNĐ).
-* `PREFERRED_GENRES`: Preferred game categories (e.g. `Action, RPG`) to restrict alerts to specific tags.
-* `EXCLUDED_GENRES`: Genre tags to exclude from alerts (e.g. `Casual, Sports`).
-
-### Does the bot support Ubisoft Connect free games?
-Yes! The bot scans Ubisoft Connect giveaways using GamerPower API and sends alerts with the Ubisoft logo. You can configure `UBISOFT_DISCORD_WEBHOOK_URL` for separate alerts and toggle it with `ENABLE_UBISOFT`.
-
-### How can I change the price currency to USD?
-Set `CURRENCY_LOCALE=US` in your environment. The bot will fetch prices in USD on Steam/Epic, and `MAX_SALE_PRICE` filters will be evaluated in USD instead of VNĐ.
-
-### Does the bot support free games on Itch.io, IndieGala, Xbox or PlayStation?
-Yes! The bot automatically scans other PC freebies using GamerPower API. Alerts are sent with a custom game controller logo (`other.png`). Toggle it with `ENABLE_OTHER_PLATFORMS` and set a custom webhook via `OTHER_DISCORD_WEBHOOK_URL`.
-
-### How are Discord embeds styled?
-Embeds use a clean one-color style with platform icons, compact price/date fields, a real game image when available, and a direct store link.
-
----
-
-## 🤖 Discord Bot Client (Direct Chat Commands)
-To interact directly with the bot on your Discord channel, follow these steps:
-
-### 1. Set Up A Discord Bot Token
-1. Open the [Discord Developer Portal](https://discord.com/developers/applications).
-2. Create a **New Application** and go to the **Bot** tab.
-3. Under **Privileged Gateway Intents**, enable **MESSAGE CONTENT INTENT** (along with Server Members and Presence intents).
-4. Reset and copy the **Bot Token**, then paste it as `DISCORD_BOT_TOKEN=` in your `.env`.
-5. Invite the bot to your server using the OAuth2 URL Generator (select `bot` scope and necessary permissions).
-
-### 2. Start the Bot Daemon
-Run the listener using:
-```bash
-npm run discord-bot
-```
-You can now type commands like `!help`, `!stats`, `!webhooks`, or `!check Portal 2` directly in your Discord channels!
-
----
-
-## 🛠️ Admin CLI Tools
-You can manage your history file, test Webhook health, or interactively write custom embeds using these commands:
-
-* **Show Sent Games History**:
-  ```bash
-  npm run show-history
-  ```
-* **Show ASCII Stats Chart**:
-  ```bash
-  npm run stats-chart
-  ```
-* **Interactive Custom Message Builder**:
-  Walk through a step-by-step console chat format to build and send custom embeds:
-  ```bash
-  npm run send-custom
-  ```
-* **Check Discord Webhooks Health**:
-  ```bash
-  npm run check-webhooks
-  ```
-* **Send Changelog v1.0.0 Info Embed**:
-  ```bash
-  npm run send-changelog
-  ```
-* **Clean Up Sent History (remove sales/events > 30 days old)**:
-  ```bash
-  npm run clean-history
-  ```
-* **Reset Sent History (clear sent.json)**:
-  ```bash
-  npm run reset-history
-  ```
-* **Check If A Game Has Been Sent**:
-  ```bash
-  npm run check-game -- "Game Name or ID"
-  ```
-* **Send A Custom Test Message To Discord**:
-  ```bash
-  npm run send-test -- "Test Game" "https://store.steampowered.com/" "Steam" "sale"
-  ```
-  *(Parameters: Name, URL, Platform (default: Steam), Alert Type (default: free))*
-
-
-
-
-
-## Release Tag v1.0.0
-To tag the first official stable release:
-```bash
-git tag -a v1.0.0 -m "Release v1.0.0 - Network retry & feature upgrades"
-git push origin v1.0.0
-```
-
-
-## Author & Support
-
-Author: **Huỳnh Tấn Đạt**
-
-- Facebook: [tan.dat.551987](https://www.facebook.com/tan.dat.551987)
-- Donation QR: [View QR](assets/support/donation-qr.jpg)
+MIT
