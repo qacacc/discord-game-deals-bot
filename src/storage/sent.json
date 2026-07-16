@@ -1,40 +1,28 @@
 {
   "sent": [
     {
-      "id": "epic:e5da2c017d4d4afab9f4c56525b66100",
-      "title": "Nova Lands",
+      "id": "epic:c27f2bb0dd9b4c4ca4973e653ab8a5be",
+      "title": "Luto",
       "platform": "Epic Games Store",
-      "sentAt": "2026-07-16T13:22:27.308Z"
+      "sentAt": "2026-07-16T17:04:03.574Z"
     },
     {
-      "id": "epic:f247e0af293645bda266fa9957d82d62",
-      "title": "Tattoo Tycoon",
+      "id": "epic:371545146a944478ad5a87f9b581ac29",
+      "title": "Echo Generation: Midnight Edition",
       "platform": "Epic Games Store",
-      "sentAt": "2026-07-16T13:22:27.756Z"
+      "sentAt": "2026-07-16T17:04:03.994Z"
     },
     {
       "id": "epic-upcoming:223c59e227e74e079a1bbe5a234b896f",
       "title": "Foretales",
       "platform": "Epic Games Store",
-      "sentAt": "2026-07-16T13:22:28.612Z"
-    },
-    {
-      "id": "epic-upcoming:c27f2bb0dd9b4c4ca4973e653ab8a5be",
-      "title": "Luto",
-      "platform": "Epic Games Store",
-      "sentAt": "2026-07-16T13:22:29.175Z"
-    },
-    {
-      "id": "epic-upcoming:371545146a944478ad5a87f9b581ac29",
-      "title": "Echo Generation: Midnight Edition",
-      "platform": "Epic Games Store",
-      "sentAt": "2026-07-16T13:22:29.777Z"
+      "sentAt": "2026-07-16T17:04:04.520Z"
     },
     {
       "id": "steam:1741160",
       "title": "Catch Me!",
       "platform": "Steam",
-      "sentAt": "2026-07-16T13:22:30.459Z"
+      "sentAt": "2026-07-16T17:04:04.883Z"
     }
   ]
 }
