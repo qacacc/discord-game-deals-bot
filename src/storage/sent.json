@@ -1,28 +1,28 @@
 {
   "sent": [
     {
-      "id": "epic:c27f2bb0dd9b4c4ca4973e653ab8a5be",
-      "title": "Luto",
-      "platform": "Epic Games Store",
-      "sentAt": "2026-07-23T13:25:45.620Z"
-    },
-    {
-      "id": "epic:371545146a944478ad5a87f9b581ac29",
-      "title": "Echo Generation: Midnight Edition",
-      "platform": "Epic Games Store",
-      "sentAt": "2026-07-23T13:25:46.163Z"
-    },
-    {
-      "id": "epic-upcoming:223c59e227e74e079a1bbe5a234b896f",
+      "id": "epic:223c59e227e74e079a1bbe5a234b896f",
       "title": "Foretales",
       "platform": "Epic Games Store",
-      "sentAt": "2026-07-23T13:25:46.678Z"
+      "sentAt": "2026-07-23T17:10:28.156Z"
     },
     {
-      "id": "steam:1272160",
-      "title": "The Life and Suffering of Sir Brante",
+      "id": "epic-upcoming:fb86769d4908427986ca9f7d94b581c2",
+      "title": "OTXO",
+      "platform": "Epic Games Store",
+      "sentAt": "2026-07-23T17:10:28.562Z"
+    },
+    {
+      "id": "epic-upcoming:c71375f1ac9444fcae1ca584a53ba6f0",
+      "title": "Sol Cesto",
+      "platform": "Epic Games Store",
+      "sentAt": "2026-07-23T17:10:29.276Z"
+    },
+    {
+      "id": "steam:674750",
+      "title": "Yet Another Zombie Defense HD",
       "platform": "Steam",
-      "sentAt": "2026-07-23T13:25:47.063Z"
+      "sentAt": "2026-07-23T17:10:29.793Z"
     }
   ]
 }
