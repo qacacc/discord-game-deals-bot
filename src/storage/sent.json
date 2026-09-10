@@ -1,22 +1,28 @@
 {
   "sent": [
     {
-      "id": "epic:b8cc76ce7d6645f0a282b843a072cc78",
-      "title": "Alone With You",
-      "platform": "Epic Games Store",
-      "sentAt": "2026-09-10T08:31:05.924Z"
-    },
-    {
-      "id": "epic-upcoming:c76046dddcdb43619c33ce0395941033",
+      "id": "epic:c76046dddcdb43619c33ce0395941033",
       "title": "Luftrausers",
       "platform": "Epic Games Store",
-      "sentAt": "2026-09-10T08:31:06.937Z"
+      "sentAt": "2026-09-10T15:31:24.393Z"
     },
     {
-      "id": "epic-upcoming:e9bb092228f544c582e2c9395fae96f3",
+      "id": "epic:e9bb092228f544c582e2c9395fae96f3",
       "title": "Astral Ascent",
       "platform": "Epic Games Store",
-      "sentAt": "2026-09-10T08:31:07.676Z"
+      "sentAt": "2026-09-10T15:31:24.733Z"
+    },
+    {
+      "id": "epic-upcoming:8a20c6c8d5b5417e800c687e9d72013e",
+      "title": "Mindcop",
+      "platform": "Epic Games Store",
+      "sentAt": "2026-09-10T15:31:25.144Z"
+    },
+    {
+      "id": "epic-upcoming:b9ff3f98367a45cdac289dff6683a2bc",
+      "title": "Shogun Showdown",
+      "platform": "Epic Games Store",
+      "sentAt": "2026-09-10T15:31:25.563Z"
     }
   ]
 }
