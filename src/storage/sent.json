@@ -4,31 +4,37 @@
       "id": "epic:c76046dddcdb43619c33ce0395941033",
       "title": "Luftrausers",
       "platform": "Epic Games Store",
-      "sentAt": "2026-09-16T08:56:33.411Z"
+      "sentAt": "2026-09-16T15:47:48.549Z"
     },
     {
       "id": "epic:e9bb092228f544c582e2c9395fae96f3",
       "title": "Astral Ascent",
       "platform": "Epic Games Store",
-      "sentAt": "2026-09-16T08:56:33.966Z"
+      "sentAt": "2026-09-16T15:47:48.944Z"
+    },
+    {
+      "id": "epic-upcoming:6d99eae44d724baf84d6261a7a0f05d2",
+      "title": "Mechabellum",
+      "platform": "Epic Games Store",
+      "sentAt": "2026-09-16T15:47:49.250Z"
     },
     {
       "id": "epic-upcoming:8a20c6c8d5b5417e800c687e9d72013e",
       "title": "Mindcop",
       "platform": "Epic Games Store",
-      "sentAt": "2026-09-16T08:56:34.653Z"
+      "sentAt": "2026-09-16T15:47:49.784Z"
     },
     {
       "id": "epic-upcoming:b9ff3f98367a45cdac289dff6683a2bc",
       "title": "Shogun Showdown",
       "platform": "Epic Games Store",
-      "sentAt": "2026-09-16T08:56:35.258Z"
+      "sentAt": "2026-09-16T15:47:50.422Z"
     },
     {
       "id": "steam:447700",
       "title": "Crystal Crisis",
       "platform": "Steam",
-      "sentAt": "2026-09-16T08:56:35.764Z"
+      "sentAt": "2026-09-16T15:47:50.888Z"
     }
   ]
 }
