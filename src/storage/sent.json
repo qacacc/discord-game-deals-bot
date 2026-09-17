@@ -1,46 +1,40 @@
 {
   "sent": [
     {
-      "id": "epic:c76046dddcdb43619c33ce0395941033",
-      "title": "Luftrausers",
+      "id": "epic:8a20c6c8d5b5417e800c687e9d72013e",
+      "title": "Mindcop",
       "platform": "Epic Games Store",
-      "sentAt": "2026-09-17T09:01:33.141Z"
+      "sentAt": "2026-09-17T15:54:46.112Z"
     },
     {
-      "id": "epic:e9bb092228f544c582e2c9395fae96f3",
-      "title": "Astral Ascent",
+      "id": "epic:b9ff3f98367a45cdac289dff6683a2bc",
+      "title": "Shogun Showdown",
       "platform": "Epic Games Store",
-      "sentAt": "2026-09-17T09:01:33.607Z"
+      "sentAt": "2026-09-17T15:54:46.514Z"
+    },
+    {
+      "id": "epic-upcoming:7c14bf0cffdd43be968fdcf28e5af653",
+      "title": "Astrea Six Sided Oracles",
+      "platform": "Epic Games Store",
+      "sentAt": "2026-09-17T15:54:47.371Z"
     },
     {
       "id": "epic-upcoming:6d99eae44d724baf84d6261a7a0f05d2",
       "title": "Mechabellum",
       "platform": "Epic Games Store",
-      "sentAt": "2026-09-17T09:01:35.084Z"
-    },
-    {
-      "id": "epic-upcoming:8a20c6c8d5b5417e800c687e9d72013e",
-      "title": "Mindcop",
-      "platform": "Epic Games Store",
-      "sentAt": "2026-09-17T09:01:35.752Z"
-    },
-    {
-      "id": "epic-upcoming:b9ff3f98367a45cdac289dff6683a2bc",
-      "title": "Shogun Showdown",
-      "platform": "Epic Games Store",
-      "sentAt": "2026-09-17T09:01:37.244Z"
+      "sentAt": "2026-09-17T15:54:47.991Z"
     },
     {
       "id": "steam:447700",
       "title": "Crystal Crisis",
       "platform": "Steam",
-      "sentAt": "2026-09-17T09:01:37.667Z"
+      "sentAt": "2026-09-17T15:54:48.839Z"
     },
     {
       "id": "steam:2000040",
       "title": "Space Menace",
       "platform": "Steam",
-      "sentAt": "2026-09-17T09:01:38.063Z"
+      "sentAt": "2026-09-17T15:54:49.596Z"
     }
   ]
 }
