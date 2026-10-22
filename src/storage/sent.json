@@ -1,28 +1,22 @@
 {
   "sent": [
     {
-      "id": "epic:6a846880836044a2adad614ac771f487",
-      "title": "Bad Cheese",
-      "platform": "Epic Games Store",
-      "sentAt": "2026-10-22T09:02:10.656Z"
-    },
-    {
-      "id": "epic:db1202a30c5541dd99cdf54c918a9348",
-      "title": "Agent A: A puzzle in disguise",
-      "platform": "Epic Games Store",
-      "sentAt": "2026-10-22T09:02:11.012Z"
-    },
-    {
-      "id": "epic-upcoming:6aab3ddef4f84fbc9dd81c60f9d8549c",
+      "id": "epic:6aab3ddef4f84fbc9dd81c60f9d8549c",
       "title": "Sker Ritual",
       "platform": "Epic Games Store",
-      "sentAt": "2026-10-22T09:02:11.393Z"
+      "sentAt": "2026-10-22T16:19:02.622Z"
     },
     {
-      "id": "epic-upcoming:06190191cede42afb633fe89ef08c27e",
+      "id": "epic:06190191cede42afb633fe89ef08c27e",
       "title": "Home - A Unique Horror Adventure",
       "platform": "Epic Games Store",
-      "sentAt": "2026-10-22T09:02:12.248Z"
+      "sentAt": "2026-10-22T16:19:02.995Z"
+    },
+    {
+      "id": "epic-upcoming:4e469c7d8bbf49bcabc2c07127d3d946",
+      "title": "Sorry We're Closed",
+      "platform": "Epic Games Store",
+      "sentAt": "2026-10-22T16:19:03.792Z"
     }
   ]
 }
