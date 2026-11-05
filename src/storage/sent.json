@@ -1,22 +1,22 @@
 {
   "sent": [
     {
-      "id": "epic:4e469c7d8bbf49bcabc2c07127d3d946",
-      "title": "Sorry We're Closed",
-      "platform": "Epic Games Store",
-      "sentAt": "2026-11-05T11:43:36.701Z"
-    },
-    {
-      "id": "epic-upcoming:a9748abde1c94b66aae5250bb9fc5503",
+      "id": "epic:a9748abde1c94b66aae5250bb9fc5503",
       "title": "Idle Champions of the Forgotten Realms",
       "platform": "Epic Games Store",
-      "sentAt": "2026-11-05T11:43:37.245Z"
+      "sentAt": "2026-11-05T19:14:54.894Z"
     },
     {
-      "id": "epic-upcoming:3be0a0d8479946d78f60d90c9442a0b4",
+      "id": "epic:3be0a0d8479946d78f60d90c9442a0b4",
       "title": "Flotsam",
       "platform": "Epic Games Store",
-      "sentAt": "2026-11-05T11:43:37.725Z"
+      "sentAt": "2026-11-05T19:14:55.314Z"
+    },
+    {
+      "id": "epic-upcoming:9975548b6d404a94b8a9bdb34cad49e9",
+      "title": "Knightica",
+      "platform": "Epic Games Store",
+      "sentAt": "2026-11-05T19:14:55.708Z"
     }
   ]
 }
