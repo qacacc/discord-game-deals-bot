@@ -1,22 +1,22 @@
 {
   "sent": [
     {
-      "id": "epic:a9748abde1c94b66aae5250bb9fc5503",
-      "title": "Idle Champions of the Forgotten Realms",
-      "platform": "Epic Games Store",
-      "sentAt": "2026-11-12T11:59:17.523Z"
-    },
-    {
-      "id": "epic:3be0a0d8479946d78f60d90c9442a0b4",
-      "title": "Flotsam",
-      "platform": "Epic Games Store",
-      "sentAt": "2026-11-12T11:59:17.852Z"
-    },
-    {
-      "id": "epic-upcoming:9975548b6d404a94b8a9bdb34cad49e9",
+      "id": "epic:9975548b6d404a94b8a9bdb34cad49e9",
       "title": "Knightica",
       "platform": "Epic Games Store",
-      "sentAt": "2026-11-12T11:59:18.317Z"
+      "sentAt": "2026-11-12T19:39:11.564Z"
+    },
+    {
+      "id": "epic-upcoming:d37f3694e7a04edb8347f3cb6320f9d3",
+      "title": "Alien: Isolation",
+      "platform": "Epic Games Store",
+      "sentAt": "2026-11-12T19:39:11.961Z"
+    },
+    {
+      "id": "epic-upcoming:1f9a12b06b4f437790b6913ad136a08c",
+      "title": "Mark of the Deep",
+      "platform": "Epic Games Store",
+      "sentAt": "2026-11-12T19:39:12.301Z"
     }
   ]
 }
