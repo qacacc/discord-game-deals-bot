@@ -1,28 +1,28 @@
 {
   "sent": [
     {
-      "id": "epic:1f9a12b06b4f437790b6913ad136a08c",
-      "title": "Mark of the Deep",
-      "platform": "Epic Games Store",
-      "sentAt": "2026-11-26T06:01:19.709Z"
-    },
-    {
-      "id": "epic-upcoming:0623017cf9f341efbe07557f46beb4e8",
+      "id": "epic:0623017cf9f341efbe07557f46beb4e8",
       "title": "Firestone – Idle Clicker Online RPG",
       "platform": "Epic Games Store",
-      "sentAt": "2026-11-26T06:01:23.176Z"
+      "sentAt": "2026-11-26T17:58:47.105Z"
     },
     {
-      "id": "epic-upcoming:f0a333114190492c84a9decd2bb43875",
+      "id": "epic:f0a333114190492c84a9decd2bb43875",
       "title": "Bread and Fred",
       "platform": "Epic Games Store",
-      "sentAt": "2026-11-26T06:01:23.912Z"
+      "sentAt": "2026-11-26T17:58:47.806Z"
+    },
+    {
+      "id": "epic-upcoming:72bd05148adb4e2cacb8b2efaa4c0297",
+      "title": "Strange Antiquities",
+      "platform": "Epic Games Store",
+      "sentAt": "2026-11-26T17:58:48.102Z"
     },
     {
       "id": "event:epic-black-friday-2026",
       "title": "Epic Black Friday Sale 2026",
       "platform": "Epic Games Store",
-      "sentAt": "2026-11-26T06:01:24.389Z"
+      "sentAt": "2026-11-26T17:58:48.375Z"
     }
   ]
 }
